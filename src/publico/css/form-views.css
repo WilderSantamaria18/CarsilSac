@@ -83,7 +83,7 @@
     position: relative;
 }
 
-.input-icon > i {
+.input-icon>i {
     position: absolute;
     left: 1rem;
     top: 50%;
@@ -94,8 +94,8 @@
     z-index: 2;
 }
 
-.input-icon > .form-control-modern,
-.input-icon > input {
+.input-icon>.form-control-modern,
+.input-icon>input {
     padding-left: 2.75rem;
 }
 
@@ -186,6 +186,8 @@
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-light, rgba(0, 0, 0, 0.08));
 }
 
 .form-avatar-section {
@@ -258,13 +260,16 @@
     .form-grid {
         grid-template-columns: 1fr;
     }
+
     .form-card {
         padding: 1.25rem;
         border-radius: 1rem;
     }
+
     .form-buttons {
         flex-direction: column;
     }
+
     .form-buttons .btn-form {
         width: 100%;
         justify-content: center;
