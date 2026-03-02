@@ -1,22 +1,12 @@
-<!-- Sidebar - Estilo Linear/Notion Minimalista -->
+<!-- Sidebar - Estilo Linear/Notion Minimalista - Fijo -->
 <nav class="sidebar" id="sidebar">
+    <!-- Logo centrado -->
     <div class="sidebar-brand">
-        <div class="brand-icon">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                <rect width="28" height="28" rx="8" fill="var(--primary, #3B49DF)" />
-                <path d="M8 10h12M8 14h8M8 18h10" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-        <div class="brand-text">
-            <span class="brand-name">CARSIL</span>
-            <span class="brand-sub">Gestión de Proformas</span>
-        </div>
-        <button class="toggle-btn" id="toggleSidebarBtn" title="Ocultar menú" style="margin-left: auto;">
-            <i class="bi bi-layout-sidebar-inset"></i>
-        </button>
+        <img src="/img/Carsil.png" alt="CARSIL" class="sidebar-logo">
+
     </div>
 
-    <div class="sidebar-section-label">MENÚ</div>
+    <div class="sidebar-section-label">MENU</div>
 
     <div class="sidebar-nav">
         <a href="/menu/principal" class="sidebar-item" data-page="inicio">
@@ -76,7 +66,7 @@
                                                             </a>
                                                             <% } %>
 
-                                                                <div class="sidebar-section-label">ADMINISTRACIÓN</div>
+                                                                <div class="sidebar-section-label">ADMINISTRACION</div>
 
                                                                 <% if (user && tienePermiso(user, 'reportes' )) { %>
                                                                     <a href="/reportes" class="sidebar-item"
@@ -110,7 +100,7 @@
         <div class="sidebar-divider"></div>
         <a href="/login" class="sidebar-item sidebar-logout">
             <i class="bi bi-box-arrow-left"></i>
-            <span>Cerrar Sesión</span>
+            <span>Cerrar Sesion</span>
         </a>
     </div>
 </nav>

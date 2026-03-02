@@ -5,8 +5,8 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
 
-
 const methodOverride = require('./src/middleware/methodOverride');
+const { notificacionMiddleware } = require('./src/middleware/notificacion');
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -52,34 +52,37 @@ app.use('/', menuRutas);
 const recuperarRutas = require('./src/rutas/recuperarRutas');
 app.use('/', recuperarRutas);
 
+// API de notificaciones
+const notificacionRoutes = require('./src/rutas/notificacionRoutes');
+app.use('/', notificacionRoutes);
+
+// Rutas con middleware de notificaciones
 const asistenciaRoutes = require('./src/rutas/asistenciaRoutes');
-app.use('/', asistenciaRoutes);
+app.use('/', notificacionMiddleware('asistencias'), asistenciaRoutes);
 
 const empleadoRutas = require('./src/rutas/empleadoRoutes');
-app.use('/', empleadoRutas);
+app.use('/', notificacionMiddleware('empleados'), empleadoRutas);
 
 const clienteRoutes = require('./src/rutas/clienteRoutes');
-app.use('/clientes', clienteRoutes);
+app.use('/clientes', notificacionMiddleware('clientes'), clienteRoutes);
 
 const usuarioRoutes = require('./src/rutas/usuarioRoutes');
-app.use('/', usuarioRoutes);
+app.use('/', notificacionMiddleware('usuarios'), usuarioRoutes);
 
 const empresaRoutes = require('./src/rutas/empresaRoutes');
-
 const proformaRoutes = require('./src/rutas/proformaRoutes');
 const facturaRoutes = require('./src/rutas/facturaRoutes');
 const productoRoutes = require('./src/rutas/productoRoutes');
 const rolRoutes = require('./src/rutas/rolRoutes');
 const reporteRoutes = require('./src/rutas/reporteRoutes');
 
-app.use('/empresa', empresaRoutes);
-
-app.use('/proformas', proformaRoutes);
-app.use('/facturas', facturaRoutes);
-app.use('/productos', productoRoutes);
-app.use('/roles', rolRoutes);
+app.use('/empresa', notificacionMiddleware('empresa'), empresaRoutes);
+app.use('/proformas', notificacionMiddleware('proformas'), proformaRoutes);
+app.use('/facturas', notificacionMiddleware('facturas'), facturaRoutes);
+app.use('/productos', notificacionMiddleware('productos'), productoRoutes);
+app.use('/roles', notificacionMiddleware('roles'), rolRoutes);
 app.use('/reportes', reporteRoutes);
-app.use('/pagos', require('./src/rutas/pagoRoutes'));
+app.use('/pagos', notificacionMiddleware('pagos'), require('./src/rutas/pagoRoutes'));
 
 const PORT = process.env.PORT || 3000;
 console.log('Starting server on port:', PORT);

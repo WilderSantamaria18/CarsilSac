@@ -476,18 +476,13 @@
             const mainContent = document.getElementById('main-content');
             const toggleIcon = document.getElementById('toggleIcon');
             
-            // Toggle sidebar
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('hide');
-                mainContent.classList.toggle('full');
-                if (sidebar.classList.contains('hide')) {
-                    toggleIcon.classList.remove('bi-chevron-left');
-                    toggleIcon.classList.add('bi-chevron-right');
-                } else {
-                    toggleIcon.classList.remove('bi-chevron-right');
-                    toggleIcon.classList.add('bi-chevron-left');
-                }
-            });
+            // Toggle sidebar (solo si el botón existe)
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    if (sidebar) sidebar.classList.toggle('hide');
+                    if (mainContent) mainContent.classList.toggle('full');
+                });
+            }
             
             // Filtro de tabla
             const campoFiltro = document.getElementById('campoFiltro');

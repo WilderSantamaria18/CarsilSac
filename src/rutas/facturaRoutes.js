@@ -26,12 +26,41 @@ router.post('/', (req, res) => {
     facturaController.crear(req, res);
 });
 
-// GET /facturas/:id/editar - Mostrar formulario de edición (DEBE IR ANTES QUE /:id)
+// === RUTAS ESPECIALES (DEBEN IR ANTES DE /:id) ===
+
+// GET /facturas/buscar-proforma/:codigo - Buscar proforma por código para AJAX
+router.get('/buscar-proforma/:codigo', (req, res) => {
+    facturaController.buscarProformaPorCodigo(req, res);
+});
+
+// POST /facturas/desde-proforma - Crear factura desde proforma (usando datos del formulario)
+router.post('/desde-proforma', (req, res) => {
+    facturaController.crearDesdeProformaFormulario(req, res);
+});
+
+// POST /facturas/desde-proforma/:idProforma - Crear factura desde proforma
+router.post('/desde-proforma/:idProforma', (req, res) => {
+    facturaController.crearDesdeProforma(req, res);
+});
+
+// GET /facturas/api/buscar - Buscar facturas (API)
+router.get('/api/buscar', (req, res) => {
+    facturaController.buscar(req, res);
+});
+
+// GET /facturas/api/estadisticas - Obtener estadísticas de facturas
+router.get('/api/estadisticas', (req, res) => {
+    facturaController.obtenerDatosAPI(req, res);
+});
+
+// === RUTAS CON PARÁMETRO /:id ===
+
+// GET /facturas/:id/editar - Mostrar formulario de edición
 router.get('/:id/editar', (req, res) => {
     facturaController.mostrarEditar(req, res);
 });
 
-// GET /facturas/:id/detalle - Ver detalle completo de factura (DEBE IR ANTES QUE /:id)
+// GET /facturas/:id/detalle - Ver detalle completo de factura
 router.get('/:id/detalle', (req, res) => {
     facturaController.ver(req, res);
 });
@@ -61,23 +90,6 @@ router.post('/:id/eliminar', (req, res) => {
     facturaController.eliminar(req, res);
 });
 
-// === RUTAS ESPECIALES ===
-
-// GET /facturas/buscar-proforma/:codigo - Buscar proforma por código para AJAX
-router.get('/buscar-proforma/:codigo', (req, res) => {
-    facturaController.buscarProformaPorCodigo(req, res);
-});
-
-// POST /facturas/desde-proforma - Crear factura desde proforma (usando datos del formulario)
-router.post('/desde-proforma', (req, res) => {
-    facturaController.crearDesdeProformaFormulario(req, res);
-});
-
-// POST /facturas/desde-proforma/:idProforma - Crear factura desde proforma
-router.post('/desde-proforma/:idProforma', (req, res) => {
-    facturaController.crearDesdeProforma(req, res);
-});
-
 // PUT /facturas/:id/estado - Cambiar estado de factura
 router.put('/:id/estado', (req, res) => {
     facturaController.cambiarEstado(req, res);
@@ -86,18 +98,6 @@ router.put('/:id/estado', (req, res) => {
 // POST /facturas/:id/estado - Cambiar estado de factura (método POST)
 router.post('/:id/estado', (req, res) => {
     facturaController.cambiarEstado(req, res);
-});
-
-// === RUTAS API ===
-
-// GET /facturas/api/buscar - Buscar facturas (API)
-router.get('/api/buscar', (req, res) => {
-    facturaController.buscar(req, res);
-});
-
-// GET /facturas/api/estadisticas - Obtener estadísticas de facturas
-router.get('/api/estadisticas', (req, res) => {
-    facturaController.obtenerDatosAPI(req, res);
 });
 
 // === RUTAS DE IMPRESIÓN Y EXPORTACIÓN ===

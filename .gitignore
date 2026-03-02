@@ -28,4 +28,7 @@ build/
 
 # Misc
 *.local
+
+# Database connection (credentials)
+src/bd/conexion.js
 *.cache

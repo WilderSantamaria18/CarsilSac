@@ -37,4 +37,48 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // ========================================
+    // CUSTOM MODAL LOGIC 
+    // ========================================
+    const modalTriggers = document.querySelectorAll('[data-bs-toggle="modal"]');
+    const modalCloseBtns = document.querySelectorAll('[data-bs-dismiss="modal"]');
+    const modals = document.querySelectorAll('.modal');
+
+    // Open modal
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-bs-target');
+            if (targetId) {
+                const modal = document.querySelector(targetId);
+                if (modal) {
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                }
+            }
+        });
+    });
+
+    // Close modal via close button
+    modalCloseBtns.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const modal = this.closest('.modal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    // Close modal when clicking outside content
+    modals.forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    });
 });
