@@ -50,7 +50,7 @@ class Proforma {
     static async verificarProformasVencidas() {
         try {
             console.log('Verificando proformas vencidas...');
-            
+
             // Actualizar proformas que han superado su ValidezOferta y no se han vendido
             const sqlActualizar = `
                 UPDATE PROFORMA
@@ -66,10 +66,10 @@ class Proforma {
                     ) AS sub
                 )
             `;
-            
+
             const [resultado] = await conexion.query(sqlActualizar);
             console.log(`Proformas actualizadas a VENCIDA: ${resultado.affectedRows}`);
-            
+
             return resultado.affectedRows;
         } catch (error) {
             console.error('Error en Proforma.verificarProformasVencidas:', error);
@@ -90,7 +90,7 @@ class Proforma {
                 GROUP BY Estado
                 ORDER BY cantidad DESC
             `;
-            
+
             const [resultados] = await conexion.query(sql);
             return resultados;
         } catch (error) {
@@ -121,7 +121,7 @@ class Proforma {
                 AND p.Estado IN ('PENDIENTE', 'APROBADA', 'VENCIDA')
                 ORDER BY p.FechaEmision DESC
             `;
-            
+
             const [resultados] = await conexion.query(sql);
             return resultados;
         } catch (error) {
@@ -129,7 +129,37 @@ class Proforma {
             throw error;
         }
     }
-    
+
+    /**
+     * Genera el siguiente código de proforma en formato PROF-NNN
+     * Consulta el número de proformas existentes y asigna el siguiente consecutivo.
+     */
+    static async generarCodigo() {
+        try {
+            // Contar cuántos códigos PROF-NNN ya existen (incluyendo borradores eliminados no se reusa)
+            const sql = `SELECT COUNT(*) as total FROM PROFORMA WHERE Codigo REGEXP '^PROF-[0-9]+$'`;
+            const [rows] = await conexion.query(sql);
+            const siguiente = (rows[0].total || 0) + 1;
+            // Formatear con mínimo 3 dígitos: PROF-001, PROF-002 ... PROF-999 ...
+            const codigo = 'PROF-' + String(siguiente).padStart(3, '0');
+            // Verificar que no exista (por si hubo eliminaciones y el número ya se usó)
+            const sqlCheck = 'SELECT COUNT(*) as existe FROM PROFORMA WHERE Codigo = ?';
+            const [check] = await conexion.query(sqlCheck, [codigo]);
+            if (check[0].existe > 0) {
+                // Si ya existe, buscar el MAX y sumar 1
+                const sqlMax = `SELECT MAX(CAST(SUBSTRING(Codigo, 6) AS UNSIGNED)) as maxNum FROM PROFORMA WHERE Codigo REGEXP '^PROF-[0-9]+$'`;
+                const [maxRow] = await conexion.query(sqlMax);
+                const maxNum = (maxRow[0].maxNum || 0) + 1;
+                return 'PROF-' + String(maxNum).padStart(3, '0');
+            }
+            return codigo;
+        } catch (error) {
+            console.error('Error en Proforma.generarCodigo:', error);
+            // Fallback seguro
+            return 'PROF-' + String(Date.now()).slice(-4);
+        }
+    }
+
     static async listar() {
         try {
             console.log('Obteniendo lista de proformas...');
@@ -149,7 +179,7 @@ class Proforma {
                               LEFT JOIN EMPRESA e ON p.IdEmpresa = e.IdEmpresa
                               LEFT JOIN FACTURA f ON p.IdProforma = f.IdProforma
                               ORDER BY p.FechaRegistro DESC`;
-        
+
             const [proformas] = await conexion.query(sqlProformas);
 
             // Calcular EstadoVisual: si la proforma está vencida por fecha y validez, mostrar VENCIDA, si no, mostrar el estado real
@@ -176,9 +206,9 @@ class Proforma {
                 const [detalles] = await conexion.query(sqlDetalle, [proforma.IdProforma]);
                 proforma.detalle = detalles;
             }
-            
+
             return proformas;
-            
+
         } catch (error) {
             console.error('Error en Proforma.listar:', error);
             throw error;
@@ -190,7 +220,7 @@ class Proforma {
         try {
             // Iniciar transacción
             await connection.beginTransaction();
-            
+
             // 1. Insertar en tabla PROFORMA
             const sqlProforma = `INSERT INTO PROFORMA 
                 (Codigo, IdUsuario, IdCliente, IdEmpresa, FechaEmision, Referencia, ValidezOferta, TiempoEntrega, LugarEntrega, Garantia, FormaPago, PorcentajeIGV, SubTotal, TotalIGV, Total, Estado, Observaciones)
@@ -214,17 +244,17 @@ class Proforma {
                 data.Estado || 'PENDIENTE',
                 data.Observaciones || null
             ];
-            
+
             const [resultadoProforma] = await connection.query(sqlProforma, valoresProforma);
             const idProforma = resultadoProforma.insertId;
             console.log('Proforma creada con ID:', idProforma);
-            
+
             // 2. Insertar detalles en tabla DETALLE_PROFORMA
             if (data.detalle && Array.isArray(data.detalle)) {
                 const sqlDetalle = `INSERT INTO DETALLE_PROFORMA 
                     (IdProforma, IdProducto, Cantidad, UnidadMedida, PrecioUnitario, Total, DescripcionAdicional)
                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
-                
+
                 for (const item of data.detalle) {
                     if (item.IdProducto && item.Cantidad && item.PrecioUnitario) {
                         const valoresDetalle = [
@@ -241,11 +271,11 @@ class Proforma {
                     }
                 }
             }
-            
+
             // Confirmar transacción
             await connection.commit();
             console.log('Proforma y detalles creados exitosamente');
-            
+
         } catch (error) {
             // Revertir transacción en caso de error
             await connection.rollback();
@@ -262,14 +292,14 @@ class Proforma {
             // Obtener proforma principal
             const sqlProforma = 'SELECT * FROM PROFORMA WHERE IdProforma = ?';
             const [resultadosProforma] = await conexion.query(sqlProforma, [id]);
-            
+
             if (resultadosProforma.length === 0) {
                 return null;
             }
-            
+
             const proforma = resultadosProforma[0];
             console.log('Proforma obtenida por ID:', proforma);
-            
+
             // Calcular estado visual dinámicamente según fecha y validez
             const hoy = new Date();
             const fechaEmision = new Date(proforma.FechaEmision);
@@ -282,7 +312,7 @@ class Proforma {
             } else {
                 proforma.EstadoVisual = proforma.Estado;
             }
-            
+
             // Obtener detalles de la proforma
             const sqlDetalle = `SELECT dp.*, 
                                p.Codigo as CodigoProducto, 
@@ -292,11 +322,11 @@ class Proforma {
                                LEFT JOIN PRODUCTO p ON dp.IdProducto = p.IdProducto 
                                WHERE dp.IdProforma = ?`;
             const [resultadosDetalle] = await conexion.query(sqlDetalle, [id]);
-            
+
             // Agregar detalles a la proforma
             proforma.detalle = resultadosDetalle;
             console.log('Detalles obtenidos:', resultadosDetalle.length);
-            
+
             return proforma;
         } catch (error) {
             console.error('Error en Proforma.obtenerPorId:', error);
@@ -309,7 +339,7 @@ class Proforma {
         try {
             // Iniciar transacción
             await connection.beginTransaction();
-            
+
             // 1. Actualizar tabla PROFORMA
             const sqlProforma = `UPDATE PROFORMA SET 
                 Codigo = ?, IdUsuario = ?, IdCliente = ?, IdEmpresa = ?, FechaEmision = ?, Referencia = ?, ValidezOferta = ?, TiempoEntrega = ?, LugarEntrega = ?, Garantia = ?, FormaPago = ?, PorcentajeIGV = ?, SubTotal = ?, TotalIGV = ?, Total = ?, Estado = ?, Observaciones = ?
@@ -336,18 +366,18 @@ class Proforma {
             ];
             await connection.query(sqlProforma, valoresProforma);
             console.log('Proforma actualizada');
-            
+
             // 2. Eliminar detalles existentes
             const sqlEliminarDetalles = 'DELETE FROM DETALLE_PROFORMA WHERE IdProforma = ?';
             await connection.query(sqlEliminarDetalles, [id]);
             console.log('Detalles anteriores eliminados');
-            
+
             // 3. Insertar nuevos detalles
             if (data.detalle && Array.isArray(data.detalle)) {
                 const sqlDetalle = `INSERT INTO DETALLE_PROFORMA 
                     (IdProforma, IdProducto, Cantidad, UnidadMedida, PrecioUnitario, Total, DescripcionAdicional)
                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
-                
+
                 for (const item of data.detalle) {
                     if (item.IdProducto && item.Cantidad && item.PrecioUnitario) {
                         const valoresDetalle = [
@@ -364,11 +394,11 @@ class Proforma {
                     }
                 }
             }
-            
+
             // Confirmar transacción
             await connection.commit();
             console.log('Proforma y detalles actualizados exitosamente');
-            
+
         } catch (error) {
             // Revertir transacción en caso de error
             await connection.rollback();
@@ -385,21 +415,21 @@ class Proforma {
         try {
             // Iniciar transacción
             await connection.beginTransaction();
-            
+
             // 1. Eliminar detalles primero (por integridad referencial)
             const sqlEliminarDetalles = 'DELETE FROM DETALLE_PROFORMA WHERE IdProforma = ?';
             await connection.query(sqlEliminarDetalles, [id]);
             console.log('Detalles de proforma eliminados');
-            
+
             // 2. Eliminar proforma principal
             const sqlEliminarProforma = 'DELETE FROM PROFORMA WHERE IdProforma = ?';
             await connection.query(sqlEliminarProforma, [id]);
             console.log('Proforma eliminada');
-            
+
             // Confirmar transacción
             await connection.commit();
             console.log('Proforma y detalles eliminados exitosamente');
-            
+
         } catch (error) {
             // Revertir transacción en caso de error
             await connection.rollback();
@@ -425,14 +455,14 @@ class Proforma {
                                  LEFT JOIN EMPRESA e ON p.IdEmpresa = e.IdEmpresa
                                  WHERE p.Codigo = ? AND p.Estado = 'APROBADA'`;
             const [resultadosProforma] = await conexion.query(sqlProforma, [codigo]);
-            
+
             if (resultadosProforma.length === 0) {
                 return null;
             }
-            
+
             const proforma = resultadosProforma[0];
             console.log('Proforma obtenida por código:', proforma);
-            
+
             // Obtener detalles de la proforma
             const sqlDetalle = `SELECT dp.*, 
                                p.Codigo as CodigoProducto, 
@@ -444,7 +474,7 @@ class Proforma {
                                LEFT JOIN PRODUCTO p ON dp.IdProducto = p.IdProducto 
                                WHERE dp.IdProforma = ?`;
             const [resultadosDetalle] = await conexion.query(sqlDetalle, [proforma.IdProforma]);
-            
+
             // Retornar tanto la proforma como sus detalles
             return {
                 proforma: proforma,

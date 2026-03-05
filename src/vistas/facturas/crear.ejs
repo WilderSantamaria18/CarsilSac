@@ -4,753 +4,1392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Factura - CARSIL Equipos y Servicios SAC</title>
+    <title>Nueva Factura — CARSIL Equipos y Servicios SAC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/publico/css/layout.css?v=1772427290140">
-    <link rel="stylesheet" href="/publico/css/form-views.css?v=1772427290140">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/publico/css/layout.css?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="/publico/css/form-views.css?v=<%= Date.now() %>">
+    <style>
+        /* ════════════════════════════════════════
+           MODAL DE BÚSQUEDA
+           ════════════════════════════════════════ */
+        .pf-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1060;
+            transition: opacity 0.2s;
+        }
+
+        .pf-modal-overlay.hiding {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .pf-modal {
+            background: #fff;
+            width: 100%;
+            max-width: 540px;
+            border-radius: 0.875rem;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+            transform: translateY(0);
+            transition: transform 0.25s ease;
+        }
+
+        .pf-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.125rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+        }
+
+        .pf-modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pf-modal-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-light);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .pf-modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .pf-modal-close {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-page);
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.15s;
+        }
+
+        .pf-modal-close:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .pf-modal-body {
+            padding: 1.5rem;
+        }
+
+        .pf-modal-subtitle {
+            font-size: 1.375rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            margin-bottom: 0.25rem;
+        }
+
+        .pf-modal-desc {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+        }
+
+        .pf-search-field {
+            position: relative;
+        }
+
+        .pf-search-field i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .pf-search-field input {
+            width: 100%;
+            height: 48px;
+            padding-left: 3rem;
+            padding-right: 1rem;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            border: 1px solid #e2e6ea;
+            border-radius: 0.625rem;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .pf-search-field input:focus {
+            outline: none;
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .pf-search-field:focus-within i {
+            color: var(--primary);
+        }
+
+        .pf-modal-info-box {
+            margin-top: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            background: rgba(59, 73, 223, 0.05);
+            border: 1px solid rgba(59, 73, 223, 0.12);
+            border-radius: 0.75rem;
+            padding: 1rem 1.125rem;
+        }
+
+        .pf-modal-info-box i {
+            color: var(--primary);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 0.05rem;
+        }
+
+        .pf-modal-info-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .pf-modal-info-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .pf-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-page);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .pf-modal-cancel {
+            padding: 0.55rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pf-modal-cancel:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .pf-modal-search-btn {
+            padding: 0.55rem 2rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 73, 223, 0.22);
+            transition: all 0.2s ease;
+        }
+
+        .pf-modal-search-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .pf-modal-search-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* ════════════════════════════════════════
+           ESTADO INICIAL (pantalla de bienvenida)
+           ════════════════════════════════════════ */
+        .pf-initial-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            gap: 1.25rem;
+            text-align: center;
+        }
+
+        .pf-initial-icon {
+            width: 72px;
+            height: 72px;
+            background: var(--primary-light);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .pf-initial-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .pf-initial-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            max-width: 380px;
+            margin: 0;
+        }
+
+        .pf-initial-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.75rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
+            border: none;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 73, 223, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .pf-initial-trigger:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* ════════════════════════════════════════
+           NAVBAR + BREADCRUMB
+           ════════════════════════════════════════ */
+        .pf-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .pf-breadcrumb a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .pf-breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .pf-header-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .pf-btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.55rem 1.1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-decoration: none;
+        }
+
+        .pf-btn-cancel:hover {
+            background: var(--bg-page);
+            color: var(--text-primary);
+        }
+
+        .pf-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
+            border: none;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 73, 223, 0.22);
+            transition: all 0.2s ease;
+        }
+
+        .pf-btn-primary:hover {
+            background: var(--primary-dark);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .pf-btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .pf-btn-outline:hover {
+            background: var(--bg-page);
+            color: var(--text-primary);
+        }
+
+        /* ════════════════════════════════════════
+           BODY / CARDS
+           ════════════════════════════════════════ */
+        .pf-body {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .pf-page-bar {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pf-page-title {
+            font-size: 1.875rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .pf-page-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin: 0.4rem 0 0;
+        }
+
+        .pf-page-subtitle strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .pf-card {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.07);
+            border-radius: 0.875rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .pf-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .pf-card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pf-card-header i {
+            font-size: 1.05rem;
+            color: var(--primary);
+        }
+
+        .pf-card-header h3 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        /* ════════════════════════════════════════
+           TABLA PROFORMA (readonly)
+           ════════════════════════════════════════ */
+        .pf-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pf-table thead tr {
+            background: rgba(248, 249, 250, 1);
+        }
+
+        .pf-table thead th {
+            padding: 0.65rem 1.5rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            white-space: nowrap;
+        }
+
+        .pf-table tbody tr {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .pf-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .pf-table tbody tr:hover {
+            background: rgba(59, 73, 223, 0.015);
+        }
+
+        .pf-table tbody td {
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            vertical-align: middle;
+        }
+
+        .pf-table-code {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+        }
+
+        .pf-table-desc {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .pf-table-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .pf-table-bold {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ════════════════════════════════════════
+           EMPTY STATE (productos adicionales)
+           ════════════════════════════════════════ */
+        .pf-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
+            gap: 0.5rem;
+            border: 2px dashed rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            margin: 1rem;
+            background: rgba(248, 249, 250, 0.5);
+        }
+
+        .pf-empty i {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+            opacity: 0.35;
+        }
+
+        .pf-empty p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* ════════════════════════════════════════
+           TABLA PRODUCTOS ADICIONALES (editable)
+           ════════════════════════════════════════ */
+        .pf-add-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 0.4rem;
+            padding: 0.4rem 0.5rem;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .pf-add-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .pf-add-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 12px 8px;
+            padding-right: 2rem;
+            -webkit-appearance: none;
+        }
+
+        .pf-btn-del {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.15s ease;
+        }
+
+        .pf-btn-del:hover {
+            background: #fff1f1;
+            color: var(--danger);
+        }
+
+        /* ════════════════════════════════════════
+           LABELS
+           ════════════════════════════════════════ */
+        .pf-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.4rem;
+        }
+
+        .pf-input {
+            width: 100%;
+            padding: 0.6rem 0.875rem;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: #fff;
+            border: 1px solid #e2e6ea;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .pf-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .pf-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.875rem center;
+            background-size: 14px 10px;
+            padding-right: 2.5rem;
+        }
+
+        textarea.pf-input {
+            resize: vertical;
+        }
+
+        /* ════════════════════════════════════════
+           TOTALES
+           ════════════════════════════════════════ */
+        .pf-totals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .pf-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .pf-total-row span {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .pf-total-row strong {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .pf-total-separator {
+            border: none;
+            border-top: 1px solid rgba(0, 0, 0, 0.07);
+            margin: 0.5rem 0;
+        }
+
+        .pf-total-final-block {
+            padding: 1.5rem;
+            background: var(--bg-page);
+            border-top: 1px solid rgba(0, 0, 0, 0.07);
+        }
+
+        .pf-total-label-sm {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .pf-total-amount {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.05em;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .pf-currency-badge {
+            display: inline-block;
+            padding: 0.15rem 0.45rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pf-generate-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #fff;
+            background: var(--primary);
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(59, 73, 223, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            letter-spacing: -0.01em;
+        }
+
+        .pf-generate-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 28px rgba(59, 73, 223, 0.3);
+        }
+
+        .pf-generate-note {
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* ════════════════════════════════════════
+           BTN agregar producto adicional
+           ════════════════════════════════════════ */
+        .pf-btn-add-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.875rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pf-btn-add-row:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* spinner loading */
+        .pf-spinner {
+            display: none;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        /* navbar-top sticky */
+        .navbar-top {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        @media (max-width: 768px) {
+            .pf-body {
+                padding: 1rem;
+            }
+
+            .pf-modal {
+                margin: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <div class="wrapper">
         <%- include("../parciales/sidebar") %>
 
-            <!-- Botón para ocultar/mostrar barra -->
-
-            <!-- Main Content -->
             <div class="main-content" id="main-content">
+
+                <!-- ── Navbar ── -->
                 <nav class="navbar navbar-expand-lg navbar-top border-bottom">
-                    <div class="container-fluid">
-                        <h5 class="page-title mb-0">
-                            <i class="bi bi-receipt"></i>
-                            Nueva Factura
-                        </h5>
-                        <div class="user-profile ms-auto">
-                            <span>
-                                <%= user && user.Nombres ? user.Nombres : 'Usuario' %>
-                            </span>
-                            <div class="user-avatar">
-                                <%= user && user.Nombres ? user.Nombres.charAt(0) : 'U' %>
+                    <div class="container-fluid px-4">
+                        <div class="flex-grow-1">
+                            <div class="pf-breadcrumb">
+                                <a href="/dashboard"><i class="bi bi-house"></i> Inicio</a>
+                                <i class="bi bi-chevron-right" style="font-size:0.6rem;"></i>
+                                <a href="/facturas">Facturas</a>
+                                <i class="bi bi-chevron-right" style="font-size:0.6rem;"></i>
+                                <span>Nueva Factura</span>
                             </div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span class="pf-header-title">Nueva Factura</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="/facturas" class="pf-btn-cancel">Cancelar</a>
                         </div>
                     </div>
                 </nav>
 
-                <div class="container-fluid py-4">
-                    <!-- Mensajes flash -->
+                <!-- ── Contenido ── -->
+                <div class="pf-body">
+
+                    <!-- Alertas -->
                     <% if (typeof success !=='undefined' && success) { %>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle me-2"></i>
+                            <i class="bi bi-check-circle-fill me-2"></i>
                             <%= success %>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                         <% } %>
                             <% if (typeof error !=='undefined' && error) { %>
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <i class="bi bi-exclamation-circle-fill me-2"></i>
                                     <%= error %>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
                                 <% } %>
 
-                                    <!-- Formulario de creación de factura -->
-                                    <div class="form-container">
-                                        <div class="text-center mb-4">
-                                            <h2 class="text-primary fw-bold">
-                                                <i class="bi bi-receipt me-2"></i>
-                                                Crear Nueva Factura
-                                            </h2>
-                                            <p class="text-muted">Complete los datos para generar una factura desde una
-                                                proforma aprobada</p>
+                                    <!-- ── Estado inicial: Buscar Proforma ── -->
+                                    <div id="initialState" class="pf-initial-state">
+                                        <div class="pf-initial-icon">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </div>
+                                        <h2 class="pf-initial-title">Generar Comprobante de Pago</h2>
+                                        <p class="pf-initial-desc">Seleccione una proforma aprobada para generar la
+                                            factura correspondiente con sus productos y totales.</p>
+                                        <button class="pf-initial-trigger" id="openModalBtn">
+                                            <i class="bi bi-search"></i> Buscar Proforma Aprobada
+                                        </button>
+                                    </div>
+
+                                    <!-- ── Spinner de carga ── -->
+                                    <div class="pf-spinner" id="loadingSpinner">
+                                        <div class="spinner-border text-primary" role="status"
+                                            style="width:2rem;height:2rem;">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                        <p class="text-muted mt-2" style="font-size:0.875rem;">Buscando proforma...</p>
+                                    </div>
+
+                                    <!-- ── Contenido de la factura (se muestra al encontrar proforma) ── -->
+                                    <div id="facturaContent" style="display:none; flex-direction:column; gap:1.5rem;">
+
+                                        <!-- Barra de título -->
+                                        <div class="pf-page-bar">
+                                            <div>
+                                                <h2 class="pf-page-title">Generar Comprobante</h2>
+                                                <p class="pf-page-subtitle" id="proformaSubtitle">Basado en Proforma
+                                                    <strong id="codigoProformaDisplay">#PRO-...</strong></p>
+                                            </div>
+                                            <button class="pf-btn-outline" id="verProformaBtn" style="display:none;">
+                                                <i class="bi bi-eye"></i> Ver Proforma Original
+                                            </button>
                                         </div>
 
-                                        <!-- Búsqueda de proforma -->
-                                        <div class="proforma-search-box">
-                                            <label for="proformaSearch" class="form-label">
-                                                <i class="bi bi-search"></i>
-                                                Buscar Proforma por Código <span class="required">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control-modern" id="proformaSearch"
-                                                    placeholder="Ingrese el código de la proforma (ej: PRO-2025-001)"
-                                                    autocomplete="off">
-                                                <button class="btn-form btn-form-primary-modern" type="button"
-                                                    id="buscarProforma">
-                                                    <i class="bi bi-search"></i>
-                                                    Buscar
+                                        <!-- Sección 1: Detalle de la proforma -->
+                                        <div class="pf-card">
+                                            <div class="pf-card-header">
+                                                <div class="pf-card-header-left">
+                                                    <i class="bi bi-box-seam"></i>
+                                                    <h3>Detalles de la Proforma</h3>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="pf-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Cód.</th>
+                                                            <th style="width:40%;">Descripción del Producto / Servicio
+                                                            </th>
+                                                            <th style="text-align:center;">Cant.</th>
+                                                            <th>Unidad</th>
+                                                            <th style="text-align:right;">P. Unitario</th>
+                                                            <th style="text-align:right;">Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="productosTableBody">
+                                                        <!-- Se llena dinámicamente -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sección 2: Productos adicionales -->
+                                        <div class="pf-card">
+                                            <div class="pf-card-header">
+                                                <div class="pf-card-header-left">
+                                                    <i class="bi bi-plus-circle"></i>
+                                                    <h3>Productos Adicionales</h3>
+                                                </div>
+                                                <button type="button" class="pf-btn-add-row" id="addProductBtn">
+                                                    <i class="bi bi-plus-lg"></i> Agregar Producto
                                                 </button>
                                             </div>
-                                            <small class="form-text text-muted">
-                                                <i class="bi bi-info-circle me-1"></i>
-                                                Solo se pueden usar proformas con estado "APROBADA" (ej: PRO-2025-001)
-                                            </small>
-                                        </div>
-
-                                        <!-- Loading spinner -->
-                                        <div class="loading-spinner" id="loadingSpinner">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Cargando...</span>
+                                            <div id="adicionalEmptyState" class="pf-empty">
+                                                <i class="bi bi-post-stamp-fill"></i>
+                                                <p>¿Desea agregar productos o repuestos adicionales al trabajo?</p>
                                             </div>
-                                            <p class="mt-2 text-muted">Buscando proforma...</p>
-                                        </div>
-
-                                        <!-- Detalles de la proforma encontrada -->
-                                        <div class="proforma-details" id="proformaDetails">
-                                            <h5 class="text-primary fw-bold mb-3">
-                                                <i class="bi bi-file-earmark-check me-2"></i>
-                                                Detalles de la Proforma
-                                            </h5>
-
-                                            <div class="row" id="proformaInfo">
-                                                <!-- Los detalles se llenarán dinámicamente -->
-                                            </div>
-
-                                            <!-- Tabla de productos -->
-                                            <div class="mt-4">
-                                                <h6 class="fw-bold text-primary mb-3">
-                                                    <i class="bi bi-box me-2"></i>
-                                                    Productos/Servicios de la Proforma
-                                                </h6>
-                                                <div class="table-responsive">
-                                                    <table class="table product-table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Producto</th>
-                                                                <th>Cantidad</th>
-                                                                <th>Unidad</th>
-                                                                <th>Precio Unit.</th>
-                                                                <th>Total</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="productosTableBody">
-                                                            <!-- Los productos se llenarán dinámicamente -->
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-
-                                            <!-- Sección de productos adicionales -->
-                                            <div class="mt-4">
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h6 class="fw-bold text-success mb-0">
-                                                        <i class="bi bi-plus-circle me-2"></i>
-                                                        Productos Adicionales
-                                                    </h6>
-                                                    <button type="button" class="btn btn-success btn-sm"
-                                                        id="addProductBtn">
-                                                        <i class="bi bi-plus-lg me-1"></i>
-                                                        Agregar Producto
-                                                    </button>
-                                                </div>
-                                                <div class="table-responsive">
-                                                    <table class="table product-table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Producto</th>
-                                                                <th>Cantidad</th>
-                                                                <th>Unidad</th>
-                                                                <th>Precio Unit.</th>
-                                                                <th>Total</th>
-                                                                <th width="60">Acción</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="productosAdicionalesBody">
-                                                            <!-- Los productos adicionales se agregarán aquí -->
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                <div id="noProductosAdicionales" class="text-center py-3 text-muted">
-                                                    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                                                    <p class="mb-0 mt-2">No hay productos adicionales agregados</p>
-                                                    <small>Use el botón "Agregar Producto" para incluir productos
-                                                        adicionales a la factura</small>
-                                                </div>
-                                            </div>
-
-                                            <!-- Totales -->
-                                            <div class="totals-section">
-                                                <h6 class="fw-bold text-primary mb-3">
-                                                    <i class="bi bi-calculator me-2"></i>
-                                                    Resumen de Totales
-                                                </h6>
-
-                                                <!-- Totales de la proforma original -->
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <div class="total-row">
-                                                            <span class="total-original">Subtotal Proforma:</span>
-                                                            <strong class="total-original"
-                                                                id="subtotalOriginalDisplay">S/ 0.00</strong>
-                                                        </div>
-                                                        <div class="total-row">
-                                                            <span class="total-original">IGV Proforma (18%):</span>
-                                                            <strong class="total-original" id="igvOriginalDisplay">S/
-                                                                0.00</strong>
-                                                        </div>
-                                                        <div class="total-row">
-                                                            <span class="total-original">Total Proforma:</span>
-                                                            <strong class="total-original" id="totalOriginalDisplay">S/
-                                                                0.00</strong>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Totales de productos adicionales -->
-                                                    <div class="col-md-6">
-                                                        <div class="total-row">
-                                                            <span class="total-adicional">Subtotal Adicionales:</span>
-                                                            <strong class="total-adicional"
-                                                                id="subtotalAdicionalesDisplay">S/ 0.00</strong>
-                                                        </div>
-                                                        <div class="total-row">
-                                                            <span class="total-adicional">IGV Adicionales (18%):</span>
-                                                            <strong class="total-adicional"
-                                                                id="igvAdicionalesDisplay">S/ 0.00</strong>
-                                                        </div>
-                                                        <div class="total-row">
-                                                            <span class="total-adicional">Total Adicionales:</span>
-                                                            <strong class="total-adicional"
-                                                                id="totalAdicionalesDisplay">S/ 0.00</strong>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Total final -->
-                                                <div class="total-row"
-                                                    style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #28a745;">
-                                                    <span class="total-final">TOTAL FINAL FACTURA:</span>
-                                                    <strong class="total-final" id="totalFinalDisplay">S/ 0.00</strong>
-                                                </div>
-                                            </div>
-
-                                            <!-- Formulario de factura -->
-                                            <form action="/facturas/desde-proforma" method="POST" id="facturaForm"
-                                                class="mt-4">
-                                                <input type="hidden" id="idProformaHidden" name="IdProforma">
-
-                                                <!-- Productos adicionales (hidden inputs) -->
-                                                <div id="productosAdicionalesHidden">
-                                                    <!-- Los inputs hidden se agregarán dinámicamente aquí -->
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label for="fechaVencimiento" class="form-label">
-                                                                <i class="bi bi-calendar-x"></i>
-                                                                Fecha de Vencimiento
-                                                            </label>
-                                                            <input type="date" class="form-control-modern"
-                                                                id="fechaVencimiento" name="FechaVencimiento">
-                                                            <small class="form-text text-muted">Opcional. Si no se
-                                                                especifica, será a 30 días de la fecha de
-                                                                emisión.</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label for="formaPago" class="form-label">
-                                                                <i class="bi bi-credit-card"></i>
-                                                                Forma de Pago
-                                                            </label>
-                                                            <select class="form-control-modern form-select-modern" id="formaPago" name="FormaPago">
-                                                                <option value="">Seleccionar forma de pago</option>
-                                                                <option value="CONTADO">Contado</option>
-                                                                <option value="CREDITO_30">Crédito 30 días</option>
-                                                                <option value="CREDITO_60">Crédito 60 días</option>
-                                                                <option value="CREDITO_90">Crédito 90 días</option>
-                                                                <option value="TRANSFERENCIA">Transferencia bancaria
-                                                                </option>
-                                                                <option value="CHEQUE">Cheque</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label for="observaciones" class="form-label">
-                                                        <i class="bi bi-chat-square-text"></i>
-                                                        Observaciones Adicionales
-                                                    </label>
-                                                    <textarea class="form-control-modern" id="observaciones"
-                                                        name="Observaciones" rows="3"
-                                                        placeholder="Observaciones adicionales para la factura (opcional)"></textarea>
-                                                </div>
-
-                                                <!-- Botones de acción -->
-                                                <div class="text-center mt-4">
-                                                    <button type="submit" class="btn-form btn-form-primary-modern btn-lg me-3">
-                                                        <i class="bi bi-receipt"></i>
-                                                        Generar Factura
-                                                    </button>
-                                                    <a href="/facturas" class="btn-form btn-form-cancel-modern btn-lg">
-                                                        <i class="bi bi-arrow-left"></i>
-                                                        Cancelar
-                                                    </a>
-                                                </div>
-                                            </form>
-                                        </div>
-
-                                        <!-- Mensaje de ayuda cuando no hay proforma seleccionada -->
-                                        <div class="text-center py-5" id="helpMessage">
-                                            <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
-                                            <h5 class="mt-3 text-muted">Busque una proforma para comenzar</h5>
-                                            <p class="text-muted">
-                                                Ingrese el código de una proforma aprobada (ej: PRO-2025-001) en el campo de
-                                                búsqueda para generar la factura automáticamente.
-                                            </p>
-                                            <div class="alert alert-info d-inline-block">
-                                                <i class="bi bi-lightbulb me-2"></i>
-                                                <strong>Tip:</strong> Solo las proformas con estado "APROBADA" pueden
-                                                convertirse en facturas.
+                                            <div class="table-responsive" id="adicionalTableWrap" style="display:none;">
+                                                <table class="pf-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:35%;padding-left:1.5rem;">Producto /
+                                                                Servicio</th>
+                                                            <th style="width:10%;">Cantidad</th>
+                                                            <th style="width:10%;text-align:center;">Unidad</th>
+                                                            <th style="width:14%;">P. Unit (S/)</th>
+                                                            <th style="width:12%;text-align:right;">Total (S/)</th>
+                                                            <th style="width:13%;">Descripción</th>
+                                                            <th style="width:6%;text-align:center;">Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="productosAdicionalesBody"></tbody>
+                                                </table>
                                             </div>
                                         </div>
-                                    </div>
+
+                                        <!-- Sección 3: Grid Información de pago + Totales -->
+                                        <div class="row g-4">
+
+                                            <!-- Información de Pago -->
+                                            <div class="col-lg-8">
+                                                <div class="pf-card h-100">
+                                                    <div class="pf-card-header">
+                                                        <div class="pf-card-header-left">
+                                                            <i class="bi bi-info-circle"></i>
+                                                            <h3>Información de Pago y Facturación</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div style="padding:1.5rem;">
+                                                        <form action="/facturas/desde-proforma" method="POST"
+                                                            id="facturaForm">
+                                                            <input type="hidden" id="idProformaHidden"
+                                                                name="IdProforma">
+                                                            <div id="productosAdicionalesHidden"></div>
+
+                                                            <div class="row g-3">
+                                                                <div class="col-sm-6">
+                                                                    <label class="pf-label">Fecha de Vencimiento</label>
+                                                                    <input type="date" class="pf-input"
+                                                                        id="fechaVencimiento" name="FechaVencimiento">
+                                                                    <small
+                                                                        style="font-size:0.7rem;color:var(--text-muted);">Si
+                                                                        no se especifica, será a 30 días de la
+                                                                        emisión.</small>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <label class="pf-label">Forma de Pago</label>
+                                                                    <select class="pf-input pf-select" id="formaPago"
+                                                                        name="FormaPago">
+                                                                        <option value="">Seleccionar forma de pago
+                                                                        </option>
+                                                                        <option value="CONTADO">Contado</option>
+                                                                        <option value="CREDITO_30">Crédito 30 días
+                                                                        </option>
+                                                                        <option value="CREDITO_60">Crédito 60 días
+                                                                        </option>
+                                                                        <option value="CREDITO_90">Crédito 90 días
+                                                                        </option>
+                                                                        <option value="TRANSFERENCIA">Transferencia
+                                                                            bancaria</option>
+                                                                        <option value="CHEQUE">Cheque</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <label class="pf-label">Observaciones
+                                                                        Adicionales</label>
+                                                                    <textarea class="pf-input" name="Observaciones"
+                                                                        rows="3"
+                                                                        placeholder="Escriba notas relevantes aquí..."></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Resumen de Totales -->
+                                            <div class="col-lg-4">
+                                                <div class="pf-card h-100 d-flex flex-column">
+                                                    <div class="pf-card-header">
+                                                        <div class="pf-card-header-left">
+                                                            <i class="bi bi-cash-coin"></i>
+                                                            <h3>Resumen de Totales</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div style="padding:1.5rem;flex:1;">
+                                                        <div class="pf-totals-list">
+                                                            <div class="pf-total-row">
+                                                                <span>Subtotal (Gravado)</span>
+                                                                <strong id="subtotalOriginalDisplay">S/ 0.00</strong>
+                                                            </div>
+                                                            <div class="pf-total-row" id="adicionalSubtotalRow"
+                                                                style="display:none;">
+                                                                <span>Adiciones</span>
+                                                                <strong id="subtotalAdicionalesDisplay"
+                                                                    style="color:var(--success);">+ S/ 0.00</strong>
+                                                            </div>
+                                                            <div class="pf-total-row">
+                                                                <span>IGV (18%)</span>
+                                                                <strong id="igvOriginalDisplay">S/ 0.00</strong>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="pf-total-final-block">
+                                                        <div
+                                                            class="d-flex align-items-center justify-content-between mb-0.5">
+                                                            <div>
+                                                                <div class="pf-total-label-sm">Total Final Factura</div>
+                                                                <p class="pf-total-amount" id="totalFinalDisplay">S/
+                                                                    0.00</p>
+                                                            </div>
+                                                            <span class="pf-currency-badge">PEN</span>
+                                                        </div>
+                                                    </div>
+                                                    <div style="padding:1rem 1.5rem 1.5rem;">
+                                                        <button type="submit" form="facturaForm" class="pf-generate-btn"
+                                                            id="submitFacturaBtn">
+                                                            <i class="bi bi-send"></i> Generar Factura
+                                                        </button>
+                                                        <p class="pf-generate-note">El documento será registrado en el
+                                                            sistema.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div><!-- /row -->
+
+                                    </div><!-- /facturaContent -->
+
+                </div><!-- /pf-body -->
+
+            </div><!-- /main-content -->
+    </div><!-- /wrapper -->
+
+    <!-- ════════════════════════════════════════
+         MODAL DE BÚSQUEDA DE PROFORMA
+         ════════════════════════════════════════ -->
+    <div class="pf-modal-overlay" id="searchModal">
+        <div class="pf-modal">
+            <div class="pf-modal-header">
+                <div class="pf-modal-header-left">
+                    <div class="pf-modal-icon">
+                        <i class="bi bi-archive"></i>
+                    </div>
+                    <h2 class="pf-modal-title">CARSIL System</h2>
+                </div>
+                <button class="pf-modal-close" id="closeModalBtn" title="Cerrar">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="pf-modal-body">
+                <h3 class="pf-modal-subtitle">Buscar Proforma Aprobada</h3>
+                <p class="pf-modal-desc">Ingrese los detalles para localizar el documento en el sistema.</p>
+                <label class="pf-label" style="font-size:0.8125rem;margin-bottom:0.5rem;">Código de Proforma</label>
+                <div class="pf-search-field">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="proformaSearch" placeholder="Ej. PROF-001" autocomplete="off"
+                        style="text-transform:uppercase;">
+                </div>
+                <div class="pf-modal-info-box">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <div>
+                        <div class="pf-modal-info-title">Solo se pueden usar proformas con estado "APROBADA"</div>
+                        <p class="pf-modal-info-text">Asegúrese de que la proforma haya pasado por el proceso de
+                            validación correspondiente antes de intentar realizar la búsqueda.</p>
+                    </div>
                 </div>
             </div>
+            <div class="pf-modal-footer">
+                <button class="pf-modal-cancel" id="cancelModalBtn">Cancelar</button>
+                <button class="pf-modal-search-btn" id="buscarProforma">
+                    <i class="bi bi-search me-1"></i> Buscar
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toggleBtn = document.getElementById('toggleSidebarBtn');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const toggleIcon = document.getElementById('toggleIcon');
-
-            // Toggle sidebar (solo si el botón existe)
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function () {
-                    if (sidebar) sidebar.classList.toggle('hide');
-                    if (mainContent) mainContent.classList.toggle('full');
-                });
-            }
-
-            // Elementos del DOM
-            const proformaSearch = document.getElementById('proformaSearch');
+            /* ── Referencias DOM ── */
+            const modal = document.getElementById('searchModal');
+            const openModalBtn = document.getElementById('openModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
             const buscarBtn = document.getElementById('buscarProforma');
+            const proformaSearch = document.getElementById('proformaSearch');
+            const initialState = document.getElementById('initialState');
+            const facturaContent = document.getElementById('facturaContent');
             const loadingSpinner = document.getElementById('loadingSpinner');
-            const proformaDetails = document.getElementById('proformaDetails');
-            const helpMessage = document.getElementById('helpMessage');
-            const facturaForm = document.getElementById('facturaForm');
             const addProductBtn = document.getElementById('addProductBtn');
-            const productosAdicionalesBody = document.getElementById('productosAdicionalesBody');
-            const noProductosAdicionales = document.getElementById('noProductosAdicionales');
+            const adicionalEmpty = document.getElementById('adicionalEmptyState');
+            const adicionalWrap = document.getElementById('adicionalTableWrap');
+            const adicionalBody = document.getElementById('productosAdicionalesBody');
+            const noProductosAdicionales = document.getElementById('adicionalEmptyState');
 
-            // Variables globales
+            /* ── Estado ── */
             let productosDisponibles = [];
             let productosAdicionales = [];
             let totalesProforma = { subtotal: 0, igv: 0, total: 0 };
             let contadorProductos = 0;
 
-            // Cargar productos disponibles
-            cargarProductosDisponibles();
+            /* ── Abrir/cerrar modal ── */
+            function abrirModal() {
+                modal.style.display = 'flex';
+                requestAnimationFrame(() => proformaSearch.focus());
+            }
+            function cerrarModal() {
+                modal.classList.add('hiding');
+                setTimeout(() => { modal.style.display = 'none'; modal.classList.remove('hiding'); }, 200);
+            }
 
-            // Event listeners
+            abrirModal(); // Abrir al cargar
+            openModalBtn.addEventListener('click', abrirModal);
+            closeModalBtn.addEventListener('click', cerrarModal);
+            cancelModalBtn.addEventListener('click', cerrarModal);
+            modal.addEventListener('click', e => { if (e.target === modal) cerrarModal(); });
+
+            /* ── Buscar al presionar Enter en el input ── */
+            proformaSearch.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); buscarProforma(); } });
             buscarBtn.addEventListener('click', buscarProforma);
-            proformaSearch.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    buscarProforma();
-                }
-            });
-            addProductBtn.addEventListener('click', agregarProductoAdicional);
 
-            // Función para cargar productos disponibles
+            /* ── Cargar productos disponibles ── */
             async function cargarProductosDisponibles() {
                 try {
-                    const response = await fetch('/productos/api/listar');
-                    if (response.ok) {
-                        const data = await response.json();
-                        productosDisponibles = data.productos || [];
-                    }
-                } catch (error) {
-                    console.error('Error al cargar productos:', error);
-                }
+                    const r = await fetch('/productos/api/listar');
+                    if (r.ok) { const d = await r.json(); productosDisponibles = d.productos || []; }
+                } catch (e) { console.error('Error al cargar productos:', e); }
             }
+            cargarProductosDisponibles();
 
-            // Función para buscar proforma
+            /* ── Buscar proforma ── */
             async function buscarProforma() {
-                const codigoProforma = proformaSearch.value.trim().toUpperCase();
-
-                if (!codigoProforma) {
-                    alert('Por favor ingrese un código de proforma');
-                    return;
-                }
+                const codigo = proformaSearch.value.trim().toUpperCase();
+                if (!codigo) { proformaSearch.focus(); return; }
+                cerrarModal();
+                initialState.style.display = 'none';
+                loadingSpinner.style.display = 'block';
+                facturaContent.style.display = 'none';
 
                 try {
-                    loadingSpinner.style.display = 'block';
-                    proformaDetails.classList.remove('show');
-                    helpMessage.style.display = 'none';
-
-                    const response = await fetch(`/facturas/buscar-proforma/${codigoProforma}`);
-                    const data = await response.json();
-
+                    const r = await fetch(`/facturas/buscar-proforma/${codigo}`);
+                    const data = await r.json();
                     loadingSpinner.style.display = 'none';
 
-                    if (!response.ok) {
-                        throw new Error(data.message || 'Error al buscar la proforma');
+                    if (!r.ok || !data.success) {
+                        alert(data.message || 'Proforma no encontrada o no está aprobada.');
+                        initialState.style.display = 'flex';
+                        return;
                     }
-
-                    if (data.success) {
-                        mostrarProforma(data.data.proforma, data.data.detalles, data.data.totales);
-                    } else {
-                        alert(data.message || 'Proforma no encontrada');
-                        helpMessage.style.display = 'block';
-                    }
-
-                } catch (error) {
+                    mostrarProforma(data.data.proforma, data.data.detalles, data.data.totales);
+                } catch (e) {
                     loadingSpinner.style.display = 'none';
-                    console.error('Error:', error);
-                    alert('Error al buscar la proforma: ' + error.message);
-                    helpMessage.style.display = 'block';
+                    alert('Error al buscar la proforma: ' + e.message);
+                    initialState.style.display = 'flex';
                 }
             }
 
-            // Función para mostrar los datos de la proforma
+            /* ── Mostrar datos de la proforma ── */
             function mostrarProforma(proforma, detalles, totales) {
-                // Guardar totales de la proforma
                 totalesProforma = totales;
+                document.getElementById('idProformaHidden').value = proforma.IdProforma;
+                document.getElementById('codigoProformaDisplay').textContent = '#' + proforma.Codigo;
 
-                // Llenar información básica
-                document.getElementById('proformaInfo').innerHTML = `
-                    <div class="col-md-4">
-                        <div class="detail-item">
-                            <div class="detail-label">Código de Proforma</div>
-                            <div class="detail-value">${proforma.Codigo}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="detail-item">
-                            <div class="detail-label">Cliente</div>
-                            <div class="detail-value">${proforma.ClienteNombre || 'Cliente no encontrado'}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="detail-item">
-                            <div class="detail-label">Empresa</div>
-                            <div class="detail-value">${proforma.EmpresaNombre || 'Empresa no encontrada'}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="detail-item">
-                            <div class="detail-label">Estado</div>
-                            <div class="detail-value">
-                                <span class="badge bg-success">APROBADA</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                // Btn ver proforma original
+                const verBtn = document.getElementById('verProformaBtn');
+                verBtn.style.display = 'inline-flex';
+                verBtn.onclick = () => window.open('/proformas/' + proforma.IdProforma, '_blank');
 
                 // Llenar tabla de productos
-                let productosHtml = '';
-                detalles.forEach(detalle => {
-                    productosHtml += `
-                        <tr>
-                            <td>
-                                <strong>${detalle.ProductoNombre || 'Producto no encontrado'}</strong>
-                                ${detalle.DescripcionAdicional ? `<br><small class="text-muted">${detalle.DescripcionAdicional}</small>` : ''}
-                            </td>
-                            <td>${detalle.Cantidad}</td>
-                            <td>${detalle.UnidadMedida || 'UNID'}</td>
-                            <td>S/ ${parseFloat(detalle.PrecioUnitario || 0).toFixed(2)}</td>
-                            <td>S/ ${parseFloat(detalle.Subtotal || 0).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-                document.getElementById('productosTableBody').innerHTML = productosHtml;
-
-                // Llenar campo oculto
-                document.getElementById('idProformaHidden').value = proforma.IdProforma;
-
-                // Resetear productos adicionales
-                productosAdicionales = [];
-                actualizarTablaProductosAdicionales();
-
-                // Actualizar totales
-                actualizarTotales();
-
-                // Mostrar detalles
-                proformaDetails.classList.add('show');
-                helpMessage.style.display = 'none';
-
-                // Auto-calcular fecha de vencimiento (30 días por defecto)
-                const fechaEmision = new Date();
-                const fechaVencimiento = new Date(fechaEmision);
-                fechaVencimiento.setDate(fechaVencimiento.getDate() + 30);
-                document.getElementById('fechaVencimiento').value = fechaVencimiento.toISOString().split('T')[0];
-            }
-
-            // Función para agregar producto adicional
-            function agregarProductoAdicional() {
-                if (productosDisponibles.length === 0) {
-                    alert('No hay productos disponibles. Asegúrese de que existan productos en el sistema.');
-                    return;
-                }
-
-                contadorProductos++;
-                const producto = {
-                    id: contadorProductos,
-                    IdProducto: '',
-                    Nombre: '',
-                    Cantidad: 1,
-                    UnidadMedida: 'UNID',
-                    PrecioUnitario: 0,
-                    Total: 0,
-                    DescripcionAdicional: ''
-                };
-
-                productosAdicionales.push(producto);
-                actualizarTablaProductosAdicionales();
-                actualizarTotales();
-            }
-
-            // Función para actualizar la tabla de productos adicionales
-            function actualizarTablaProductosAdicionales() {
-                if (productosAdicionales.length === 0) {
-                    productosAdicionalesBody.innerHTML = '';
-                    noProductosAdicionales.style.display = 'block';
-                    return;
-                }
-
-                noProductosAdicionales.style.display = 'none';
-
                 let html = '';
-                productosAdicionales.forEach((producto, index) => {
-                    html += `
-                        <tr class="producto-adicional-row" data-index="${index}">
-                            <td>
-                                <select class="form-control-modern form-select-modern form-control-modern form-select-modern-sm producto-select" data-index="${index}" required>
-                                    <option value="">Seleccionar producto...</option>
-                                    ${productosDisponibles.map(p =>
-                        `<option value="${p.IdProducto}" 
-                                                 data-precio="${p.PrecioUnitario}" 
-                                                 data-unidad="${p.UnidadMedida}"
-                                                 ${producto.IdProducto == p.IdProducto ? 'selected' : ''}>
-                                            ${p.Nombre} - ${p.Marca || ''} ${p.Modelo || ''}
-                                        </option>`
-                    ).join('')}
+                detalles.forEach(d => {
+                    html += `<tr>
+                        <td class="pf-table-code">${d.CodigoProducto || '—'}</td>
+                        <td>
+                            <span class="pf-table-desc">${d.ProductoNombre || 'Producto no encontrado'}</span>
+                            ${d.DescripcionAdicional ? `<div class="pf-table-sub">${d.DescripcionAdicional}</div>` : ''}
+                        </td>
+                        <td style="text-align:center;">${d.Cantidad}</td>
+                        <td>${d.UnidadMedida || 'UNID'}</td>
+                        <td style="text-align:right;">S/ ${parseFloat(d.PrecioUnitario || 0).toFixed(2)}</td>
+                        <td style="text-align:right;" class="pf-table-bold">S/ ${parseFloat(d.Subtotal || 0).toFixed(2)}</td>
+                    </tr>`;
+                });
+                document.getElementById('productosTableBody').innerHTML = html;
+
+                // Reset adicionales
+                productosAdicionales = [];
+                contadorProductos = 0;
+                actualizarTablaAdicionales();
+
+                // Fecha vencimiento default 30d
+                const fv = new Date();
+                fv.setDate(fv.getDate() + 30);
+                document.getElementById('fechaVencimiento').value = fv.toISOString().split('T')[0];
+
+                actualizarTotales();
+
+                facturaContent.style.display = 'flex';
+                facturaContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            /* ── Tabla productos adicionales ── */
+            addProductBtn.addEventListener('click', () => {
+                contadorProductos++;
+                productosAdicionales.push({ id: contadorProductos, IdProducto: '', Nombre: '', Cantidad: 1, UnidadMedida: 'UNID', PrecioUnitario: 0, Total: 0, DescripcionAdicional: '' });
+                actualizarTablaAdicionales();
+            });
+
+            function actualizarTablaAdicionales() {
+                if (productosAdicionales.length === 0) {
+                    adicionalEmpty.style.display = 'flex';
+                    adicionalWrap.style.display = 'none';
+                    document.getElementById('adicionalSubtotalRow').style.display = 'none';
+                } else {
+                    adicionalEmpty.style.display = 'none';
+                    adicionalWrap.style.display = 'block';
+                    let html = '';
+                    productosAdicionales.forEach((p, i) => {
+                        html += `<tr class="producto-adicional-row" data-index="${i}">
+                            <td style="padding-left:1.5rem;">
+                                <select class="pf-add-input pf-add-select producto-select" data-index="${i}">
+                                    <option value="">Seleccionar...</option>
+                                    ${productosDisponibles.map(x => `<option value="${x.IdProducto}" data-precio="${x.PrecioUnitario}" data-unidad="${x.UnidadMedida}" ${p.IdProducto == x.IdProducto ? 'selected' : ''}>${x.Nombre}</option>`).join('')}
                                 </select>
-                                <input type="text" class="form-control-modern form-control-modern-sm mt-1" 
-                                       placeholder="Descripción adicional (opcional)"
-                                       data-index="${index}" data-field="descripcion"
-                                       value="${producto.DescripcionAdicional}">
                             </td>
-                            <td>
-                                <input type="number" class="form-control-modern form-control-modern-sm cantidad-input" 
-                                       min="0.01" step="0.01" data-index="${index}" 
-                                       value="${producto.Cantidad}" required>
-                            </td>
-                            <td>
-                                <span class="unidad-display">${producto.UnidadMedida}</span>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control-modern form-control-modern-sm precio-input" 
-                                       min="0" step="0.01" data-index="${index}" 
-                                       value="${producto.PrecioUnitario}" required>
-                            </td>
-                            <td>
-                                <strong class="total-display">S/ ${producto.Total.toFixed(2)}</strong>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-remove-product" 
-                                        data-index="${index}" title="Eliminar producto">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                productosAdicionalesBody.innerHTML = html;
-
-                // Agregar event listeners
-                agregarEventListenersProductos();
-            }
-
-            // Función para agregar event listeners a los productos adicionales
-            function agregarEventListenersProductos() {
-                // Select de productos
-                document.querySelectorAll('.producto-select').forEach(select => {
-                    select.addEventListener('change', function () {
-                        const index = parseInt(this.dataset.index);
-                        const selectedOption = this.options[this.selectedIndex];
-
-                        if (selectedOption.value) {
-                            const producto = productosDisponibles.find(p => p.IdProducto == selectedOption.value);
-                            if (producto) {
-                                productosAdicionales[index].IdProducto = producto.IdProducto;
-                                productosAdicionales[index].Nombre = producto.Nombre;
-                                productosAdicionales[index].PrecioUnitario = parseFloat(producto.PrecioUnitario || 0);
-                                productosAdicionales[index].UnidadMedida = producto.UnidadMedida || 'UNID';
-
-                                // Actualizar la fila
-                                const row = document.querySelector(`tr[data-index="${index}"]`);
-                                row.querySelector('.precio-input').value = parseFloat(producto.PrecioUnitario || 0).toFixed(2);
-                                row.querySelector('.unidad-display').textContent = producto.UnidadMedida || 'UNID';
-
-                                calcularTotalProducto(index);
-                            }
-                        }
+                            <td><input type="number" class="pf-add-input text-end cantidad-input" min="0.01" step="0.01" data-index="${i}" value="${p.Cantidad}"></td>
+                            <td style="text-align:center;"><span class="badge bg-light text-secondary" style="font-size:0.65rem;font-weight:700;">${p.UnidadMedida}</span></td>
+                            <td><input type="number" class="pf-add-input text-end precio-input" min="0" step="0.01" data-index="${i}" value="${p.PrecioUnitario}"></td>
+                            <td style="text-align:right;"><strong class="total-display pf-table-bold">S/ ${p.Total.toFixed(2)}</strong></td>
+                            <td><input type="text" class="pf-add-input" data-index="${i}" data-field="descripcion" value="${p.DescripcionAdicional}" placeholder="Opcional..."></td>
+                            <td style="text-align:center;"><button type="button" class="pf-btn-del btn-remove-product" data-index="${i}"><i class="bi bi-trash3"></i></button></td>
+                        </tr>`;
                     });
-                });
-
-                // Inputs de cantidad
-                document.querySelectorAll('.cantidad-input').forEach(input => {
-                    input.addEventListener('input', function () {
-                        const index = parseInt(this.dataset.index);
-                        productosAdicionales[index].Cantidad = parseFloat(this.value) || 0;
-                        calcularTotalProducto(index);
-                    });
-                });
-
-                // Inputs de precio
-                document.querySelectorAll('.precio-input').forEach(input => {
-                    input.addEventListener('input', function () {
-                        const index = parseInt(this.dataset.index);
-                        productosAdicionales[index].PrecioUnitario = parseFloat(this.value) || 0;
-                        calcularTotalProducto(index);
-                    });
-                });
-
-                // Inputs de descripción
-                document.querySelectorAll('input[data-field="descripcion"]').forEach(input => {
-                    input.addEventListener('input', function () {
-                        const index = parseInt(this.dataset.index);
-                        productosAdicionales[index].DescripcionAdicional = this.value;
-                    });
-                });
-
-                // Botones de eliminar
-                document.querySelectorAll('.btn-remove-product').forEach(btn => {
-                    btn.addEventListener('click', async function () {
-                        const index = parseInt(this.dataset.index);
-                        if (await liquidGlassConfirm('¿Está seguro de que desea eliminar este producto?')) {
-                            productosAdicionales.splice(index, 1);
-                            actualizarTablaProductosAdicionales();
-                            actualizarTotales();
-                        }
-                    });
-                });
-            }
-
-            // Función para calcular el total de un producto específico
-            function calcularTotalProducto(index) {
-                const producto = productosAdicionales[index];
-                producto.Total = producto.Cantidad * producto.PrecioUnitario;
-
-                // Actualizar display del total
-                const row = document.querySelector(`tr[data-index="${index}"]`);
-                if (row) {
-                    row.querySelector('.total-display').textContent = `S/ ${producto.Total.toFixed(2)}`;
+                    adicionalBody.innerHTML = html;
+                    agregarEventListeners();
                 }
-
                 actualizarTotales();
             }
 
-            // Función para actualizar todos los totales
-            function actualizarTotales() {
-                // Calcular totales de productos adicionales
-                const subtotalAdicionales = productosAdicionales.reduce((sum, p) => sum + p.Total, 0);
-                const igvAdicionales = subtotalAdicionales * 0.18;
-                const totalAdicionales = subtotalAdicionales + igvAdicionales;
-
-                // Totales finales
-                const subtotalFinal = totalesProforma.subtotal + subtotalAdicionales;
-                const igvFinal = totalesProforma.igv + igvAdicionales;
-                const totalFinal = totalesProforma.total + totalAdicionales;
-
-                // Actualizar displays
-                document.getElementById('subtotalOriginalDisplay').textContent = `S/ ${totalesProforma.subtotal.toFixed(2)}`;
-                document.getElementById('igvOriginalDisplay').textContent = `S/ ${totalesProforma.igv.toFixed(2)}`;
-                document.getElementById('totalOriginalDisplay').textContent = `S/ ${totalesProforma.total.toFixed(2)}`;
-
-                document.getElementById('subtotalAdicionalesDisplay').textContent = `S/ ${subtotalAdicionales.toFixed(2)}`;
-                document.getElementById('igvAdicionalesDisplay').textContent = `S/ ${igvAdicionales.toFixed(2)}`;
-                document.getElementById('totalAdicionalesDisplay').textContent = `S/ ${totalAdicionales.toFixed(2)}`;
-
-                document.getElementById('totalFinalDisplay').textContent = `S/ ${totalFinal.toFixed(2)}`;
+            function agregarEventListeners() {
+                document.querySelectorAll('.producto-select').forEach(sel => {
+                    sel.addEventListener('change', function () {
+                        const i = parseInt(this.dataset.index);
+                        const opt = this.options[this.selectedIndex];
+                        if (opt.value) {
+                            productosAdicionales[i].IdProducto = opt.value;
+                            productosAdicionales[i].PrecioUnitario = parseFloat(opt.dataset.precio || 0);
+                            productosAdicionales[i].UnidadMedida = opt.dataset.unidad || 'UNID';
+                            const row = document.querySelector(`tr[data-index="${i}"]`);
+                            row.querySelector('.precio-input').value = productosAdicionales[i].PrecioUnitario.toFixed(2);
+                            calcularTotal(i);
+                        }
+                    });
+                });
+                document.querySelectorAll('.cantidad-input').forEach(inp => {
+                    inp.addEventListener('input', function () {
+                        const i = parseInt(this.dataset.index);
+                        productosAdicionales[i].Cantidad = parseFloat(this.value) || 0;
+                        calcularTotal(i);
+                    });
+                });
+                document.querySelectorAll('.precio-input').forEach(inp => {
+                    inp.addEventListener('input', function () {
+                        const i = parseInt(this.dataset.index);
+                        productosAdicionales[i].PrecioUnitario = parseFloat(this.value) || 0;
+                        calcularTotal(i);
+                    });
+                });
+                document.querySelectorAll('input[data-field="descripcion"]').forEach(inp => {
+                    inp.addEventListener('input', function () {
+                        productosAdicionales[parseInt(this.dataset.index)].DescripcionAdicional = this.value;
+                    });
+                });
+                document.querySelectorAll('.btn-remove-product').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        productosAdicionales.splice(parseInt(this.dataset.index), 1);
+                        actualizarTablaAdicionales();
+                    });
+                });
             }
 
-            // Función para actualizar inputs hidden de productos adicionales
+            function calcularTotal(i) {
+                productosAdicionales[i].Total = productosAdicionales[i].Cantidad * productosAdicionales[i].PrecioUnitario;
+                const row = document.querySelector(`tr[data-index="${i}"]`);
+                if (row) row.querySelector('.total-display').textContent = 'S/ ' + productosAdicionales[i].Total.toFixed(2);
+                actualizarTotales();
+            }
+
+            function actualizarTotales() {
+                const subtotalAd = productosAdicionales.reduce((s, p) => s + p.Total, 0);
+                const igvAd = subtotalAd * 0.18;
+                const subtotalTotal = totalesProforma.subtotal + subtotalAd;
+                const igvTotal = totalesProforma.igv + igvAd;
+                const totalFinal = totalesProforma.total + subtotalAd + igvAd;
+
+                document.getElementById('subtotalOriginalDisplay').textContent = 'S/ ' + subtotalTotal.toFixed(2);
+                document.getElementById('igvOriginalDisplay').textContent = 'S/ ' + igvTotal.toFixed(2);
+                document.getElementById('totalFinalDisplay').textContent = 'S/ ' + totalFinal.toFixed(2);
+
+                const addRow = document.getElementById('adicionalSubtotalRow');
+                if (subtotalAd > 0) {
+                    addRow.style.display = 'flex';
+                    document.getElementById('subtotalAdicionalesDisplay').textContent = '+ S/ ' + subtotalAd.toFixed(2);
+                } else {
+                    addRow.style.display = 'none';
+                }
+            }
+
             function actualizarProductosAdicionalesHidden() {
                 const container = document.getElementById('productosAdicionalesHidden');
                 container.innerHTML = '';
-
-                productosAdicionales.forEach((producto, index) => {
-                    if (producto.IdProducto) { // Solo agregar productos válidos
+                productosAdicionales.forEach((p, i) => {
+                    if (p.IdProducto) {
                         container.innerHTML += `
-                            <input type="hidden" name="productosAdicionales[${index}][IdProducto]" value="${producto.IdProducto}">
-                            <input type="hidden" name="productosAdicionales[${index}][Cantidad]" value="${producto.Cantidad}">
-                            <input type="hidden" name="productosAdicionales[${index}][PrecioUnitario]" value="${producto.PrecioUnitario}">
-                            <input type="hidden" name="productosAdicionales[${index}][DescripcionAdicional]" value="${producto.DescripcionAdicional}">
+                            <input type="hidden" name="productosAdicionales[${i}][IdProducto]" value="${p.IdProducto}">
+                            <input type="hidden" name="productosAdicionales[${i}][Cantidad]" value="${p.Cantidad}">
+                            <input type="hidden" name="productosAdicionales[${i}][PrecioUnitario]" value="${p.PrecioUnitario}">
+                            <input type="hidden" name="productosAdicionales[${i}][DescripcionAdicional]" value="${p.DescripcionAdicional}">
                         `;
                     }
                 });
             }
 
-            // Auto-calcular fecha de vencimiento según forma de pago
-            const formaPagoSelect = document.getElementById('formaPago');
-            const fechaVencimientoInput = document.getElementById('fechaVencimiento');
-
-            formaPagoSelect.addEventListener('change', function () {
-                const formaPago = this.value;
-                const fechaEmision = new Date();
-                let dias = 30;
-
-                if (formaPago === 'CONTADO') {
-                    dias = 0;
-                } else if (formaPago === 'CREDITO_30') {
-                    dias = 30;
-                } else if (formaPago === 'CREDITO_60') {
-                    dias = 60;
-                } else if (formaPago === 'CREDITO_90') {
-                    dias = 90;
-                }
-
-                const fechaVencimiento = new Date(fechaEmision);
-                fechaVencimiento.setDate(fechaVencimiento.getDate() + dias);
-                fechaVencimientoInput.value = fechaVencimiento.toISOString().split('T')[0];
+            /* ── Forma de pago → fecha vencimiento ── */
+            document.getElementById('formaPago').addEventListener('change', function () {
+                const dias = { 'CONTADO': 0, 'CREDITO_30': 30, 'CREDITO_60': 60, 'CREDITO_90': 90 }[this.value] || 30;
+                const fv = new Date();
+                fv.setDate(fv.getDate() + dias);
+                document.getElementById('fechaVencimiento').value = fv.toISOString().split('T')[0];
             });
 
-            // Validación del formulario
-            facturaForm.addEventListener('submit', async function (e) {
-                const idProforma = document.getElementById('idProformaHidden').value;
-
-                if (!idProforma) {
-                    e.preventDefault();
-                    alert('Por favor seleccione una proforma válida');
-                    return false;
-                }
-
-                // Validar productos adicionales
+            /* ── Submit ── */
+            document.getElementById('facturaForm').addEventListener('submit', function (e) {
+                const idPro = document.getElementById('idProformaHidden').value;
+                if (!idPro) { e.preventDefault(); alert('Por favor seleccione una proforma válida.'); return false; }
                 for (let i = 0; i < productosAdicionales.length; i++) {
-                    const producto = productosAdicionales[i];
-                    if (!producto.IdProducto || producto.Cantidad <= 0 || producto.PrecioUnitario < 0) {
-                        e.preventDefault();
-                        alert(`Por favor complete correctamente el producto adicional #${i + 1}`);
-                        return false;
+                    const p = productosAdicionales[i];
+                    if (!p.IdProducto || p.Cantidad <= 0 || p.PrecioUnitario < 0) {
+                        e.preventDefault(); alert(`Producto adicional #${i + 1} incompleto.`); return false;
                     }
                 }
-
-                // Actualizar inputs hidden antes del envío
                 actualizarProductosAdicionalesHidden();
-
-                const confirmado = await liquidGlassConfirm('¿Está seguro de que desea generar esta factura?\nEsta acción no se puede deshacer.');
-                if (!confirmado) {
-                    e.preventDefault();
-                    return false;
-                }
-
-                // Deshabilitar botón para evitar doble envío
-                const submitBtn = this.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando...';
+                const btn = this.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando...';
             });
         });
     </script>
-    <script src="/publico/js/layout.js?v=1772427290140"></script>
+    <script src="/publico/js/layout.js?v=<%= Date.now() %>"></script>
 </body>
 
 </html>

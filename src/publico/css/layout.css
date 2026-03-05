@@ -45,7 +45,7 @@
    BASE
    ======================================== */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--bg-page);
     background-image:
         radial-gradient(ellipse at 0% 0%, rgba(59, 73, 223, 0.12) 0px, transparent 50%),
@@ -94,13 +94,16 @@ body {
 .sidebar::-webkit-scrollbar {
     width: 4px;
 }
+
 .sidebar::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .sidebar::-webkit-scrollbar-thumb {
     background: rgba(59, 73, 223, 0.18);
     border-radius: 10px;
 }
+
 .sidebar::-webkit-scrollbar-thumb:hover {
     background: rgba(59, 73, 223, 0.30);
 }
@@ -472,6 +475,7 @@ body {
     :root {
         --sidebar-width: 240px;
     }
+
     .page-container {
         padding: 20px 24px;
     }
@@ -482,12 +486,15 @@ body {
     :root {
         --sidebar-width: 220px;
     }
+
     .page-container {
         padding: 16px 20px;
     }
+
     .navbar-top {
         padding: 0 20px;
     }
+
     .search-input {
         width: 180px;
     }
@@ -498,13 +505,16 @@ body {
     :root {
         --sidebar-width: 200px;
     }
+
     .sidebar-brand {
         padding: 16px 12px 12px;
     }
+
     .sidebar-item {
         padding: 7px 10px;
         font-size: 0.78rem;
     }
+
     .sidebar-section-label {
         padding: 14px 14px 6px;
         font-size: 0.625rem;
@@ -632,8 +642,8 @@ body {
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     border-radius: 1.25rem;
     box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.15),
-               0 0 0 1px rgba(0, 0, 0, 0.03),
-               inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        0 0 0 1px rgba(0, 0, 0, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
     overflow: hidden;
     width: 100%;
 }
@@ -833,7 +843,7 @@ body {
     padding: 2rem 2.25rem 1.75rem;
     width: 90%;
     max-width: 460px;
-    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0,0,0,0.03);
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.03);
     text-align: left;
     transform: scale(0.95) translateY(20px);
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -983,9 +993,11 @@ body {
         padding: 1.5rem;
         margin: 0 1rem;
     }
+
     .liquid-glass-actions {
         flex-direction: column;
     }
+
     .liquid-glass-btn {
         width: 100%;
         text-align: center;
