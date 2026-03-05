@@ -19,20 +19,20 @@ exports.list = async (req, res) => {
                 EmpresaNombre: proformas[0].EmpresaNombre
             });
         }
-        res.render('proformas/lista', { 
-            title: 'Lista de Proformas', 
-            proformas, 
-            user: req.user, 
-            messages: req.flash() 
+        res.render('proformas/lista', {
+            title: 'Lista de Proformas',
+            proformas,
+            user: req.user,
+            messages: req.flash()
         });
     } catch (error) {
         console.error('Error en proformaController.list:', error);
         req.flash('error', 'Error al obtener las proformas: ' + error.message);
-        res.render('proformas/lista', { 
-            title: 'Lista de Proformas', 
-            proformas: [], 
-            user: req.user, 
-            messages: req.flash() 
+        res.render('proformas/lista', {
+            title: 'Lista de Proformas',
+            proformas: [],
+            user: req.user,
+            messages: req.flash()
         });
     }
 };
@@ -41,12 +41,12 @@ exports.createForm = async (req, res) => {
     try {
         // Obtener datos para los comboboxes
         console.log('Obteniendo datos para el formulario...');
-        
+
         let clientes = [];
         let usuarios = [];
         let empresas = [];
         let productos = [];
-        
+
         try {
             clientes = await Cliente.getAll();
             console.log('Clientes obtenidos:', clientes.length);
@@ -54,7 +54,7 @@ exports.createForm = async (req, res) => {
             console.error('Error al obtener clientes:', error);
             clientes = [];
         }
-        
+
         try {
             usuarios = await Usuario.getAll();
             console.log('Usuarios obtenidos:', usuarios.length);
@@ -62,7 +62,7 @@ exports.createForm = async (req, res) => {
             console.error('Error al obtener usuarios:', error);
             usuarios = [];
         }
-        
+
         try {
             empresas = await Empresa.getAll();
             console.log('Empresas obtenidas:', empresas.length);
@@ -70,7 +70,7 @@ exports.createForm = async (req, res) => {
             console.error('Error al obtener empresas:', error);
             empresas = [];
         }
-        
+
         try {
             productos = await Producto.listar(); // Usar el método existente
             console.log('Productos obtenidos:', productos.length);
@@ -78,15 +78,24 @@ exports.createForm = async (req, res) => {
             console.error('Error al obtener productos:', error);
             productos = [];
         }
-        
-        res.render('proformas/crear', { 
-            title: 'Nueva Proforma', 
-            user: req.user, 
+
+        // Generar código consecutivo auto-sugerido
+        let codigoSugerido = 'PROF-001';
+        try {
+            codigoSugerido = await Proforma.generarCodigo();
+        } catch (e) {
+            console.error('Error al generar código:', e);
+        }
+
+        res.render('proformas/crear', {
+            title: 'Nueva Proforma',
+            user: req.user,
             messages: req.flash(),
             clientes,
             usuarios,
             empresas,
-            productos
+            productos,
+            codigoSugerido
         });
     } catch (error) {
         console.error('Error al cargar datos para nueva proforma:', error);
@@ -114,15 +123,15 @@ exports.editForm = async (req, res) => {
             req.flash('error', 'Proforma no encontrada');
             return res.redirect('/proformas');
         }
-        
+
         // Obtener datos para los comboboxes
         console.log('Obteniendo datos para el formulario de edición...');
-        
+
         let clientes = [];
         let usuarios = [];
         let empresas = [];
         let productos = [];
-        
+
         try {
             clientes = await Cliente.getAll();
             console.log('Clientes obtenidos:', clientes.length);
@@ -130,7 +139,7 @@ exports.editForm = async (req, res) => {
             console.error('Error al obtener clientes:', error);
             clientes = [];
         }
-        
+
         try {
             usuarios = await Usuario.getAll();
             console.log('Usuarios obtenidos:', usuarios.length);
@@ -138,7 +147,7 @@ exports.editForm = async (req, res) => {
             console.error('Error al obtener usuarios:', error);
             usuarios = [];
         }
-        
+
         try {
             empresas = await Empresa.getAll();
             console.log('Empresas obtenidas:', empresas.length);
@@ -146,7 +155,7 @@ exports.editForm = async (req, res) => {
             console.error('Error al obtener empresas:', error);
             empresas = [];
         }
-        
+
         try {
             productos = await Producto.listar(); // Usar el método existente
             console.log('Productos obtenidos:', productos.length);
@@ -154,11 +163,11 @@ exports.editForm = async (req, res) => {
             console.error('Error al obtener productos:', error);
             productos = [];
         }
-        
-        res.render('proformas/editar', { 
-            title: 'Editar Proforma', 
-            proforma, 
-            user: req.user, 
+
+        res.render('proformas/editar', {
+            title: 'Editar Proforma',
+            proforma,
+            user: req.user,
             messages: req.flash(),
             clientes,
             usuarios,
@@ -200,20 +209,20 @@ exports.detail = async (req, res) => {
     try {
         const id = req.params.id;
         console.log('Obteniendo detalle de proforma ID:', id);
-        
+
         // Obtener la proforma con sus detalles
         const proforma = await Proforma.obtenerPorId(id);
-        
+
         if (!proforma) {
             req.flash('error', 'Proforma no encontrada');
             return res.redirect('/proformas');
         }
-        
+
         // Obtener información completa del cliente, usuario y empresa
         let cliente = null;
         let usuario = null;
         let empresa = null;
-        
+
         try {
             if (proforma.IdCliente) {
                 const clientes = await Cliente.listar();
@@ -222,7 +231,7 @@ exports.detail = async (req, res) => {
         } catch (error) {
             console.error('Error al obtener cliente:', error);
         }
-        
+
         try {
             if (proforma.IdUsuario) {
                 const usuarios = await Usuario.listar();
@@ -231,7 +240,7 @@ exports.detail = async (req, res) => {
         } catch (error) {
             console.error('Error al obtener usuario:', error);
         }
-        
+
         try {
             if (proforma.IdEmpresa) {
                 const empresas = await Empresa.getAll();
@@ -240,7 +249,7 @@ exports.detail = async (req, res) => {
         } catch (error) {
             console.error('Error al obtener empresa:', error);
         }
-        
+
         console.log('Datos obtenidos para detalle:', {
             proforma: proforma.Codigo,
             cliente: cliente ? cliente.RazonSocial : 'No encontrado',
@@ -248,8 +257,8 @@ exports.detail = async (req, res) => {
             empresa: empresa ? empresa.Nombre : 'No encontrada',
             productos: proforma.detalle ? proforma.detalle.length : 0
         });
-        
-        res.render('proformas/detalle', { 
+
+        res.render('proformas/detalle', {
             title: `Detalle Proforma ${proforma.Codigo}`,
             proforma,
             factura: proforma, // Para compatibilidad con la vista
@@ -260,7 +269,7 @@ exports.detail = async (req, res) => {
             user: req.user,
             messages: req.flash()
         });
-        
+
     } catch (error) {
         console.error('Error en proformaController.detail:', error);
         req.flash('error', 'Error al obtener el detalle de la proforma: ' + error.message);
@@ -273,7 +282,7 @@ exports.aprobar = async (req, res) => {
     try {
         const { id } = req.params;
         const { estado } = req.body;
-        
+
         // Validar estado
         const estadosPermitidos = ['APROBADA', 'RECHAZADA', 'PENDIENTE'];
         if (!estadosPermitidos.includes(estado)) {
@@ -282,7 +291,7 @@ exports.aprobar = async (req, res) => {
                 message: 'Estado no válido'
             });
         }
-        
+
         // Obtener proforma actual
         const proformaActual = await Proforma.obtenerPorId(id);
         if (!proformaActual) {
@@ -291,21 +300,21 @@ exports.aprobar = async (req, res) => {
                 message: 'Proforma no encontrada'
             });
         }
-        
+
         // Preparar datos para actualizar solo el estado
         const datosActualizacion = {
             ...proformaActual.proforma,
             Estado: estado
         };
-        
+
         // Actualizar proforma
         await Proforma.actualizar(id, datosActualizacion, proformaActual.productos || []);
-        
+
         res.json({
             success: true,
             message: `Proforma ${estado.toLowerCase()} exitosamente`
         });
-        
+
     } catch (error) {
         console.error('Error al aprobar proforma:', error);
         res.status(500).json({
