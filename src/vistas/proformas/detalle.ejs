@@ -80,7 +80,8 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
-    <% // Helper local declarations para parseo seguro var fSubtotal=!isNaN(parseFloat(factura.SubTotal)) ?
+    <%# Helper local declarations para parseo seguro %>
+    <% var fSubtotal=!isNaN(parseFloat(factura.SubTotal)) ?
         parseFloat(factura.SubTotal).toFixed(2) : '0.00' ; var fIgv=!isNaN(parseFloat(factura.TotalIGV)) ?
         parseFloat(factura.TotalIGV).toFixed(2) : '0.00' ; var fTotal=!isNaN(parseFloat(factura.Total)) ?
         parseFloat(factura.Total).toFixed(2) : '0.00' ; var fFechaEmision=factura.FechaEmision ?
