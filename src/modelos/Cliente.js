@@ -9,8 +9,8 @@ class Cliente {
 
     static async listar(terminoBusqueda = '') {
         const sql = terminoBusqueda 
-            ? 'SELECT * FROM CLIENTE WHERE Estado = 1 AND (Documento LIKE ? OR RazonSocial LIKE ?)'
-            : 'SELECT * FROM CLIENTE WHERE Estado = 1';
+            ? 'SELECT * FROM CLIENTE WHERE (Documento LIKE ? OR RazonSocial LIKE ?) ORDER BY RazonSocial'
+            : 'SELECT * FROM CLIENTE ORDER BY RazonSocial';
         const valores = terminoBusqueda ? [`%${terminoBusqueda}%`, `%${terminoBusqueda}%`] : [];
         const [resultados] = await conexion.query(sql, valores);
         return resultados;
@@ -73,7 +73,7 @@ class Cliente {
     }
 
     static async getAll() {
-        const sql = 'SELECT * FROM CLIENTE WHERE Estado = 1 ORDER BY RazonSocial';
+        const sql = 'SELECT * FROM CLIENTE ORDER BY RazonSocial';
         const [resultados] = await conexion.query(sql);
         return resultados;
     }

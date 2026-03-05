@@ -40,11 +40,11 @@ var fechaPagoVal   = pago.FechaPago   ? (pago.FechaPago.toISOString   ? pago.Fec
                 <%= pago.NombreEmpleado ? pago.NombreEmpleado.charAt(0).toUpperCase() : 'E' %>
             </div>
             <div>
-                <h2 class="text-xl font-bold text-slate-900">Editar Pago de RemuneraciÃ³n</h2>
+                <h2 class="text-xl font-bold text-slate-900">Editar Pago de Remuneración</h2>
                 <p class="text-sm text-slate-500 mt-0.5">
                     <span class="font-medium text-slate-700"><%= pago.NombreEmpleado || 'Empleado' %></span>
-                    &nbsp;Â·&nbsp; Semana <span class="font-semibold"><%= pago.Semana %></span> / <%= pago.Anio %>
-                    &nbsp;Â·&nbsp; ID: <span class="font-mono text-xs">#<%= pago.IdPago %></span>
+                    &nbsp;A·&nbsp; Semana <span class="font-semibold"><%= pago.Semana %></span> / <%= pago.Año %>
+                    &nbsp;A·&nbsp; ID: <span class="font-mono text-xs">#<%= pago.IdPago %></span>
                 </p>
             </div>
         </div>
@@ -146,11 +146,11 @@ var fechaPagoVal   = pago.FechaPago   ? (pago.FechaPago.toISOString   ? pago.Fec
             </div>
         </section>
 
-        <!-- SecciÃ³n 3: CÃ¡lculo de RemuneraciÃ³n -->
+        <!-- Sección 3: Cálculo de Remuneración -->
         <section class="bg-[#3b4bc9]/5 p-6 rounded-xl border border-[#3b4bc9]/10">
             <div class="flex items-center gap-2 mb-5">
                 <span class="material-symbols-outlined text-[#3b4bc9] text-xl">calculate</span>
-                <h3 class="text-sm font-semibold uppercase tracking-wider text-[#3b4bc9]/70">CÃ¡lculo de RemuneraciÃ³n</h3>
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-[#3b4bc9]/70">Cálculo de Remuneración</h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
@@ -203,12 +203,12 @@ var fechaPagoVal   = pago.FechaPago   ? (pago.FechaPago.toISOString   ? pago.Fec
                             class="w-full h-12 pl-10 pr-3 rounded-lg border-2 border-emerald-400 bg-emerald-50 text-emerald-700 font-bold text-lg outline-none">
                         <span class="material-symbols-outlined absolute left-3 top-3 text-emerald-500 text-xl pointer-events-none">savings</span>
                     </div>
-                    <p class="text-[10px] text-emerald-600 mt-1 font-semibold uppercase tracking-tighter">Sueldo Calculado + Bonificaciones âˆ’ Descuentos</p>
+                    <p class="text-[10px] text-emerald-600 mt-1 font-semibold uppercase tracking-tighter">Sueldo Calculado + Bonificaciones + Descuentos</p>
                 </div>
             </div>
         </section>
 
-        <!-- SecciÃ³n 4: Detalles Adicionales -->
+        <!-- Sección 4: Detalles Adicionales -->
         <section>
             <div class="flex items-center gap-2 mb-4">
                 <span class="material-symbols-outlined text-[#3b4bc9] text-xl">info</span>
@@ -216,14 +216,14 @@ var fechaPagoVal   = pago.FechaPago   ? (pago.FechaPago.toISOString   ? pago.Fec
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1.5">MÃ©todo de Pago</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Método de Pago</label>
                     <div class="relative">
                         <select id="MetodoPago" name="MetodoPago"
                             class="w-full h-11 pl-10 pr-10 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] appearance-none text-sm outline-none">
                             <option value="TRANSFERENCIA" <%= pago.MetodoPago === 'TRANSFERENCIA' ? 'selected' : '' %>>Transferencia Bancaria</option>
                             <option value="EFECTIVO"      <%= pago.MetodoPago === 'EFECTIVO'      ? 'selected' : '' %>>Efectivo</option>
                             <option value="CHEQUE"        <%= pago.MetodoPago === 'CHEQUE'        ? 'selected' : '' %>>Cheque</option>
-                            <option value="DEPOSITO"      <%= pago.MetodoPago === 'DEPOSITO'      ? 'selected' : '' %>>DepÃ³sito Bancario</option>
+                            <option value="DEPOSITO"      <%= pago.MetodoPago === 'DEPOSITO'      ? 'selected' : '' %>>Depósito Bancario</option>
                         </select>
                         <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">account_balance</span>
                         <span class="material-symbols-outlined absolute right-2 top-2.5 text-slate-400 pointer-events-none">expand_more</span>

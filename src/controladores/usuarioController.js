@@ -44,6 +44,12 @@ exports.crearUsuario = async (req, res) => {
 exports.mostrarFormularioEditar = async (req, res) => {
     try {
         const usuario = await Usuario.obtenerPorId(req.params.id);
+        
+        if (!usuario) {
+            req.flash('error', 'Usuario no encontrado');
+            return res.redirect('/usuarios');
+        }
+        
         const roles = await Usuario.obtenerRoles();
         res.render('usuarios/editar', {
             usuario,
@@ -52,6 +58,7 @@ exports.mostrarFormularioEditar = async (req, res) => {
             success: req.flash('success')
         });
     } catch (error) {
+        console.error('Error en mostrarFormularioEditar:', error);
         req.flash('error', 'Error al cargar el usuario');
         res.redirect('/usuarios');
     }

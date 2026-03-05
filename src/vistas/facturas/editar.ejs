@@ -40,27 +40,27 @@
     </script>
     <style>
         .wrapper {
-        width: 100%;
+            width: 100%;
         }
 
         .main-content {
-        width: 100%;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        background: #f6f6f8;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f6f6f8;
         }
 
         /* Oculta navbar superflua si layout.css y Tailwind entran en conflicto visual */
         .navbar-top {
-        display: none !important;
+            display: none !important;
         }
 
         /* Resets de Sweetalert vs Tailwind */
         body.swal2-shown {
-        padding-right: 0 !important;
+            padding-right: 0 !important;
         }
-        </style>
+    </style>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
@@ -84,20 +84,10 @@
                                 </path>
                             </svg>
                         </div>
-                        <h2
-                            class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight hidden md:block">
-                            CARSIL ERP</h2>
+
                     </div>
                     <div class="flex flex-1 justify-end gap-6 items-center">
-                        <nav class="hidden lg:flex items-center gap-8">
-                            <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                                href="/dashboard">Dashboard</a>
-                            <a class="text-primary text-sm font-semibold" href="/facturas">Facturas</a>
-                            <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                                href="/proformas">Proformas</a>
-                            <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                                href="/clientes">Clientes</a>
-                        </nav>
+
                         <div class="flex gap-2 border-l border-slate-200 dark:border-slate-800 pl-6">
                             <button
                                 class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
@@ -203,7 +193,7 @@
                                                                 factura hereda datos de una proforma autorizada.</p>
                                                         </div>
                                                     </div>
-                                                    <a href="/proformas/<%= factura.IdProforma %>"
+                                                    <a href="/proformas/<%= factura.IdProforma %>/detalle"
                                                         class="flex items-center justify-center gap-2 rounded-lg h-9 px-5 bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primary/90 transition-all">
                                                         <span
                                                             class="material-symbols-outlined text-sm">open_in_new</span>
@@ -231,7 +221,7 @@
                                                                         class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                                                                         <h2
                                                                             class="text-slate-900 dark:text-white text-lg font-bold">
-                                                                            Información B�sica</h2>
+                                                                            Información Básica</h2>
                                                                     </div>
                                                                     <div
                                                                         class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -296,7 +286,7 @@
                                                                             <input id="FechaEmision" name="FechaEmision"
                                                                                 class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:ring-primary focus:border-primary"
                                                                                 type="date"
-                                                                                value="<%= factura.FechaEmision ? factura.FechaEmision.toISOString().split('T')[0] : '' %>"
+                                                                                value="<%= factura.FechaEmision ? (new Date(factura.FechaEmision)).toISOString().split('T')[0] : '' %>"
                                                                                 required />
                                                                         </div>
                                                                         <div class="flex flex-col gap-2">
@@ -307,7 +297,7 @@
                                                                                 name="FechaVencimiento"
                                                                                 class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:ring-primary focus:border-primary"
                                                                                 type="date"
-                                                                                value="<%= factura.FechaVencimiento ? factura.FechaVencimiento.toISOString().split('T')[0] : '' %>" />
+                                                                                value="<%= factura.FechaVencimiento ? (new Date(factura.FechaVencimiento)).toISOString().split('T')[0] : '' %>" />
                                                                         </div>
                                                                         <div class="flex flex-col gap-2">
                                                                             <label
@@ -633,93 +623,91 @@
                                                                 </div>
                                                             </div>
 
-                                                            <!-- Contenedor oculto para inputs din�micos de envío al back -->
+                                                            <!-- Contenedor oculto para inputs dinámicos de envío al back -->
                                                             <div id="productosModificadosHidden"></div>
                                                 </form>
                     </div>
                 </main>
             </div>
-                        </div>
+    </div>
 
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-                            // Configs extra de la vista
-                            const formatter = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' });
+            // Configs extra de la vista
+            const formatter = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' });
 
-                            const liquidGlassConfirm = async (text) => {
-                            if (typeof Swal !== 'undefined') {
-                            const res = await Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: text,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3b4bc9',
-                            cancelButtonColor: '#ef4444',
-                            confirmButtonText: 'Sí, confirmar',
-                            cancelButtonText: 'Cancelar'
-                            });
-                            return res.isConfirmed;
-                            }
-                            return confirm(text);
-                            };
+            const liquidGlassConfirm = async (text) => {
+                if (typeof Swal !== 'undefined') {
+                    const res = await Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3b4bc9',
+                        cancelButtonColor: '#ef4444',
+                        confirmButtonText: 'Sí, confirmar',
+                        cancelButtonText: 'Cancelar'
+                    });
+                    return res.isConfirmed;
+                }
+                return confirm(text);
+            };
 
-                            let productosDisponibles = [];
-                            let contadorNuevosProductos = 0;
-                            let productosModificados = [];
-                            let productosEliminados = [];
+            let productosDisponibles = [];
+            let contadorNuevosProductos = 0;
+            let productosModificados = [];
+            let productosEliminados = [];
 
-                            cargarProductosDisponibles();
+            cargarProductosDisponibles();
 
-                            document.getElementById('addProductBtn').addEventListener('click', agregarNuevoProducto);
-                            document.getElementById('editFacturaForm').addEventListener('submit',
-                            validarYEnviarFormulario);
+            document.getElementById('addProductBtn').addEventListener('click', agregarNuevoProducto);
+            document.getElementById('editFacturaForm').addEventListener('submit',
+                validarYEnviarFormulario);
 
-                            calcularTotales();
+            calcularTotales();
 
-                            document.querySelectorAll('.cantidad-input, .precio-input').forEach(input => {
-                            input.addEventListener('input', function () {
-                            const detalleId = this.dataset.detalleId;
-                            actualizarProductoExistente(detalleId);
-                            });
-                            });
+            document.querySelectorAll('.cantidad-input, .precio-input').forEach(input => {
+                input.addEventListener('input', function () {
+                    const detalleId = this.dataset.detalleId;
+                    actualizarProductoExistente(detalleId);
+                });
+            });
 
-                            document.querySelectorAll('.btn-remove-product').forEach(btn => {
-                            btn.addEventListener('click', function () {
-                            const detalleId = this.dataset.detalleId;
-                            eliminarProductoAdicional(detalleId);
-                            });
-                            });
+            document.querySelectorAll('.btn-remove-product').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const detalleId = this.dataset.detalleId;
+                    eliminarProductoAdicional(detalleId);
+                });
+            });
 
-                            async function cargarProductosDisponibles() {
-                            try {
-                            const response = await fetch('/productos/api/listar');
-                            if (response.ok) {
-                            const data = await response.json();
-                            productosDisponibles = data.productos || [];
-                            }
-                            } catch (error) {
-                            console.error('Error al cargar productos:', error);
-                            }
-                            }
+            async function cargarProductosDisponibles() {
+                try {
+                    const response = await fetch('/productos/api/listar');
+                    if (response.ok) {
+                        const data = await response.json();
+                        productosDisponibles = data.productos || [];
+                    }
+                } catch (error) {
+                    console.error('Error al cargar productos:', error);
+                }
+            }
 
-                            function agregarNuevoProducto() {
-                            if (productosDisponibles.length === 0) {
-                            Swal.fire('Error', 'No hay productos disponibles. Asegúrese de que existan productos en el
-                            sistema.', 'error');
-                            return;
-                            }
+            function agregarNuevoProducto() {
+                if (productosDisponibles.length === 0) {
+                    Swal.fire('Error', 'No hay productos disponibles. Asegúrese de que existan productos en el sistema.', 'error');
+                    return;
+                }
 
-                            contadorNuevosProductos++;
-                            const nuevoId = `nuevo_${contadorNuevosProductos}`;
+                contadorNuevosProductos++;
+                const nuevoId = `nuevo_${contadorNuevosProductos}`;
 
-                            const nuevaFila = document.createElement('tr');
-                            nuevaFila.className = 'group hover:bg-slate-50/50 dark:hover:bg-slate-800/30
-                            transition-colors bg-blue-50/40 dark:bg-primary/5 producto-row';
-                            nuevaFila.dataset.nuevoId = nuevoId;
-                            nuevaFila.dataset.tipo = 'ADICIONAL';
+                const nuevaFila = document.createElement('tr');
+                nuevaFila.className = 'group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors bg-blue-50/40 dark:bg-primary/5 producto-row';
+                nuevaFila.dataset.nuevoId = nuevoId;
+                nuevaFila.dataset.tipo = 'ADICIONAL';
 
-                            nuevaFila.innerHTML = `
+                nuevaFila.innerHTML = `
                             <td class="px-6 py-4 text-center">
                                 <div
                                     class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] px-2 py-1 rounded font-bold uppercase inline-flex items-center">
@@ -732,11 +720,11 @@
                                     data-nuevo-id="${nuevoId}" required>
                                     <option value="">Seleccionar producto...</option>
                                     ${productosDisponibles.map(p =>
-                                    `<option value="${p.IdProducto}" data-precio="${p.PrecioUnitario}"
+                    `<option value="${p.IdProducto}" data-precio="${p.PrecioUnitario}"
                                         data-unidad="${p.UnidadMedida}">
                                         ${p.Nombre} - ${p.Marca || ''} ${p.Modelo || ''}
                                     </option>`
-                                    ).join('')}
+                ).join('')}
                                 </select>
                                 <input type="text"
                                     class="w-full border-transparent bg-transparent dark:text-slate-300 focus:ring-0 focus:border-b focus:border-primary p-1 text-xs italic"
@@ -768,208 +756,213 @@
                             </td>
                             `;
 
-                            document.getElementById('nuevosProductosAdicionales').appendChild(nuevaFila);
+                document.getElementById('nuevosProductosAdicionales').appendChild(nuevaFila);
 
-                            // Agregando event listeners locales a la fila insertada
-                            const select = nuevaFila.querySelector('.producto-select');
-                            const cantidadInput = nuevaFila.querySelector('.cantidad-nueva');
-                            const precioInput = nuevaFila.querySelector('.precio-nuevo');
-                            const removeBtn = nuevaFila.querySelector('.btn-remove-product');
+                // Agregando event listeners locales a la fila insertada
+                const select = nuevaFila.querySelector('.producto-select');
+                const cantidadInput = nuevaFila.querySelector('.cantidad-nueva');
+                const precioInput = nuevaFila.querySelector('.precio-nuevo');
+                const removeBtn = nuevaFila.querySelector('.btn-remove-product');
 
-                            select.addEventListener('change', function () {
-                            const opt = this.options[this.selectedIndex];
-                            if (opt.value) {
-                            precioInput.value = parseFloat(opt.dataset.precio || 0).toFixed(2);
-                            nuevaFila.querySelector('.unidad-display').textContent = opt.dataset.unidad || 'UND';
-                            calcularTotalNuevoProducto(nuevoId);
-                            }
-                            });
+                select.addEventListener('change', function () {
+                    const opt = this.options[this.selectedIndex];
+                    if (opt.value) {
+                        precioInput.value = parseFloat(opt.dataset.precio || 0).toFixed(2);
+                        nuevaFila.querySelector('.unidad-display').textContent = opt.dataset.unidad || 'UND';
+                        calcularTotalNuevoProducto(nuevoId);
+                    }
+                });
 
-                            cantidadInput.addEventListener('input', () => calcularTotalNuevoProducto(nuevoId));
-                            precioInput.addEventListener('input', () => calcularTotalNuevoProducto(nuevoId));
+                cantidadInput.addEventListener('input', () => calcularTotalNuevoProducto(nuevoId));
+                precioInput.addEventListener('input', () => calcularTotalNuevoProducto(nuevoId));
 
-                            removeBtn.addEventListener('click', async function () {
-                            if (await liquidGlassConfirm('¿Eliminar esta fila nueva?')) {
-                            nuevaFila.remove();
-                            calcularTotales();
-                            }
-                            });
-                            }
+                removeBtn.addEventListener('click', async function () {
+                    if (await liquidGlassConfirm('¿Eliminar esta fila nueva?')) {
+                        nuevaFila.remove();
+                        calcularTotales();
+                    }
+                });
+            }
 
-                            function calcularTotalNuevoProducto(nuevoId) {
-                            const fila = document.querySelector(`[data-nuevo-id="${nuevoId}"]`);
-                            if (!fila) return;
-                            const cant = parseFloat(fila.querySelector('.cantidad-nueva').value) || 0;
-                            const prec = parseFloat(fila.querySelector('.precio-nuevo').value) || 0;
-                            const total = cant * prec;
-                            fila.querySelector('.total-producto').textContent = formatter.format(total).replace('PEN',
-                            'S/');
-                            calcularTotales();
-                            }
+            function calcularTotalNuevoProducto(nuevoId) {
+                const fila = document.querySelector(`[data-nuevo-id="${nuevoId}"]`);
+                if (!fila) return;
+                const cant = parseFloat(fila.querySelector('.cantidad-nueva').value) || 0;
+                const prec = parseFloat(fila.querySelector('.precio-nuevo').value) || 0;
+                const total = cant * prec;
+                fila.querySelector('.total-producto').textContent = formatter.format(total).replace('PEN',
+                    'S/');
+                calcularTotales();
+            }
 
-                            function actualizarProductoExistente(detalleId) {
-                            const fila = document.querySelector(`[data-detalle-id="${detalleId}"]`);
-                            if (!fila) return;
+            function actualizarProductoExistente(detalleId) {
+                const fila = document.querySelector(`[data-detalle-id="${detalleId}"]`);
+                if (!fila) return;
 
-                            const cant = parseFloat(fila.querySelector('.cantidad-input').value) || 0;
-                            const prec = parseFloat(fila.querySelector('.precio-input').value) || 0;
-                            const total = cant * prec;
+                const cant = parseFloat(fila.querySelector('.cantidad-input').value) || 0;
+                const prec = parseFloat(fila.querySelector('.precio-input').value) || 0;
+                const total = cant * prec;
 
-                            fila.querySelector('.total-producto').textContent = formatter.format(total).replace('PEN',
-                            'S/');
+                fila.querySelector('.total-producto').textContent = formatter.format(total).replace('PEN',
+                    'S/');
 
-                            const idx = productosModificados.findIndex(p => p.IdDetalleFactura == detalleId);
-                            const obj = { IdDetalleFactura: detalleId, Cantidad: cant, PrecioUnitario: prec, Total:
-                            total };
-                            if (idx >= 0) productosModificados[idx] = obj;
-                            else productosModificados.push(obj);
+                const idx = productosModificados.findIndex(p => p.IdDetalleFactura == detalleId);
+                const obj = {
+                    IdDetalleFactura: detalleId, Cantidad: cant, PrecioUnitario: prec, Total:
+                        total
+                };
+                if (idx >= 0) productosModificados[idx] = obj;
+                else productosModificados.push(obj);
 
-                            calcularTotales();
-                            }
+                calcularTotales();
+            }
 
-                            async function eliminarProductoAdicional(detalleId) {
-                            if (await liquidGlassConfirm('¿Está seguro de que desea eliminar este ítem de la factura
-                            original?')) {
-                            const fila = document.querySelector(`[data-detalle-id="${detalleId}"]`);
-                            if (fila && fila.dataset.tipo === 'ADICIONAL') {
-                            fila.remove();
-                            productosEliminados.push(detalleId);
-                            calcularTotales();
-                            }
-                            }
-                            }
+            async function eliminarProductoAdicional(detalleId) {
+                if (await liquidGlassConfirm('¿Está seguro de que desea eliminar este ítem de la factura original?')) {
+                    const fila = document.querySelector(`[data-detalle-id="${detalleId}"]`);
+                    if (fila && fila.dataset.tipo === 'ADICIONAL') {
+                        fila.remove();
+                        productosEliminados.push(detalleId);
+                        calcularTotales();
+                    }
+                }
+            }
 
-                            function calcularTotales() {
-                            let subOrig = 0, subAdic = 0;
+            function calcularTotales() {
+                let subOrig = 0, subAdic = 0;
 
-                            document.querySelectorAll('[data-tipo="ORIGINAL"] .total-producto').forEach(el => {
-                            subOrig += parseFloat(el.textContent.replace(/[S/\s,]/g, '')) || 0;
-                            });
+                document.querySelectorAll('[data-tipo="ORIGINAL"] .total-producto').forEach(el => {
+                    subOrig += parseFloat(el.textContent.replace(/[S/\s,]/g, '')) || 0;
+                });
 
-                            document.querySelectorAll('[data-tipo="ADICIONAL"] .total-producto').forEach(el => {
-                            const row = el.closest('tr');
-                            if (row && !productosEliminados.includes(row.dataset.detalleId)) {
-                            subAdic += parseFloat(el.textContent.replace(/[S/\s,]/g, '')) || 0;
-                            }
-                            });
+                document.querySelectorAll('[data-tipo="ADICIONAL"] .total-producto').forEach(el => {
+                    const row = el.closest('tr');
+                    if (row && !productosEliminados.includes(row.dataset.detalleId)) {
+                        subAdic += parseFloat(el.textContent.replace(/[S/\s,]/g, '')) || 0;
+                    }
+                });
 
-                            const igvOrig = subOrig * 0.18;
-                            const igvAdic = subAdic * 0.18;
+                const igvOrig = subOrig * 0.18;
+                const igvAdic = subAdic * 0.18;
 
-                            document.getElementById('subtotalOriginal').textContent =
-                            formatter.format(subOrig).replace('PEN', 'S/');
-                            document.getElementById('igvOriginal').textContent =
-                            formatter.format(igvOrig).replace('PEN', 'S/');
+                document.getElementById('subtotalOriginal').textContent =
+                    formatter.format(subOrig).replace('PEN', 'S/');
+                document.getElementById('igvOriginal').textContent =
+                    formatter.format(igvOrig).replace('PEN', 'S/');
 
-                            document.getElementById('subtotalAdicionales').textContent =
-                            formatter.format(subAdic).replace('PEN', 'S/');
-                            document.getElementById('igvAdicionales').textContent =
-                            formatter.format(igvAdic).replace('PEN', 'S/');
+                document.getElementById('subtotalAdicionales').textContent =
+                    formatter.format(subAdic).replace('PEN', 'S/');
+                document.getElementById('igvAdicionales').textContent =
+                    formatter.format(igvAdic).replace('PEN', 'S/');
 
-                            const gTotal = (subOrig + igvOrig) + (subAdic + igvAdic);
-                            document.getElementById('totalFinal').textContent = formatter.format(gTotal).replace('PEN',
-                            'S/');
-                            }
+                const gTotal = (subOrig + igvOrig) + (subAdic + igvAdic);
+                document.getElementById('totalFinal').textContent = formatter.format(gTotal).replace('PEN',
+                    'S/');
+            }
 
-                            async function validarYEnviarFormulario(e) {
-                            e.preventDefault();
-                            actualizarInputsHidden();
+            async function validarYEnviarFormulario(e) {
+                e.preventDefault();
+                actualizarInputsHidden();
 
-                            const req = ['Estado', 'IdCliente', 'FechaEmision'];
-                            for (let id of req) {
-                            if (!document.getElementById(id).value) {
-                            Swal.fire('Atención', 'Por favor complete todos los datos b�sicos requeridos.', 'warning');
-                            return;
-                            }
-                            }
+                const req = ['Estado', 'IdCliente', 'FechaEmision'];
+                for (let id of req) {
+                    if (!document.getElementById(id).value) {
+                        Swal.fire('Atención', 'Por favor complete todos los datos básicos requeridos.', 'warning');
+                        return;
+                    }
+                }
 
-                            const news = document.querySelectorAll('#nuevosProductosAdicionales .producto-row');
-                            for (let row of news) {
-                            const select = row.querySelector('.producto-select');
-                            const cant = row.querySelector('.cantidad-nueva');
-                            const prec = row.querySelector('.precio-nuevo');
-                            if (!select.value || !cant.value || cant.value <= 0 || prec.value < 0) {
-                                Swal.fire('Atención', 'Verifique que los productos adicionales que agreg� estén correctamente llenados.'
-                                , 'warning' ); return; } } if (await liquidGlassConfirm('¿Actualizar esta factura con
-                                los montos e ítems especificados?')) { const
-                                submitBtn=document.querySelector('button[type="submit" ]'); submitBtn.disabled=true;
-                                submitBtn.innerHTML='<span class="material-symbols-outlined animate-spin mr-2">refresh</span> Guardando...'
-                                ; e.target.submit(); } } function actualizarInputsHidden() { const
-                                c=document.getElementById('productosModificadosHidden'); c.innerHTML='' ;
-                                productosModificados.forEach((p, i)=> {
-                                c.innerHTML += `
+                const news = document.querySelectorAll('#nuevosProductosAdicionales .producto-row');
+                for (let row of news) {
+                    const select = row.querySelector('.producto-select');
+                    const cant = row.querySelector('.cantidad-nueva');
+                    const prec = row.querySelector('.precio-nuevo');
+                    if (!select.value || !cant.value || cant.value <= 0 || prec.value < 0) {
+                        Swal.fire('Atención', 'Verifique que los productos adicionales que agregó estén correctamente llenados.', 'warning');
+                        return;
+                    }
+                }
+
+                if (await liquidGlassConfirm('¿Actualizar esta factura con los montos e ítems especificados?')) {
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">refresh</span> Guardando...';
+                    e.target.submit();
+                }
+            }
+
+            function actualizarInputsHidden() {
+                const c = document.getElementById('productosModificadosHidden');
+                c.innerHTML = '';
+                productosModificados.forEach((p, i) => {
+                    c.innerHTML += `
                                 <input type="hidden" name="productosModificados[${i}][IdDetalleFactura]"
                                     value="${p.IdDetalleFactura}">
                                 <input type="hidden" name="productosModificados[${i}][Cantidad]" value="${p.Cantidad}">
                                 <input type="hidden" name="productosModificados[${i}][PrecioUnitario]"
                                     value="${p.PrecioUnitario}">
                                 `;
-                                });
+                });
 
-                                productosEliminados.forEach((id, i) => {
-                                c.innerHTML += `<input type="hidden" name="productosEliminados[${i}]" value="${id}">`;
-                                });
+                productosEliminados.forEach((id, i) => {
+                    c.innerHTML += `<input type="hidden" name="productosEliminados[${i}]" value="${id}">`;
+                });
 
-                                const news = document.querySelectorAll('#nuevosProductosAdicionales .producto-row');
-                                news.forEach((row, i) => {
-                                const select = row.querySelector('.producto-select');
-                                const cant = row.querySelector('.cantidad-nueva');
-                                const prec = row.querySelector('.precio-nuevo');
-                                const desc = row.querySelector('input[data-field="descripcion"]');
+                const news = document.querySelectorAll('#nuevosProductosAdicionales .producto-row');
+                news.forEach((row, i) => {
+                    const select = row.querySelector('.producto-select');
+                    const cant = row.querySelector('.cantidad-nueva');
+                    const prec = row.querySelector('.precio-nuevo');
+                    const desc = row.querySelector('input[data-field="descripcion"]');
 
-                                if (select.value) {
-                                c.innerHTML += `
+                    if (select && select.value) {
+                        c.innerHTML += `
                                 <input type="hidden" name="nuevosProductos[${i}][IdProducto]" value="${select.value}">
                                 <input type="hidden" name="nuevosProductos[${i}][Cantidad]" value="${cant.value}">
                                 <input type="hidden" name="nuevosProductos[${i}][PrecioUnitario]" value="${prec.value}">
                                 <input type="hidden" name="nuevosProductos[${i}][DescripcionAdicional]"
-                                    value="${desc.value}">
+                                    value="${desc ? desc.value : ''}">
                                 `;
-                                }
-                                });
-                                }
+                    }
+                });
+            }
 
-                                const fpSel = document.getElementById('FormaPago');
-                                const feIn = document.getElementById('FechaEmision');
-                                const fvIn = document.getElementById('FechaVencimiento');
+            const fpSel = document.getElementById('FormaPago');
+            const feIn = document.getElementById('FechaEmision');
+            const fvIn = document.getElementById('FechaVencimiento');
 
-                                function calcVenc() {
-                                const fp = fpSel.value;
-                                const fe = feIn.value;
-                                if (fe && fp.startsWith('CREDITO_')) {
-                                const days = parseInt(fp.split('_')[1]);
-                                const d = new Date(fe);
-                                d.setDate(d.getDate() + days);
-                                fvIn.value = d.toISOString().split('T')[0];
-                                } else if (fp === 'CONTADO' && fe) {
-                                fvIn.value = fe;
-                                }
-                                }
+            function calcVenc() {
+                const fp = fpSel.value;
+                const fe = feIn.value;
+                if (fe && fp.startsWith('CREDITO_')) {
+                    const days = parseInt(fp.split('_')[1]);
+                    const d = new Date(fe);
+                    d.setDate(d.getDate() + days);
+                    fvIn.value = d.toISOString().split('T')[0];
+                } else if (fp === 'CONTADO' && fe) {
+                    fvIn.value = fe;
+                }
+            }
 
-                                fpSel.addEventListener('change', calcVenc);
-                                feIn.addEventListener('change', calcVenc);
+            fpSel.addEventListener('change', calcVenc);
+            feIn.addEventListener('change', calcVenc);
 
-                                const estSelect = document.getElementById('Estado');
-                                if (estSelect) {
-                                estSelect.addEventListener('change', function () {
-                                const badge = document.querySelector('.badge-estado-display');
-                                if (badge) {
-                                badge.textContent = this.value;
-                                badge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
-                                badge-estado-display ';
-                                if (this.value === 'PAGADA') badge.className += 'bg-green-100 text-green-700
-                                dark:bg-green-900/30 dark:text-green-400';
-                                else if (this.value === 'ANULADA') badge.className += 'bg-red-100 text-red-700
-                                dark:bg-red-900/30 dark:text-red-400';
-                                else badge.className += 'bg-amber-100 text-amber-700 dark:bg-amber-900/30
-                                dark:text-amber-400';
-                                }
-                                });
-                                }
-                                });
-                                </script>
-                                <script src="/publico/js/layout.js?v=1772427290141"></script>
-            </body>
+            const estSelect = document.getElementById('Estado');
+            if (estSelect) {
+                estSelect.addEventListener('change', function () {
+                    const badge = document.querySelector('.badge-estado-display');
+                    if (badge) {
+                        badge.textContent = this.value;
+                        badge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider badge-estado-display ';
+                        if (this.value === 'PAGADA') badge.className += 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+                        else if (this.value === 'ANULADA') badge.className += 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+                        else badge.className += 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+                    }
+                });
+            }
+        });
+    </script>
+    <script src="/publico/js/layout.js?v=1772427290141"></script>
+</body>
 
 </html>
-

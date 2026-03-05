@@ -15,8 +15,8 @@ class Producto {
     
     static async listar(terminoBusqueda = '') {
         const sql = terminoBusqueda 
-            ? 'SELECT * FROM PRODUCTO WHERE Estado = 1 AND (Codigo LIKE ? OR Nombre LIKE ?)' 
-            : 'SELECT * FROM PRODUCTO WHERE Estado = 1';
+            ? 'SELECT * FROM PRODUCTO WHERE (Codigo LIKE ? OR Nombre LIKE ?) ORDER BY Codigo' 
+            : 'SELECT * FROM PRODUCTO ORDER BY Codigo';
         const valores = terminoBusqueda ? [`%${terminoBusqueda}%`, `%${terminoBusqueda}%`] : [];
         const [resultados] = await conexion.query(sql, valores);
         return resultados;
@@ -85,8 +85,8 @@ class Producto {
     
     static async listarPorCodigo(codigoTipo = '') {
         const sql = codigoTipo 
-            ? 'SELECT * FROM PRODUCTO WHERE Estado = 1 AND Codigo = ?' 
-            : 'SELECT * FROM PRODUCTO WHERE Estado = 1';
+            ? 'SELECT * FROM PRODUCTO WHERE Codigo = ? ORDER BY Nombre' 
+            : 'SELECT * FROM PRODUCTO ORDER BY Codigo';
         const valores = codigoTipo ? [codigoTipo] : [];
         const [resultados] = await conexion.query(sql, valores);
         return resultados;

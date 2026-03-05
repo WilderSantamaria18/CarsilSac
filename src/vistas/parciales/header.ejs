@@ -1,0 +1,394 @@
+<!-- Header Superior Unificado - Notificaciones, Manual de Usuario y Datos del Usuario -->
+<header id="headerUnificado" style="
+    height: 64px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    z-index: 500;
+    box-sizing: border-box;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+">
+    <!-- Breadcrumb / Título -->
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="color: var(--text-muted); font-size: 0.8125rem;">Panel</span>
+        <span class="material-symbols-outlined" style="font-size: 0.875rem; color: #cbd5e1;">chevron_right</span>
+        <span style="font-weight: 600; font-size: 0.8125rem; color: var(--text-primary);"><%= pageTitle || 'Dashboard' %></span>
+    </div>
+
+    <!-- Notificaciones, Manual y Usuario -->
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <!-- Icono de Notificaciones -->
+        <div style="position: relative;">
+            <span 
+                class="material-symbols-outlined"
+                style="
+                    padding: 8px;
+                    color: var(--text-secondary);
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                    font-size: 1.25rem;
+                    user-select: none;
+                "
+                title="Notificaciones"
+                onmouseover="this.style.backgroundColor='var(--primary-light)'; this.style.color='var(--primary)';"
+                onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-secondary)';"
+                onclick="(function() { 
+                    var dropdown = this.closest('div').querySelector('.notification-dropdown');
+                    dropdown.style.display = dropdown.style.display === 'none' || !dropdown.style.display ? 'block' : 'none';
+                }).call(this)"
+            >
+                notifications
+            </span>
+            <span style="
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                width: 6px;
+                height: 6px;
+                background: #ef4444;
+                border-radius: 50%;
+                border: 2px solid white;
+            "></span>
+            
+            <!-- Dropdown de notificaciones -->
+            <div class="notification-dropdown" style="
+                display: none;
+                position: absolute;
+                right: 0;
+                margin-top: 8px;
+                width: 320px;
+                background: var(--bg-card);
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+                border: 1px solid var(--border);
+                z-index: 50;
+            ">
+                <div style="padding: 16px; border-bottom: 1px solid var(--border);">
+                    <h3 style="font-weight: 600; color: var(--text-primary); margin: 0; font-size: 0.875rem;">Notificaciones</h3>
+                </div>
+                <div style="max-height: 384px; overflow-y: auto;">
+                    <div style="padding: 16px; font-size: 0.8125rem; color: var(--text-secondary); text-align: center;">
+                        No hay notificaciones nuevas
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual de Usuario -->
+        <button 
+            type="button"
+            style="
+                position: relative;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0;
+            "
+            title="Manual de Usuario"
+            onclick="document.getElementById('helpModal').style.display='flex'"
+        >
+            <span 
+                class="material-symbols-outlined"
+                style="
+                    padding: 8px;
+                    color: var(--text-secondary);
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                    font-size: 1.25rem;
+                    user-select: none;
+                    display: block;
+                "
+                onmouseover="this.style.backgroundColor='var(--primary-light)'; this.style.color='var(--primary)';"
+                onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-secondary)';"
+            >
+                help
+            </span>
+            <span style="
+                position: absolute;
+                bottom: 6px;
+                right: 6px;
+                width: 6px;
+                height: 6px;
+                background: #3b82f6;
+                border-radius: 50%;
+                border: 2px solid white;
+            "></span>
+        </button>
+
+        <!-- Divisor -->
+        <div style="height: 24px; width: 1px; background: var(--border);"></div>
+
+        <!-- Avatar y Nombre de Usuario -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                user-select: none;
+            "
+            title="<%= user && user.Nombres ? user.Nombres + ' ' + (user.Apellidos || '') : 'Usuario' %>"
+            onmouseover="this.style.backgroundColor='var(--primary-dark)';"
+            onmouseout="this.style.backgroundColor='var(--primary)';"
+            >
+                <%= user && user.Nombres ? user.Nombres.charAt(0).toUpperCase() : 'U' %>
+            </div>
+            <span style="
+                font-size: 0.8125rem;
+                font-weight: 500;
+                color: var(--text-primary);
+            ">
+                <%= user && user.Nombres ? user.Nombres : 'Usuario' %>
+            </span>
+        </div>
+    </div>
+</header>
+
+<!-- Espaciador para compensar el header fijo -->
+<div style="height: 64px; flex-shrink: 0;"></div>
+
+<!-- Modal Flotante de Ayuda -->
+<div id="helpModal" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 12, 20, 0.72);
+    backdrop-filter: blur(8px);
+">
+    <div style="
+        background: var(--bg-card);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 420px;
+        width: 100%;
+        margin: 0 16px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        animation: slideIn 0.3s ease-out;
+    ">
+        <!-- Header del Modal -->
+        <div style="
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(59, 73, 223, 0.05) 0%, rgba(59, 115, 223, 0.05) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        ">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
+                    background: rgba(59, 73, 223, 0.1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">security</span>
+                </div>
+                <div>
+                    <h3 style="font-weight: 600; color: var(--text-primary); margin: 0; font-size: 0.9375rem;">Manual por Roles</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;">Permisos por rol de usuario</p>
+                </div>
+            </div>
+            <button 
+                type="button"
+                onclick="document.getElementById('helpModal').style.display='none'"
+                style="
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 4px;
+                    color: var(--text-muted);
+                    transition: color 0.2s ease;
+                "
+                onmouseover="this.style.color='var(--text-primary)'"
+                onmouseout="this.style.color='var(--text-muted)'"
+            >
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Contenido del Modal -->
+        <div style="padding: 24px; max-height: 600px; overflow-y: auto;">
+            <% 
+                const idRol = user && user.IdRol ? parseInt(user.IdRol) : 0;
+                const rolNombre = user && user.Rol ? user.Rol : (idRol === 1 ? 'Administrador' : idRol === 2 ? 'Supervisor' : idRol === 3 ? 'Empleado' : 'Usuario');
+            %>
+
+            <!-- Mostrar información según el rol del usuario -->
+            <% if (idRol === 1) { %>
+                <!-- Admin Info -->
+                <div style="background: linear-gradient(135deg, rgba(59, 73, 223, 0.1) 0%, rgba(59, 115, 223, 0.1) 100%); border-left: 4px solid var(--primary); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <h4 style="margin: 0 0 6px 0; color: var(--primary); font-weight: 700; font-size: 0.9rem;">👨‍💼 Tu Rol: Administrador</h4>
+                    <p style="margin: 0 0 8px 0; color: var(--text-secondary); font-size: 0.8rem;">Tienes acceso total al sistema</p>
+                    <ul style="margin: 0; padding: 0 0 0 16px; font-size: 0.75rem; color: var(--text-primary); line-height: 1.6;">
+                        <li>✓ Gestión completa: Proformas, Facturas, Clientes, Productos, Empleados, Pagos</li>
+                        <li>✓ Administración de Usuarios (crear, editar, eliminar)</li>
+                        <li>✓ Configuración de Empresa</li>
+                        <li>✓ Ver Reportes y Auditoría</li>
+                        <li>✓ Gestión de Asistencias</li>
+                    </ul>
+                </div>
+                <div style="padding: 12px; background: rgba(59, 73, 223, 0.05); border-radius: 8px; border: 1px solid rgba(59, 73, 223, 0.2); font-size: 0.75rem; color: var(--text-secondary);">
+                    <strong style="color: var(--primary);">💡 Nota:</strong> Como Administrador, puedes gestionar todos los aspectos del sistema, incluyendo usuarios y configuración.
+                </div>
+            <% } else if (idRol === 2) { %>
+                <!-- Supervisor Info -->
+                <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%); border-left: 4px solid #F59E0B; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <h4 style="margin: 0 0 6px 0; color: #F59E0B; font-weight: 700; font-size: 0.9rem;">👔 Tu Rol: Supervisor</h4>
+                    <p style="margin: 0 0 8px 0; color: var(--text-secondary); font-size: 0.8rem;">Tienes acceso limitado al sistema</p>
+                    <ul style="margin: 0; padding: 0 0 0 16px; font-size: 0.75rem; color: var(--text-primary); line-height: 1.6;">
+                        <li>✓ Ver, crear y editar: Proformas y Clientes</li>
+                        <li>✓ Ver y crear Facturas</li>
+                        <li>◉ Lectura: Productos, Empleados, Pagos</li>
+                        <li>✓ Ver Reportes disponibles</li>
+                        <li>✓ Registrar y ver Asistencias</li>
+                    </ul>
+                </div>
+                <div style="padding: 12px; background: rgba(245, 158, 11, 0.05); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.75rem; color: var(--text-secondary);">
+                    <strong style="color: #F59E0B;">💡 Nota:</strong> No tienes acceso a Usuarios ni Configuración de Empresa. Contacta al Administrador para esos cambios.
+                </div>
+            <% } else if (idRol === 3) { %>
+                <!-- Empleado Info -->
+                <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border-left: 4px solid #8B5CF6; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <h4 style="margin: 0 0 6px 0; color: #8B5CF6; font-weight: 700; font-size: 0.9rem;">👤 Tu Rol: Empleado</h4>
+                    <p style="margin: 0 0 8px 0; color: var(--text-secondary); font-size: 0.8rem;">Tienes acceso básico al sistema</p>
+                    <ul style="margin: 0; padding: 0 0 0 16px; font-size: 0.75rem; color: var(--text-primary); line-height: 1.6;">
+                        <li>◉ Lectura: Proformas y Clientes</li>
+                        <li>✓ Registrar Asistencia (entrada/salida)</li>
+                        <li>✓ Ver tu información personal</li>
+                        <li>✗ No tienes acceso a gestión de datos</li>
+                    </ul>
+                </div>
+                <div style="padding: 12px; background: rgba(139, 92, 246, 0.05); border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.2); font-size: 0.75rem; color: var(--text-secondary);">
+                    <strong style="color: #8B5CF6;">💡 Nota:</strong> Tu acceso es limitado a funciones básicas. Contacta a tu Supervisor para más información.
+                </div>
+            <% } else { %>
+                <!-- Default Info -->
+                <div style="padding: 12px; background: rgba(107, 114, 128, 0.1); border-radius: 8px; border: 1px solid rgba(107, 114, 128, 0.2); font-size: 0.75rem; color: var(--text-secondary);">
+                    No se pudo determinar tu rol. Contacta al Administrador del sistema.
+                </div>
+            <% } %>
+        </div>
+        </div>
+
+        <!-- Footer del Modal -->
+        <div style="
+            padding: 16px 24px;
+            background: var(--bg-page);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        ">
+            <button 
+                type="button"
+                onclick="document.getElementById('helpModal').style.display='none'"
+                style="
+                    flex: 1;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    border: 1px solid var(--border);
+                    background: var(--bg-card);
+                    color: var(--text-primary);
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                "
+                onmouseover="this.style.backgroundColor='var(--primary-light)'"
+                onmouseout="this.style.backgroundColor='var(--bg-card)'"
+            >
+                Cerrar
+            </button>
+            <a 
+                href="/menu/principal"
+                style="
+                    flex: 1;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    background: var(--primary);
+                    color: white;
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                    text-align: center;
+                    text-decoration: none;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                onmouseover="this.style.backgroundColor='var(--primary-dark)'"
+                onmouseout="this.style.backgroundColor='var(--primary)'"
+            >
+                Ver Manual
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos de animación del Modal -->
+<style>
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    #helpModal {
+        cursor: pointer;
+    }
+
+    #helpModal > div {
+        cursor: auto;
+    }
+</style>
+
+<script>
+    // Cerrar modal cuando se hace click en el fondo
+    document.getElementById('helpModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+
+    // Toggle dropdown de notificaciones
+    function toggleNotifications(event) {
+        if (event.target.closest('.notification-dropdown')) return;
+        var dropdown = event.target.closest('div[style*="position: relative"]').querySelector('.notification-dropdown');
+        if (dropdown) {
+            if (dropdown.style.display === 'none' || !dropdown.style.display) {
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+    }
+</script>

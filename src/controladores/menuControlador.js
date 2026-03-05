@@ -2,6 +2,7 @@ const Cliente = require('../modelos/Cliente');
 const Empleado = require('../modelos/Empleado');
 const Proforma = require('../modelos/Proforma');
 const Producto = require('../modelos/Producto');
+const Auditoria = require('../modelos/Auditoria');
 const pool = require('../bd/conexion');
 
 exports.mostrarMenu = async (req, res) => {
@@ -104,6 +105,17 @@ exports.mostrarMenu = async (req, res) => {
             console.error('Error al contar facturas:', err);
         }
 
+        // Auditoria reciente para dashboard
+        let auditoriaReciente = [];
+        try {
+            const auditoria = await Auditoria.listarRecientes(8);
+            auditoriaReciente = auditoria && Array.isArray(auditoria) ? auditoria : [];
+            console.log(`✓ Auditoria cargada: ${auditoriaReciente.length} registros`);
+        } catch (err) {
+            console.error('✗ Error al obtener auditoria reciente:', err.message);
+            auditoriaReciente = []; // Pasar array vacío si hay error
+        }
+
         // Pasar datos a la vista
         res.render('menu/principal', {
             estadisticas,
@@ -111,7 +123,8 @@ exports.mostrarMenu = async (req, res) => {
             actividadMensual: JSON.stringify(actividadMensual),
             proformasRecientes,
             estadosProformas: JSON.stringify(estadosProformas),
-            totalFacturas
+            totalFacturas,
+            auditoriaReciente
         });
     } catch (error) {
         console.error('Error general al obtener estadisticas:', error);
@@ -121,7 +134,8 @@ exports.mostrarMenu = async (req, res) => {
             actividadMensual: JSON.stringify({ labels: [], datos: [] }),
             proformasRecientes: [],
             estadosProformas: JSON.stringify({ pendientes: 0, aprobadas: 0, vendidas: 0, vencidas: 0 }),
-            totalFacturas: 0
+            totalFacturas: 0,
+            auditoriaReciente: []
         });
     }
 };

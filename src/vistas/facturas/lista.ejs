@@ -33,34 +33,12 @@
 
     <div class="main-content" id="main-content">
 
-        <!-- Top Nav -->
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm">
-            <div class="flex items-center gap-2">
-                <span class="text-slate-400 text-sm">Panel</span>
-                <span class="material-symbols-outlined text-sm text-slate-300">chevron_right</span>
-                <span class="font-semibold text-sm">Gestión de Facturas</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <span class="material-symbols-outlined p-2 text-slate-500 hover:bg-slate-100 rounded-full cursor-pointer transition-colors">notifications</span>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </div>
-                <div class="h-8 w-px bg-slate-200"></div>
-                <div class="w-8 h-8 rounded-full bg-[#3b4bc9] flex items-center justify-center text-white text-xs font-bold">
-                    <%= user && user.Nombres ? user.Nombres.charAt(0) : 'A' %>
-                </div>
-                <span class="text-sm font-medium hidden sm:inline-block">
-                    <%= user && user.Nombres ? user.Nombres : 'Administrador' %>
-                </span>
-            </div>
-        </header>
-
         <!-- Content -->
         <div class="p-8">
 
             <!-- Page Title -->
             <div class="mb-8">
-                <h2 class="text-3xl font-black tracking-tight mb-2">Gestión de Facturas</h2>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Gestión de Facturas</h2>
                 <p class="text-slate-500">Administra y monitorea las facturas emitidas por CARSIL.</p>
             </div>
 
@@ -226,15 +204,12 @@
                                         </a>
                                         <!-- Marcar pagada -->
                                         <% if (factura.Estado === 'PENDIENTE') { %>
-                                        <form action="/facturas/<%= factura.IdFactura %>/estado" method="POST" class="inline">
-                                            <input type="hidden" name="Estado" value="PAGADA">
-                                            <button type="submit"
-                                                    class="p-1.5 hover:bg-emerald-50 rounded-lg transition-colors text-slate-500 hover:text-emerald-600"
-                                                    title="Marcar como pagada"
-                                                    onclick="return confirm('¿Marcar factura <%= factura.Codigo %> como PAGADA?')">
-                                                <span class="material-symbols-outlined text-lg leading-none">check_circle</span>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                onclick="marcarComoPagada(<%= factura.IdFactura %>, '<%= factura.Codigo %>')"
+                                                class="p-1.5 hover:bg-emerald-50 rounded-lg transition-colors text-slate-500 hover:text-emerald-600"
+                                                title="Marcar como pagada">
+                                            <span class="material-symbols-outlined text-lg leading-none">check_circle</span>
+                                        </button>
                                         <% } %>
                                         <!-- Eliminar -->
                                         <form action="/facturas/<%= factura.IdFactura %>/eliminar" method="POST" class="inline">
@@ -302,6 +277,33 @@
             });
             const vc = document.getElementById('visibleCount');
             if (vc) vc.textContent = vis;
+        }
+    }
+
+    // Marcar factura como pagada
+    async function marcarComoPagada(idFactura, codigo) {
+        if (!confirm(`¿Marcar factura ${codigo} como PAGADA?`)) return;
+
+        try {
+            const res = await fetch(`/facturas/${idFactura}/estado`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ Estado: 'PAGADA' })
+            });
+
+            const json = await res.json();
+
+            if (json.success) {
+                alert('✅ Factura actualizada a PAGADA');
+                location.reload();
+            } else {
+                alert('❌ Error: ' + (json.message || 'Error desconocido'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error al actualizar: ' + error.message);
         }
     }
 </script>

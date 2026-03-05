@@ -61,6 +61,24 @@ body {
     overflow-x: hidden;
 }
 
+/* ========================================
+   TIPOGRAFÍA DE TÍTULOS - Sistema CARSIL
+   ======================================== */
+.main-content h1,
+.main-content h2,
+.main-content h3,
+.main-content h4,
+.main-content .page-title,
+.main-content .text-2xl,
+.main-content .text-3xl,
+.main-content .dash-title,
+.main-content .stat-card-value {
+    font-family: "Inter", sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    color: #0F172A;
+}
+
 /* Layout wrapper */
 .wrapper {
     display: flex;
@@ -232,7 +250,6 @@ body {
     border-radius: 16px 0 0 0;
     box-shadow: -2px 0 24px rgba(0, 0, 0, 0.06);
     position: relative;
-    overflow-x: hidden;
     box-sizing: border-box;
 }
 

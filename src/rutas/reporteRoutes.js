@@ -23,4 +23,8 @@ router.get('/api/top-clientes-ventas', ReporteController.topClientesVentas);
 // Endpoint de diagnóstico
 router.get('/api/diagnostico-venta', ReporteController.diagnosticoVenta);
 
+// Endpoints para listas recientes
+router.get('/api/proformas-recientes', ReporteController.proformasRecientes);
+router.get('/api/auditoria-reciente', ReporteController.auditoriaReciente);
+
 module.exports = router;

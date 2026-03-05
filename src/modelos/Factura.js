@@ -402,30 +402,36 @@ class Factura {
         try {
             const queryFactura = `
                 UPDATE FACTURA SET
-                    IdProforma = ?, IdCliente = ?, FechaEmision = ?, FechaVencimiento = ?,
-                    SubTotal = ?, TotalIGV = ?, Total = ?, Estado = ?,
-                    FormaPago = ?, Observaciones = ?
+                    IdCliente = ?, 
+                    FechaEmision = ?, 
+                    FechaVencimiento = ?,
+                    SubTotal = ?, 
+                    TotalIGV = ?, 
+                    Total = ?, 
+                    Estado = ?,
+                    FormaPago = ?, 
+                    Observaciones = ?
                 WHERE IdFactura = ?
             `;
 
-            const [resultado] = await this.conexion.execute(queryFactura, [
-                datosFactura.IdProforma || null,
+            const [resultado] = await this.conexion.query(queryFactura, [
                 datosFactura.IdCliente,
                 datosFactura.FechaEmision,
                 datosFactura.FechaVencimiento || null,
                 datosFactura.SubTotal,
                 datosFactura.TotalIGV,
                 datosFactura.Total,
-                datosFactura.Estado,
+                datosFactura.Estado || 'PENDIENTE',
                 datosFactura.FormaPago || null,
                 datosFactura.Observaciones || null,
                 idFactura
             ]);
 
+            console.log(`✅ Factura ${idFactura} actualizada - Nuevo estado: ${datosFactura.Estado}`);
             return resultado.affectedRows > 0;
 
         } catch (error) {
-            console.error('Error al actualizar solo factura:', error);
+            console.error('❌ Error al actualizar factura:', error);
             throw error;
         }
     }

@@ -779,14 +779,17 @@ class FacturaController {
     async cambiarEstado(req, res) {
         try {
             const idFactura = req.params.id;
-            const { estado } = req.body;
+            const { Estado } = req.body;
+            const estado = Estado || req.body.estado;
+
+            console.log(`🔄 Cambiar estado de factura ${idFactura} a: ${estado}`);
 
             // Validar estado
             const estadosPermitidos = ['PENDIENTE', 'PAGADA', 'VENCIDA', 'ANULADA'];
-            if (!estadosPermitidos.includes(estado)) {
+            if (!estado || !estadosPermitidos.includes(estado.toUpperCase())) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Estado no válido'
+                    message: 'Estado no válido. Estados permitidos: ' + estadosPermitidos.join(', ')
                 });
             }
 
@@ -803,27 +806,29 @@ class FacturaController {
 
             // Actualizar solo el estado
             const datosActualizacion = {
-                IdProforma: factura.IdProforma,
                 IdCliente: factura.IdCliente,
                 FechaEmision: factura.FechaEmision,
                 FechaVencimiento: factura.FechaVencimiento,
                 SubTotal: factura.SubTotal,
                 TotalIGV: factura.TotalIGV,
                 Total: factura.Total,
-                Estado: estado,
+                Estado: estado.toUpperCase(),
                 FormaPago: factura.FormaPago,
                 Observaciones: factura.Observaciones
             };
 
             await this.facturaModel.actualizarSoloFactura(idFactura, datosActualizacion);
 
+            console.log(`✅ Factura ${idFactura} actualizada a estado: ${estado}`);
+
             res.json({
                 success: true,
-                message: 'Estado actualizado exitosamente'
+                message: 'Estado actualizado exitosamente',
+                nuevoEstado: estado.toUpperCase()
             });
 
         } catch (error) {
-            console.error('Error al cambiar estado:', error);
+            console.error('❌ Error al cambiar estado:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error al cambiar estado',
