@@ -4,16 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Proformas - CARSIL Equipos y Servicios SAC</title>
+    <title>Lista de Proformas - CARSIL</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/publico/css/layout.css?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="/publico/css/layout.css">
     <link rel="stylesheet" href="/publico/css/list-views.css">
     <style>
-        /* ══════════════════════════════════════════
-           MODAL FLOTANTE CON FONDO DIFUMINADO
-           ══════════════════════════════════════════ */
+        /* MODAL FLOTANTE CON FONDO DIFUMINADO */
         .pf-modal-overlay {
             display: none;
             position: fixed;
@@ -24,21 +22,10 @@
             -webkit-backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
-            animation: overlayFadeIn 0.2s ease both;
         }
 
         .pf-modal-overlay.active {
             display: flex;
-        }
-
-        @keyframes overlayFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
         }
 
         .pf-modal-sheet {
@@ -51,10 +38,10 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            animation: sheetSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation: sheetIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        @keyframes sheetSlideIn {
+        @keyframes sheetIn {
             from {
                 transform: translateY(40px) scale(0.97);
                 opacity: 0;
@@ -76,7 +63,7 @@
             flex-shrink: 0;
         }
 
-        .pf-modal-header-title {
+        .pf-modal-title {
             font-size: 1rem;
             font-weight: 700;
             color: #0f1117;
@@ -86,7 +73,7 @@
             gap: 0.5rem;
         }
 
-        .pf-modal-header-title i {
+        .pf-modal-title i {
             color: #3b4bc9;
             font-size: 1.1rem;
         }
@@ -103,7 +90,7 @@
             justify-content: center;
             color: #6b7280;
             font-size: 1.1rem;
-            transition: background 0.15s, color 0.15s;
+            transition: background 0.15s;
         }
 
         .pf-modal-close:hover {
@@ -117,7 +104,7 @@
             position: relative;
         }
 
-        .pf-modal-loading {
+        .pf-modal-spinner {
             position: absolute;
             inset: 0;
             display: flex;
@@ -131,16 +118,16 @@
             z-index: 2;
         }
 
-        .pf-modal-loading .spinner-border {
+        .pf-modal-spinner .spinner-border {
             width: 2.5rem;
             height: 2.5rem;
             color: #3b4bc9;
         }
 
-        #pfModalIframe {
+        #pfIframe {
             width: 100%;
             height: 100%;
-            min-height: 80vh;
+            min-height: 82vh;
             border: none;
             display: block;
         }
@@ -157,426 +144,427 @@
 </head>
 
 <body>
-    <div class="wrapper">
-        <%- include("../parciales/sidebar") %>
 
-            <div class="main-content" id="main-content">
-                <nav class="navbar navbar-expand-lg navbar-top border-bottom">
-                    <div class="container-fluid">
-                        <h5 class="page-title mb-0">
-                            <i class="bi bi-file-earmark-text"></i>
-                            Gestión de Proformas
-                        </h5>
-                        <div class="user-profile ms-auto">
-                            <span>
-                                <%= user && user.Nombres ? user.Nombres : 'Usuario' %>
-                            </span>
-                            <div class="user-avatar">
-                                <%= user && user.Nombres ? user.Nombres.charAt(0) : 'U' %>
+    <% /* Calcular contadores antes del HTML */ var totalProformas=proformas ? proformas.length : 0; var
+        pendienteCount=0; var aprobadaCount=0; if (proformas) { for (var i=0; i < proformas.length; i++) { if
+        (proformas[i].Estado==='PENDIENTE' ) pendienteCount++; if (proformas[i].Estado==='APROBADA' ) aprobadaCount++; }
+        } %>
+
+        <div class="wrapper">
+            <%- include("../parciales/sidebar") %>
+
+                <div class="main-content" id="main-content">
+                    <nav class="navbar navbar-expand-lg navbar-top border-bottom">
+                        <div class="container-fluid">
+                            <h5 class="page-title mb-0">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Gestión de Proformas
+                            </h5>
+                            <div class="user-profile ms-auto">
+                                <span>
+                                    <%= user && user.Nombres ? user.Nombres : 'Usuario' %>
+                                </span>
+                                <div class="user-avatar">
+                                    <%= user && user.Nombres ? user.Nombres.charAt(0) : 'U' %>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </nav>
+                    </nav>
 
-                <div class="container-fluid py-4">
-                    <!-- Mensajes flash -->
-                    <% if (messages && messages.success) { %>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <%= messages.success %>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                        <% } %>
-                            <% if (messages && messages.error) { %>
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>
-                                    <%= messages.error %>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                                <% } %>
+                    <div class="container-fluid py-4">
 
-                                    <!-- Stats Cards -->
-                                    <div class="stats-grid">
-                                        <div class="stat-card">
-                                            <div class="stat-icon"
-                                                style="background: linear-gradient(135deg, #74b9ff, #0984e3);">
-                                                <i class="bi bi-file-earmark-text text-white"></i>
-                                            </div>
-                                            <h6 class="text-muted">Total Proformas</h6>
-                                            <h3 class="text-primary">
-                                                <%= proformas ? proformas.length : 0 %>
-                                            </h3>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-icon"
-                                                style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e);">
-                                                <i class="bi bi-clock text-warning"></i>
-                                            </div>
-                                            <h6 class="text-muted">Pendientes</h6>
-                                            <h3 class="text-warning">
-                                                <%= proformas ? proformas.filter(p=> p.Estado === 'PENDIENTE').length :
-                                                    0 %>
-                                            </h3>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-icon"
-                                                style="background: linear-gradient(135deg, #55efc4, #00b894);">
-                                                <i class="bi bi-check-circle text-success"></i>
-                                            </div>
-                                            <h6 class="text-muted">Aprobadas</h6>
-                                            <h3 class="text-success">
-                                                <%= proformas ? proformas.filter(p=> p.Estado === 'APROBADA').length : 0
-                                                    %>
-                                            </h3>
-                                        </div>
+                        <% if (messages && messages.success) { %>
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <%= messages.success %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <% } %>
+                                <% if (messages && messages.error) { %>
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        <%= messages.error %>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                     </div>
+                                    <% } %>
 
-                                    <!-- Search and Actions -->
-                                    <div class="search-container">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="search-box flex-grow-1 me-3">
-                                                <i class="bi bi-search search-icon"></i>
-                                                <div class="d-flex gap-2">
-                                                    <select class="form-select" id="campoFiltro"
-                                                        style="max-width: 180px;">
-                                                        <option value="0">Código</option>
-                                                        <option value="1">Cliente</option>
-                                                        <option value="2">Usuario</option>
-                                                        <option value="3">Fecha</option>
-                                                        <option value="8">Estado</option>
-                                                        <option value="7">Total</option>
-                                                    </select>
-                                                    <input type="text" class="form-control" id="valorFiltro"
-                                                        placeholder="Buscar proformas...">
+                                        <!-- Stats Cards -->
+                                        <div class="stats-grid">
+                                            <div class="stat-card">
+                                                <div class="stat-icon"
+                                                    style="background:linear-gradient(135deg,#74b9ff,#0984e3);">
+                                                    <i class="bi bi-file-earmark-text text-white"></i>
                                                 </div>
+                                                <h6 class="text-muted">Total Proformas</h6>
+                                                <h3 class="text-primary">
+                                                    <%= totalProformas %>
+                                                </h3>
                                             </div>
-                                            <button type="button" class="btn btn-primary-modern btn-modern"
-                                                onclick="abrirModalCrear()">
-                                                <i class="bi bi-plus-circle"></i>
-                                                Nueva Proforma
-                                            </button>
+                                            <div class="stat-card">
+                                                <div class="stat-icon"
+                                                    style="background:linear-gradient(135deg,#ffeaa7,#fdcb6e);">
+                                                    <i class="bi bi-clock text-warning"></i>
+                                                </div>
+                                                <h6 class="text-muted">Pendientes</h6>
+                                                <h3 class="text-warning">
+                                                    <%= pendienteCount %>
+                                                </h3>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-icon"
+                                                    style="background:linear-gradient(135deg,#55efc4,#00b894);">
+                                                    <i class="bi bi-check-circle text-success"></i>
+                                                </div>
+                                                <h6 class="text-muted">Aprobadas</h6>
+                                                <h3 class="text-success">
+                                                    <%= aprobadaCount %>
+                                                </h3>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Tabla -->
-                                    <div class="card-modern">
-                                        <div class="table-responsive">
-                                            <table class="table table-modern mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width:40px;"><input
-                                                                class="form-check-input custom-checkbox" type="checkbox"
-                                                                onchange="toggleAll(this)"></th>
-                                                        <th>Código</th>
-                                                        <th>Cliente</th>
-                                                        <th>Usuario</th>
-                                                        <th>Empresa</th>
-                                                        <th>Fecha</th>
-                                                        <th>Validez</th>
-                                                        <th>SubTotal</th>
-                                                        <th>IGV</th>
-                                                        <th>Total</th>
-                                                        <th>Estado</th>
-                                                        <th class="text-center">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% if (proformas && proformas.length> 0) { %>
-                                                        <% proformas.forEach(function(proforma) { %>
-                                                            <tr>
-                                                                <td><input
-                                                                        class="form-check-input custom-checkbox row-checkbox"
-                                                                        type="checkbox"></td>
-                                                                <td>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <i
-                                                                            class="bi bi-file-earmark-text text-primary me-2"></i>
-                                                                        <strong>
-                                                                            <%= proforma.Codigo %>
-                                                                        </strong>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="item-avatar me-2">
-                                                                            <%= (proforma.ClienteNombre &&
-                                                                                !proforma.ClienteNombre.includes('no
-                                                                                encontrado')) ?
-                                                                                proforma.ClienteNombre.charAt(0).toUpperCase()
-                                                                                : 'C' %>
-                                                                        </div>
-                                                                        <div>
-                                                                            <% if (proforma.ClienteNombre &&
-                                                                                !proforma.ClienteNombre.includes('no
-                                                                                encontrado')) { %>
-                                                                                <div class="fw-bold">
-                                                                                    <%= proforma.ClienteNombre %>
-                                                                                </div>
-                                                                                <% if (proforma.ClienteDocumento) { %>
-                                                                                    <small class="text-muted">RUC: <%=
-                                                                                            proforma.ClienteDocumento %>
-                                                                                            </small>
-                                                                                    <% } %>
-                                                                                        <% } else { %>
-                                                                                            <span
-                                                                                                class="text-warning">ID:
-                                                                                                <%= proforma.IdCliente
-                                                                                                    %></span>
-                                                                                            <% } %>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="item-avatar me-2"
-                                                                            style="background:linear-gradient(135deg,#ffeaa7,#fdcb6e);">
-                                                                            <%= (proforma.UsuarioNombre &&
-                                                                                !proforma.UsuarioNombre.includes('no
-                                                                                encontrado')) ?
-                                                                                proforma.UsuarioNombre.charAt(0).toUpperCase()
-                                                                                : 'U' %>
-                                                                        </div>
-                                                                        <div>
-                                                                            <% if (proforma.UsuarioNombre &&
-                                                                                !proforma.UsuarioNombre.includes('no
-                                                                                encontrado')) { %>
-                                                                                <div class="fw-bold">
-                                                                                    <%= proforma.UsuarioNombre %>
-                                                                                </div>
-                                                                                <small
-                                                                                    class="text-muted">Responsable</small>
-                                                                                <% } else { %>
-                                                                                    <span class="text-warning">ID: <%=
-                                                                                            proforma.IdUsuario %></span>
-                                                                                    <% } %>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="item-avatar me-2"
-                                                                            style="background:linear-gradient(135deg,#d63384,#e83e8c);">
-                                                                            <%= (proforma.EmpresaNombre &&
-                                                                                !proforma.EmpresaNombre.includes('no
-                                                                                encontrada')) ?
-                                                                                proforma.EmpresaNombre.charAt(0).toUpperCase()
-                                                                                : 'E' %>
-                                                                        </div>
-                                                                        <div>
-                                                                            <% if (proforma.EmpresaNombre &&
-                                                                                !proforma.EmpresaNombre.includes('no
-                                                                                encontrada')) { %>
-                                                                                <div class="fw-bold">
-                                                                                    <%= proforma.EmpresaNombre %>
-                                                                                </div>
-                                                                                <% if (proforma.EmpresaRUC) { %><small
-                                                                                        class="text-muted">RUC: <%=
-                                                                                            proforma.EmpresaRUC %>
-                                                                                            </small>
-                                                                                    <% } %>
-                                                                                        <% } else { %>
-                                                                                            <span
-                                                                                                class="text-warning">ID:
-                                                                                                <%= proforma.IdEmpresa
-                                                                                                    %></span>
-                                                                                            <% } %>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <i class="bi bi-calendar3 text-muted me-1"></i>
-                                                                    <%= proforma.FechaEmision ?
-                                                                        (proforma.FechaEmision.toISOString ?
-                                                                        proforma.FechaEmision.toISOString().split('T')[0]
-                                                                        : proforma.FechaEmision) : '' %>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="badge bg-light text-dark">
-                                                                        <i class="bi bi-clock me-1"></i>
-                                                                        <%= proforma.ValidezOferta %> días
-                                                                    </span>
-                                                                </td>
-                                                                <td class="amount-highlight">S/ <%=
-                                                                        !isNaN(parseFloat(proforma.SubTotal)) ?
-                                                                        parseFloat(proforma.SubTotal).toFixed(2)
-                                                                        : '0.00' %>
-                                                                </td>
-                                                                <td class="amount-highlight">S/ <%=
-                                                                        !isNaN(parseFloat(proforma.TotalIGV)) ?
-                                                                        parseFloat(proforma.TotalIGV).toFixed(2)
-                                                                        : '0.00' %>
-                                                                </td>
-                                                                <td><strong class="amount-highlight"
-                                                                        style="font-size:1.1rem;">S/ <%=
-                                                                            !isNaN(parseFloat(proforma.Total)) ?
-                                                                            parseFloat(proforma.Total).toFixed(2)
-                                                                            : '0.00' %></strong></td>
-                                                                <td>
-                                                                    <% let estado=proforma.EstadoVisual ||
-                                                                        proforma.Estado; %>
-                                                                        <span
-                                                                            class="badge badge-modern <%= estado==='PENDIENTE'?'badge-pendiente':estado==='APROBADA'||estado==='FACTURADA'?'badge-aprobado':'badge-rechazado' %>">
-                                                                            <i
-                                                                                class="bi <%= estado==='PENDIENTE'?'bi-clock':estado==='APROBADA'?'bi-check-circle':estado==='FACTURADA'?'bi-receipt':'bi-x-circle' %>"></i>
-                                                                            <%= estado %>
-                                                                        </span>
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    <div class="action-buttons justify-content-center">
-                                                                        <button type="button"
-                                                                            class="btn-action-icon btn-action-edit"
-                                                                            title="Editar"
-                                                                            onclick="abrirModalEditar(<%= proforma.IdProforma %>, '<%= proforma.Codigo %>')">
-                                                                            <i class="bi bi-pencil"></i>
-                                                                        </button>
-                                                                        <a href="/proformas/<%= proforma.IdProforma %>/detalle"
-                                                                            class="btn-action-icon btn-action-view"
-                                                                            target="_blank" title="Ver detalle">
-                                                                            <i class="bi bi-eye"></i>
-                                                                        </a>
-                                                                        <form
-                                                                            action="/proformas/<%= proforma.IdProforma %>/eliminar"
-                                                                            method="POST" class="d-inline"
-                                                                            onsubmit="return confirm('¿Seguro de eliminar esta proforma?');">
-                                                                            <button type="submit"
-                                                                                class="btn-action-icon btn-action-delete"
-                                                                                title="Eliminar">
-                                                                                <i class="bi bi-trash"></i>
-                                                                            </button>
-                                                                        </form>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <% }); %>
-                                                                <% } else { %>
+                                        <!-- Búsqueda y botón nueva proforma -->
+                                        <div class="search-container">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="search-box flex-grow-1 me-3">
+                                                    <i class="bi bi-search search-icon"></i>
+                                                    <div class="d-flex gap-2">
+                                                        <select class="form-select" id="campoFiltro"
+                                                            style="max-width:180px;">
+                                                            <option value="0">Código</option>
+                                                            <option value="1">Cliente</option>
+                                                            <option value="2">Usuario</option>
+                                                            <option value="3">Fecha</option>
+                                                            <option value="8">Estado</option>
+                                                            <option value="7">Total</option>
+                                                        </select>
+                                                        <input type="text" class="form-control" id="valorFiltro"
+                                                            placeholder="Buscar proformas...">
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary-modern btn-modern"
+                                                    onclick="abrirModalCrear()">
+                                                    <i class="bi bi-plus-circle"></i> Nueva Proforma
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tabla -->
+                                        <div class="card-modern">
+                                            <div class="table-responsive">
+                                                <table class="table table-modern mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:40px;"><input
+                                                                    class="form-check-input custom-checkbox"
+                                                                    type="checkbox" onchange="toggleAll(this)"></th>
+                                                            <th>Codigo</th>
+                                                            <th>Cliente</th>
+                                                            <th>Usuario</th>
+                                                            <th>Empresa</th>
+                                                            <th>Fecha</th>
+                                                            <th>Validez</th>
+                                                            <th>SubTotal</th>
+                                                            <th>IGV</th>
+                                                            <th>Total</th>
+                                                            <th>Estado</th>
+                                                            <th class="text-center">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% if (proformas && proformas.length> 0) { %>
+                                                            <% proformas.forEach(function(pf) { %>
+                                                                <% var estado=pf.EstadoVisual || pf.Estado || '' ; var
+                                                                    badgeClass=estado==='PENDIENTE' ? 'badge-pendiente'
+                                                                    : (estado==='APROBADA' || estado==='FACTURADA' )
+                                                                    ? 'badge-aprobado' : 'badge-rechazado' ; var
+                                                                    iconClass=estado==='PENDIENTE' ? 'bi-clock' :
+                                                                    estado==='APROBADA' ? 'bi-check-circle' :
+                                                                    estado==='FACTURADA' ? 'bi-receipt' : 'bi-x-circle'
+                                                                    ; var clienteOk=pf.ClienteNombre &&
+                                                                    pf.ClienteNombre.indexOf('no encontrado')===-1; var
+                                                                    usuarioOk=pf.UsuarioNombre &&
+                                                                    pf.UsuarioNombre.indexOf('no encontrado')===-1; var
+                                                                    empresaOk=pf.EmpresaNombre &&
+                                                                    pf.EmpresaNombre.indexOf('no encontrada')===-1; var
+                                                                    fechaStr=pf.FechaEmision ?
+                                                                    (pf.FechaEmision.toISOString ?
+                                                                    pf.FechaEmision.toISOString().split('T')[0] :
+                                                                    pf.FechaEmision) : '' ; var
+                                                                    subtotal=!isNaN(parseFloat(pf.SubTotal)) ?
+                                                                    parseFloat(pf.SubTotal).toFixed(2) : '0.00' ; var
+                                                                    igv=!isNaN(parseFloat(pf.TotalIGV)) ?
+                                                                    parseFloat(pf.TotalIGV).toFixed(2) : '0.00' ; var
+                                                                    total=!isNaN(parseFloat(pf.Total)) ?
+                                                                    parseFloat(pf.Total).toFixed(2) : '0.00' ; %>
                                                                     <tr>
-                                                                        <td colspan="12" class="text-center py-5">
-                                                                            <i class="bi bi-file-earmark-text text-muted"
-                                                                                style="font-size:3rem;"></i>
-                                                                            <p class="text-muted mt-2">No hay proformas
-                                                                                registradas.</p>
-                                                                            <button type="button"
-                                                                                class="btn btn-primary-modern btn-modern"
-                                                                                onclick="abrirModalCrear()">
-                                                                                <i class="bi bi-plus-circle"></i> Crear
-                                                                                primera proforma
-                                                                            </button>
+                                                                        <td><input
+                                                                                class="form-check-input custom-checkbox row-checkbox"
+                                                                                type="checkbox"></td>
+                                                                        <td>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <i
+                                                                                    class="bi bi-file-earmark-text text-primary me-2"></i>
+                                                                                <strong>
+                                                                                    <%= pf.Codigo %>
+                                                                                </strong>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="item-avatar me-2">
+                                                                                    <%= clienteOk ?
+                                                                                        pf.ClienteNombre.charAt(0).toUpperCase()
+                                                                                        : 'C' %>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <% if (clienteOk) { %>
+                                                                                        <div class="fw-bold">
+                                                                                            <%= pf.ClienteNombre %>
+                                                                                        </div>
+                                                                                        <% if (pf.ClienteDocumento) { %>
+                                                                                            <small
+                                                                                                class="text-muted">RUC:
+                                                                                                <%= pf.ClienteDocumento
+                                                                                                    %></small>
+                                                                                            <% } %>
+                                                                                                <% } else { %>
+                                                                                                    <span
+                                                                                                        class="text-warning">ID:
+                                                                                                        <%= pf.IdCliente
+                                                                                                            %></span>
+                                                                                                    <% } %>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="item-avatar me-2"
+                                                                                    style="background:linear-gradient(135deg,#ffeaa7,#fdcb6e);">
+                                                                                    <%= usuarioOk ?
+                                                                                        pf.UsuarioNombre.charAt(0).toUpperCase()
+                                                                                        : 'U' %>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <% if (usuarioOk) { %>
+                                                                                        <div class="fw-bold">
+                                                                                            <%= pf.UsuarioNombre %>
+                                                                                        </div>
+                                                                                        <small
+                                                                                            class="text-muted">Responsable</small>
+                                                                                        <% } else { %>
+                                                                                            <span
+                                                                                                class="text-warning">ID:
+                                                                                                <%= pf.IdUsuario %>
+                                                                                                    </span>
+                                                                                            <% } %>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="item-avatar me-2"
+                                                                                    style="background:linear-gradient(135deg,#d63384,#e83e8c);">
+                                                                                    <%= empresaOk ?
+                                                                                        pf.EmpresaNombre.charAt(0).toUpperCase()
+                                                                                        : 'E' %>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <% if (empresaOk) { %>
+                                                                                        <div class="fw-bold">
+                                                                                            <%= pf.EmpresaNombre %>
+                                                                                        </div>
+                                                                                        <% if (pf.EmpresaRUC) { %><small
+                                                                                                class="text-muted">RUC:
+                                                                                                <%= pf.EmpresaRUC %>
+                                                                                                    </small>
+                                                                                            <% } %>
+                                                                                                <% } else { %>
+                                                                                                    <span
+                                                                                                        class="text-warning">ID:
+                                                                                                        <%= pf.IdEmpresa
+                                                                                                            %></span>
+                                                                                                    <% } %>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td><i
+                                                                                class="bi bi-calendar3 text-muted me-1"></i>
+                                                                            <%= fechaStr %>
+                                                                        </td>
+                                                                        <td><span class="badge bg-light text-dark"><i
+                                                                                    class="bi bi-clock me-1"></i>
+                                                                                <%= pf.ValidezOferta %> dias
+                                                                            </span></td>
+                                                                        <td class="amount-highlight">S/ <%= subtotal %>
+                                                                        </td>
+                                                                        <td class="amount-highlight">S/ <%= igv %>
+                                                                        </td>
+                                                                        <td><strong class="amount-highlight"
+                                                                                style="font-size:1.1rem;">S/ <%= total
+                                                                                    %></strong></td>
+                                                                        <td>
+                                                                            <span
+                                                                                class="badge badge-modern <%= badgeClass %>">
+                                                                                <i class="bi <%= iconClass %>"></i>
+                                                                                <%= estado %>
+                                                                            </span>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <div
+                                                                                class="action-buttons justify-content-center">
+                                                                                <button type="button"
+                                                                                    class="btn-action-icon btn-action-edit"
+                                                                                    title="Editar"
+                                                                                    onclick="abrirModalEditar(<%= pf.IdProforma %>, '<%= pf.Codigo %>')">
+                                                                                    <i class="bi bi-pencil"></i>
+                                                                                </button>
+                                                                                <a href="/proformas/<%= pf.IdProforma %>/detalle"
+                                                                                    class="btn-action-icon btn-action-view"
+                                                                                    target="_blank" title="Ver detalle">
+                                                                                    <i class="bi bi-eye"></i>
+                                                                                </a>
+                                                                                <form
+                                                                                    action="/proformas/<%= pf.IdProforma %>/eliminar"
+                                                                                    method="POST" class="d-inline"
+                                                                                    onsubmit="return confirm('Seguro de eliminar esta proforma?');">
+                                                                                    <button type="submit"
+                                                                                        class="btn-action-icon btn-action-delete"
+                                                                                        title="Eliminar">
+                                                                                        <i class="bi bi-trash"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
                                                                         </td>
                                                                     </tr>
-                                                                    <% } %>
-                                                </tbody>
-                                            </table>
+                                                                    <% }); %>
+                                                                        <% } else { %>
+                                                                            <tr>
+                                                                                <td colspan="12"
+                                                                                    class="text-center py-5">
+                                                                                    <i class="bi bi-file-earmark-text text-muted"
+                                                                                        style="font-size:3rem;"></i>
+                                                                                    <p class="text-muted mt-2">No hay
+                                                                                        proformas registradas.</p>
+                                                                                    <button type="button"
+                                                                                        class="btn btn-primary-modern btn-modern"
+                                                                                        onclick="abrirModalCrear()">
+                                                                                        <i
+                                                                                            class="bi bi-plus-circle"></i>
+                                                                                        Crear primera proforma
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <% } %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                    </div>
+                    </div>
                 </div>
-            </div>
-    </div>
+        </div>
 
-    <!-- ══════════════════════════════════════════
-         MODAL FLOTANTE CREAR / EDITAR PROFORMA
-         ══════════════════════════════════════════ -->
-    <div class="pf-modal-overlay" id="pfModalOverlay" onclick="cerrarModalSiOverlay(event)">
-        <div class="pf-modal-sheet" id="pfModalSheet">
-            <div class="pf-modal-header">
-                <div class="pf-modal-header-title">
-                    <i class="bi bi-file-earmark-plus" id="pfModalIcon"></i>
-                    <span id="pfModalTitle">Nueva Proforma</span>
+        <!-- MODAL FLOTANTE -->
+        <div class="pf-modal-overlay" id="pfOverlay" onclick="cerrarSiOverlay(event)">
+            <div class="pf-modal-sheet">
+                <div class="pf-modal-header">
+                    <div class="pf-modal-title">
+                        <i class="bi bi-file-earmark-plus" id="pfIcon"></i>
+                        <span id="pfTitle">Nueva Proforma</span>
+                    </div>
+                    <button class="pf-modal-close" onclick="cerrarModal()" title="Cerrar (Esc)">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
-                <button type="button" class="pf-modal-close" onclick="cerrarModal()" title="Cerrar (Esc)">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-            <div class="pf-modal-body">
-                <div class="pf-modal-loading" id="pfModalLoading">
-                    <div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div>
-                    <span>Cargando formulario...</span>
+                <div class="pf-modal-body">
+                    <div class="pf-modal-spinner" id="pfSpinner">
+                        <div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div>
+                        <span>Cargando formulario...</span>
+                    </div>
+                    <iframe id="pfIframe" name="pfIframe"
+                        style="width:100%;height:100%;min-height:82vh;border:none;"></iframe>
                 </div>
-                <iframe id="pfModalIframe" name="pfModalIframe"
-                    style="width:100%;height:100%;min-height:82vh;border:none;"></iframe>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const overlay = document.getElementById('pfModalOverlay');
-        const iframeEl = document.getElementById('pfModalIframe');
-        const loadingEl = document.getElementById('pfModalLoading');
-        const titleEl = document.getElementById('pfModalTitle');
-        const iconEl = document.getElementById('pfModalIcon');
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            var overlay = document.getElementById('pfOverlay');
+            var iframe = document.getElementById('pfIframe');
+            var spinner = document.getElementById('pfSpinner');
+            var titleEl = document.getElementById('pfTitle');
+            var iconEl = document.getElementById('pfIcon');
 
-        function abrirModal(url, titulo, icono) {
-            titleEl.textContent = titulo;
-            iconEl.className = 'bi ' + icono;
-            loadingEl.style.display = 'flex';
-            iframeEl.style.visibility = 'hidden';
-            iframeEl.src = url;
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function abrirModalCrear() {
-            abrirModal('/proformas/nueva', 'Nueva Proforma', 'bi-file-earmark-plus');
-        }
-
-        function abrirModalEditar(id, codigo) {
-            abrirModal('/proformas/' + id + '/editar', 'Editar — ' + codigo, 'bi-pencil-square');
-        }
-
-        iframeEl.addEventListener('load', function () {
-            try {
-                const path = iframeEl.contentWindow.location.pathname;
-                // Si el iframe redirigió a /proformas (form enviado), cerrar y recargar
-                if (path === '/proformas' || path === '/proformas/') {
-                    cerrarModal();
-                    location.reload();
-                    return;
-                }
-            } catch (e) { }
-            // Ocultar spinner, mostrar iframe
-            loadingEl.style.display = 'none';
-            iframeEl.style.visibility = 'visible';
-        });
-
-        function cerrarModal() {
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-            setTimeout(() => { iframeEl.src = 'about:blank'; }, 300);
-        }
-
-        function cerrarModalSiOverlay(e) {
-            if (e.target === overlay) cerrarModal();
-        }
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') cerrarModal();
-        });
-
-        // Filtro de tabla
-        document.addEventListener('DOMContentLoaded', function () {
-            const campoFiltro = document.getElementById('campoFiltro');
-            const valorFiltro = document.getElementById('valorFiltro');
-            if (campoFiltro && valorFiltro) {
-                function filtrarTabla() {
-                    const col = parseInt(campoFiltro.value);
-                    const q = valorFiltro.value.toLowerCase();
-                    document.querySelectorAll('tbody tr').forEach(row => {
-                        if (row.querySelectorAll('td').length < 10) return;
-                        const cell = row.querySelectorAll('td')[col];
-                        if (!cell) return;
-                        row.style.display = cell.textContent.toLowerCase().includes(q) ? '' : 'none';
-                    });
-                }
-                valorFiltro.addEventListener('input', filtrarTabla);
-                campoFiltro.addEventListener('change', filtrarTabla);
+            function abrirModal(url, titulo, icono) {
+                titleEl.textContent = titulo;
+                iconEl.className = 'bi ' + icono;
+                iframe.style.visibility = 'hidden';
+                spinner.style.display = 'flex';
+                iframe.src = url;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
             }
-        });
 
-        function toggleAll(source) {
-            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = source.checked);
-        }
-    </script>
-    <script src="/publico/js/layout.js?v=<%= Date.now() %>"></script>
+            function abrirModalCrear() {
+                abrirModal('/proformas/nueva', 'Nueva Proforma', 'bi-file-earmark-plus');
+            }
+
+            function abrirModalEditar(id, codigo) {
+                abrirModal('/proformas/' + id + '/editar', 'Editar Proforma - ' + codigo, 'bi-pencil-square');
+            }
+
+            iframe.addEventListener('load', function () {
+                try {
+                    var path = iframe.contentWindow.location.pathname;
+                    if (path === '/proformas' || path === '/proformas/') {
+                        cerrarModal();
+                        setTimeout(function () { location.reload(); }, 100);
+                        return;
+                    }
+                } catch (e) { }
+                spinner.style.display = 'none';
+                iframe.style.visibility = 'visible';
+            });
+
+            function cerrarModal() {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                setTimeout(function () { iframe.src = 'about:blank'; }, 300);
+            }
+
+            function cerrarSiOverlay(e) {
+                if (e.target === overlay) cerrarModal();
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') cerrarModal();
+            });
+
+            function toggleAll(source) {
+                var cbs = document.querySelectorAll('.row-checkbox');
+                for (var i = 0; i < cbs.length; i++) cbs[i].checked = source.checked;
+            }
+
+            // Filtro de tabla
+            document.addEventListener('DOMContentLoaded', function () {
+                var campoFiltro = document.getElementById('campoFiltro');
+                var valorFiltro = document.getElementById('valorFiltro');
+                if (!campoFiltro || !valorFiltro) return;
+                function filtrar() {
+                    var col = parseInt(campoFiltro.value);
+                    var q = valorFiltro.value.toLowerCase();
+                    var rows = document.querySelectorAll('tbody tr');
+                    for (var i = 0; i < rows.length; i++) {
+                        var tds = rows[i].querySelectorAll('td');
+                        if (tds.length < 10) continue;
+                        var cell = tds[col];
+                        rows[i].style.display = (cell && cell.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+                    }
+                }
+                valorFiltro.addEventListener('input', filtrar);
+                campoFiltro.addEventListener('change', filtrar);
+            });
+        </script>
+        <script src="/publico/js/layout.js"></script>
 </body>
 
 </html>
