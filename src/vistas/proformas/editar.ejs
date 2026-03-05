@@ -507,13 +507,133 @@
         /* ════════════════════════════════════
            DRAWER SHEET — FLOTANTE DERECHA
            ════════════════════════════════════ */
+        /* ── Sin sidebar, iframe-friendly ── */
         html,
         body {
             margin: 0;
             padding: 0;
-            background: #0d0f17;
-            height: 100%;
-            overflow: hidden;
+            background: #f6f6f8;
+        }
+
+        .wrapper {
+            background: #f6f6f8;
+            display: flex;
+        }
+
+        #sidebar {
+            display: none !important;
+        }
+
+        .main-content {
+            width: 100%;
+            background: #f6f6f8;
+        }
+
+        /* ══ MINI-STATS EN TARJETA TOTALES ══ */
+        .pf-stats-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .pf-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 0.875rem;
+            background: #f8f9fa;
+            border-radius: 0.625rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: background 0.15s;
+        }
+
+        .pf-stat-item:hover {
+            background: #f3f4f6;
+        }
+
+        .pf-stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .pf-stat-icon.blue {
+            background: rgba(59, 73, 223, 0.1);
+            color: #3b4bc9;
+        }
+
+        .pf-stat-icon.green {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .pf-stat-icon.amber {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .pf-stat-text-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 0;
+        }
+
+        .pf-stat-text-val {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .pf-quote-box {
+            margin: 0.5rem 1rem 0.75rem;
+            padding: 0.875rem 1rem;
+            background: linear-gradient(135deg, rgba(59, 73, 223, 0.06) 0%, rgba(59, 73, 223, 0.02) 100%);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .pf-quote-text {
+            font-size: 0.775rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .pf-quote-author {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0.35rem 0 0;
+        }
+
+        @media (max-width:768px) {
+            .pf-body {
+                padding: 1rem;
+            }
+
+            .pf-meta-bar {
+                flex-wrap: wrap;
+            }
+
+            .pf-meta-item {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+                flex-basis: 50%;
+            }
         }
 
         .wrapper {
@@ -758,17 +878,6 @@
 <body>
     <div class="wrapper">
         <%- include("../parciales/sidebar") %>
-
-            <!-- Panel izquierdo decorativo -->
-            <div class="pf-backdrop-left">
-                <div class="pf-backdrop-logo">
-                    <span class="pf-backdrop-logo-text">CARSIL</span>
-                    <span class="pf-backdrop-logo-sub">Equipos y Servicios SAC</span>
-                </div>
-                <div class="pf-backdrop-divider"></div>
-                <p class="pf-backdrop-desc">Modifique los datos de la proforma y guarde los cambios.</p>
-                <a href="/proformas">← Volver a proformas</a>
-            </div>
 
             <div class="main-content" id="main-content">
                 <!-- ── Navbar ── -->
