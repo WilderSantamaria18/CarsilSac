@@ -1,199 +1,928 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuarios - CARSIL Equipos y Servicios SAC</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#3b4bc9", "background-light": "#f6f6f8" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
     <link rel="stylesheet" href="/publico/css/layout.css?v=1772427290149">
-    <link rel="stylesheet" href="/publico/css/list-views.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .main-content {
+            padding: 0 !important;
+            background: #f6f6f8;
+        }
+    </style>
 </head>
-<body>
+
+<body class="bg-[#f6f6f8] text-slate-900 font-display">
     <div class="wrapper">
         <%- include("../parciales/sidebar") %>
-        
-        <!-- Botón para ocultar/mostrar barra -->
-        
-        <!-- Main Content -->
-        <div class="main-content" id="main-content">
-            <nav class="navbar navbar-expand-lg navbar-light navbar-top border-bottom">
-                <div class="container-fluid">
-                    <h5 class="page-title mb-0">
-                        <i class="bi bi-person-circle"></i>
-                        Gestión de Usuarios
-                    </h5>
-                    <div class="user-profile ms-auto">
-                        <span>Administrador</span>
-                        <div class="user-avatar">A</div>
-                    </div>
-                </div>
-            </nav>
-            
-            <div class="container-fluid py-4">
-                <!-- Estadísticas -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #74b9ff, #0984e3);">
-                            <i class="bi bi-people text-white"></i>
-                        </div>
-                        <h6 class="text-muted">Total Usuarios</h6>
-                        <h3 class="text-primary"><%= usuarios ? usuarios.length : 0 %></h3>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #55efc4, #00b894);">
-                            <i class="bi bi-person-check text-white"></i>
-                        </div>
-                        <h6 class="text-muted">Activos</h6>
-                        <h3 class="text-success"><%= usuarios ? usuarios.filter(u => u.Estado).length : 0 %></h3>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #fd79a8, #e84393);">
-                            <i class="bi bi-person-x text-white"></i>
-                        </div>
-                        <h6 class="text-muted">Inactivos</h6>
-                        <h3 class="text-danger"><%= usuarios ? usuarios.filter(u => !u.Estado).length : 0 %></h3>
-                    </div>
-                </div>
 
-                <!-- Alertas -->
-                <% if (success && success.length > 0) { %>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle me-2"></i><%= success %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <% } %>
-                <% if (error && error.length > 0) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle me-2"></i><%= error %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <% } %>
+            <div class="main-content" id="main-content">
 
-                <!-- Búsqueda y acciones -->
-                <div class="search-container">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex gap-2 flex-grow-1 me-3">
-                            <select id="campoFiltroUsuario" class="form-select" style="max-width: 180px;">
-                                <option value="1">Nombres</option>
-                                <option value="2">Apellidos</option>
-                                <option value="3">Documento</option>
-                                <option value="4">Correo</option>
-                                <option value="5">Rol</option>
-                                <option value="6">Estado</option>
-                            </select>
-                            <input type="text" id="valorFiltroUsuario" class="form-control" placeholder="Buscar usuarios...">
+                <!-- Top Nav -->
+                <header
+                    class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400 text-sm">Panel</span>
+                        <span class="material-symbols-outlined text-sm text-slate-300">chevron_right</span>
+                        <span class="font-semibold text-sm">GestiÃ³n de Usuarios</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined p-2 text-slate-500 hover:bg-slate-100 rounded-full cursor-pointer transition-colors">notifications</span>
+                            <span
+                                class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                         </div>
-                        <a href="/usuarios/crear" class="btn btn-primary-modern btn-modern">
-                            <i class="bi bi-plus-circle"></i>
-                            Nuevo Usuario
-                        </a>
+                        <div class="h-8 w-px bg-slate-200"></div>
+                        <div
+                            class="w-8 h-8 rounded-full bg-[#3b4bc9] flex items-center justify-center text-white text-xs font-bold">
+                            <%= user && user.Nombres ? user.Nombres.charAt(0) : 'A' %>
+                        </div>
+                        <span class="text-sm font-medium hidden sm:inline-block">
+                            <%= user && user.Nombres ? user.Nombres : 'Administrador' %>
+                        </span>
                     </div>
-                </div>
+                </header>
 
-                <!-- Tabla de usuarios -->
-                <div class="table-responsive">
-                    <table class="table table-modern align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="text-center"><i class="bi bi-hash"></i></th>
-                                <th><i class="bi bi-person"></i> Nombres</th>
-                                <th><i class="bi bi-person-vcard"></i> Apellidos</th>
-                                <th><i class="bi bi-credit-card"></i> Documento</th>
-                                <th><i class="bi bi-envelope"></i> Correo</th>
-                                <th><i class="bi bi-person-badge"></i> Rol</th>
-                                <th class="text-center"><i class="bi bi-toggle-on"></i> Estado</th>
-                                <th class="text-center"><i class="bi bi-gear"></i> Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% usuarios.forEach((usuario, index) => { %>
-                                <tr>
-                                            <td><input class="form-check-input custom-checkbox row-checkbox" type="checkbox"></td>
-                                            <td><%= index + 1 %></td>
-                                    <td><%= usuario.Nombres %></td>
-                                    <td><%= usuario.Apellidos %></td>
-                                    <td><%= usuario.TipoDocumento %>: <%= usuario.NumeroDocumento %></td>
-                                    <td><%= usuario.Correo %></td>
-                                    <td><%= usuario.Rol %></td>
-                                    <td class="text-center">
-                                        <span class="badge <%= usuario.Estado ? 'bg-success' : 'bg-secondary' %> px-3 py-2">
-                                            <i class="bi <%= usuario.Estado ? 'bi-toggle-on' : 'bi-toggle-off' %> me-1"></i>
-                                            <%= usuario.Estado ? 'Activo' : 'Inactivo' %>
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-<div class="action-buttons justify-content-center">
-<a href="/usuarios/editar/<%= usuario.IdUsuario %>" 
-                                           class="btn-action-icon btn-action-edit" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a href="/usuarios/eliminar/<%= usuario.IdUsuario %>" 
-                                           class="btn-action-icon btn-action-delete" title="Eliminar"
-                                           onclick="return confirm('¿Está seguro de eliminar este usuario?')">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-</div>
-</td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
+                <!-- Content -->
+                <div class="p-8">
+
+                    <!-- Page Title -->
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-black tracking-tight mb-2">GestiÃ³n de Usuarios</h2>
+                        <p class="text-slate-500">Administra las cuentas y roles del sistema CARSIL.</p>
+                    </div>
+
+                    <!-- Flash messages -->
+                    <% const flashSuccess=success && success.length> 0 ? (Array.isArray(success) ? success[0] : success)
+                        : null; %>
+                        <% const flashError=error && error.length> 0 ? (Array.isArray(error) ? error[0] : error) : null;
+                            %>
+                            <% if (flashSuccess) { %>
+                                <div
+                                    class="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-sm">
+                                    <span class="material-symbols-outlined text-emerald-500">check_circle</span>
+                                    <span>
+                                        <%= flashSuccess %>
+                                    </span>
+                                </div>
+                                <% } %>
+                                    <% if (flashError) { %>
+                                        <div
+                                            class="mb-6 flex items-center gap-3 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl text-sm">
+                                            <span class="material-symbols-outlined text-rose-500">error</span>
+                                            <span>
+                                                <%= flashError %>
+                                            </span>
+                                        </div>
+                                        <% } %>
+
+                                            <!-- Stats Cards -->
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+                                                <div
+                                                    class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm border-t-4 border-t-[#3b4bc9]">
+                                                    <p
+                                                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                                                        Total Usuarios</p>
+                                                    <p class="text-3xl font-bold text-[#3b4bc9]">
+                                                        <%= usuarios ? usuarios.length : 0 %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm border-t-4 border-t-emerald-500">
+                                                    <p
+                                                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                                                        Activos</p>
+                                                    <p class="text-3xl font-bold text-emerald-600">
+                                                        <%= usuarios ? usuarios.filter(u=> u.Estado).length : 0 %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm border-t-4 border-t-rose-500">
+                                                    <p
+                                                        class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                                                        Inactivos</p>
+                                                    <p class="text-3xl font-bold text-rose-600">
+                                                        <%= usuarios ? usuarios.filter(u=> !u.Estado).length : 0 %>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Filter Bar -->
+                                            <div
+                                                class="bg-white p-4 rounded-xl border border-slate-100 mb-6 flex flex-wrap gap-4 items-center shadow-sm">
+                                                <div class="flex-1 min-w-[260px] relative group">
+                                                    <span
+                                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#3b4bc9] transition-colors">search</span>
+                                                    <input id="valorFiltroUsuario"
+                                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] transition-all text-sm outline-none"
+                                                        placeholder="Buscar usuarios..." type="text" />
+                                                </div>
+                                                <select id="campoFiltroUsuario"
+                                                    class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none">
+                                                    <option value="1">Nombres</option>
+                                                    <option value="2">Apellidos</option>
+                                                    <option value="3">Documento</option>
+                                                    <option value="4">Correo</option>
+                                                    <option value="5">Rol</option>
+                                                    <option value="6">Estado</option>
+                                                </select>
+                                                <button type="button" onclick="abrirModalCrearUsuario()"
+                                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#3b4bc9] text-white font-semibold rounded-lg hover:bg-[#3b4bc9]/90 hover:shadow-lg transition-all text-sm">
+                                                    <span class="material-symbols-outlined text-sm">person_add</span>
+                                                    Nuevo Usuario
+                                                </button>
+                                            </div>
+
+                                            <!-- Data Table -->
+                                            <div
+                                                class="bg-white rounded-xl border border-slate-100 shadow-md overflow-hidden">
+                                                <div class="overflow-x-auto">
+                                                    <table class="w-full text-left border-collapse" id="tablaUsuarios">
+                                                        <thead>
+                                                            <tr class="bg-slate-50 border-b border-slate-200">
+                                                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center"
+                                                                    style="width: 50px;">#</th>
+                                                                <th
+                                                                    class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                                                    Usuario</th>
+                                                                <th
+                                                                    class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                                                    Documento</th>
+                                                                <th
+                                                                    class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                                                    Contacto</th>
+                                                                <th
+                                                                    class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                                                    Rol</th>
+                                                                <th
+                                                                    class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">
+                                                                    Estado</th>
+                                                                <th
+                                                                    class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">
+                                                                    Acciones</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-slate-100" id="tbodyUsuarios">
+                                                            <% if (usuarios && usuarios.length> 0) { %>
+                                                                <% usuarios.forEach((usuario, index)=> { %>
+                                                                    <tr class="hover:bg-slate-50/60 transition-colors">
+                                                                        <td
+                                                                            class="px-6 py-4 text-center text-sm text-slate-400 font-medium">
+                                                                            <%= index + 1 %>
+                                                                        </td>
+                                                                        <!-- Usuario -->
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="flex items-center gap-3">
+                                                                                <div
+                                                                                    class="w-10 h-10 rounded-full bg-[#3b4bc9]/10 flex items-center justify-center text-[#3b4bc9] font-bold text-sm flex-shrink-0 border border-[#3b4bc9]/20">
+                                                                                    <%= usuario.Nombres ?
+                                                                                        usuario.Nombres.charAt(0).toUpperCase()
+                                                                                        : 'U' %>
+                                                                                        <%= usuario.Apellidos ?
+                                                                                            usuario.Apellidos.charAt(0).toUpperCase()
+                                                                                            : '' %>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p
+                                                                                        class="text-sm font-bold text-slate-800 leading-tight">
+                                                                                        <%= usuario.Nombres %>
+                                                                                            <%= usuario.Apellidos %>
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <!-- Documento -->
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="flex items-center gap-1.5">
+                                                                                <span
+                                                                                    class="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded uppercase tracking-wider">
+                                                                                    <%= usuario.TipoDocumento %>
+                                                                                </span>
+                                                                                <span
+                                                                                    class="text-sm font-mono text-slate-700">
+                                                                                    <%= usuario.NumeroDocumento %>
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <!-- Contacto -->
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="flex flex-col gap-1">
+                                                                                <span
+                                                                                    class="text-xs text-slate-600 flex items-center gap-1.5">
+                                                                                    <span
+                                                                                        class="material-symbols-outlined text-[15px] text-slate-400">mail</span>
+                                                                                    <%= usuario.Correo %>
+                                                                                </span>
+                                                                                <% if (usuario.Telefono) { %>
+                                                                                    <span
+                                                                                        class="text-xs text-slate-600 flex items-center gap-1.5">
+                                                                                        <span
+                                                                                            class="material-symbols-outlined text-[15px] text-slate-400">phone</span>
+                                                                                        <%= usuario.Telefono %>
+                                                                                    </span>
+                                                                                    <% } %>
+                                                                            </div>
+                                                                        </td>
+                                                                        <!-- Rol -->
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <span
+                                                                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3b4bc9]/5 border border-[#3b4bc9]/20 text-[#3b4bc9]">
+                                                                                <span
+                                                                                    class="material-symbols-outlined text-[14px]">shield_person</span>
+                                                                                <%= usuario.Rol %>
+                                                                            </span>
+                                                                        </td>
+                                                                        <!-- Estado -->
+                                                                        <td
+                                                                            class="px-6 py-4 whitespace-nowrap text-center">
+                                                                            <span
+                                                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider <%= usuario.Estado ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/50' : 'bg-slate-100 text-slate-500 border border-slate-200/50' %>">
+                                                                                <span
+                                                                                    class="material-symbols-outlined text-[13px] mr-1">
+                                                                                    <%= usuario.Estado ? 'check_circle'
+                                                                                        : 'cancel' %>
+                                                                                </span>
+                                                                                <%= usuario.Estado ? 'Activo'
+                                                                                    : 'Inactivo' %>
+                                                                            </span>
+                                                                        </td>
+                                                                        <!-- Acciones -->
+                                                                        <td
+                                                                            class="px-6 py-4 whitespace-nowrap text-right">
+                                                                            <div
+                                                                                class="flex items-center justify-end gap-1">
+                                                                                <button type="button"
+                                                                                    onclick="abrirModalEditarUsuario(this)"
+                                                                                    data-id="<%= usuario.IdUsuario %>"
+                                                                                    data-nombres="<%= (usuario.Nombres||'').replace(/"/g,'&quot;') %>"
+                                                                                    data-apellidos="<%=
+                                                                                        (usuario.Apellidos||'').replace(/\"/g,'&quot;')
+                                                                                        %>"
+                                                                                        data-tipodocumento="<%=
+                                                                                            usuario.TipoDocumento||'DNI'
+                                                                                            %>"
+                                                                                            data-numerodocumento="<%=
+                                                                                                (usuario.NumeroDocumento||'').replace(/\"/g,'&quot;')
+                                                                                                %>"
+                                                                                                data-correo="<%=
+                                                                                                    (usuario.Correo||'').replace(/\"/g,'&quot;')
+                                                                                                    %>"
+                                                                                                    data-telefono="<%=
+                                                                                                        (usuario.Telefono||'').replace(/\"/g,'&quot;')
+                                                                                                        %>"
+                                                                                                        data-direccion="
+                                                                                                        <%= (usuario.Direccion||'').replace(/\"/g,'&quot;')
+                                                                                                            %>"
+                                                                                                            data-idrol="
+                                                                                                            <%= usuario.IdRol
+                                                                                                                %>"
+                                                                                                                data-estado="
+                                                                                                                <%= usuario.Estado
+                                                                                                                    ? '1'
+                                                                                                                    : '0'
+                                                                                                                    %>"
+                                                                                                                    class="p-1.5
+                                                                                                                    hover:bg-slate-100
+                                                                                                                    rounded-lg
+                                                                                                                    transition-colors
+                                                                                                                    text-slate-500
+                                                                                                                    hover:text-[#3b4bc9]"
+                                                                                                                    title="Editar">
+                                                                                                                    <span
+                                                                                                                        class="material-symbols-outlined text-lg leading-none">edit</span>
+                                                                                </button>
+                                                                                <form
+                                                                                    action="/usuarios/eliminar/<%= usuario.IdUsuario %>"
+                                                                                    method="POST" class="inline"
+                                                                                    onsubmit="return confirm('Â¿Eliminar definitivamente a <%= usuario.Nombres %> <%= usuario.Apellidos %>?')">
+                                                                                    <button type="submit"
+                                                                                        class="p-1.5 hover:bg-rose-50 rounded-lg transition-colors text-slate-500 hover:text-rose-600"
+                                                                                        title="Eliminar">
+                                                                                        <span
+                                                                                            class="material-symbols-outlined text-lg leading-none">delete</span>
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% }); %>
+                                                                        <% } else { %>
+                                                                            <tr>
+                                                                                <td colspan="7"
+                                                                                    class="text-center py-16">
+                                                                                    <div
+                                                                                        class="flex flex-col items-center justify-center">
+                                                                                        <span
+                                                                                            class="material-symbols-outlined text-5xl text-slate-300 block mb-3">group</span>
+                                                                                        <p
+                                                                                            class="text-slate-500 font-medium mb-1">
+                                                                                            No hay usuarios registrados
+                                                                                        </p>
+                                                                                        <button
+                                                                                            onclick="abrirModalCrearUsuario()"
+                                                                                            class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#3b4bc9] text-white font-semibold rounded-lg hover:bg-[#3b4bc9]/90 transition-all text-sm">
+                                                                                            <span
+                                                                                                class="material-symbols-outlined text-sm">person_add</span>
+                                                                                            Nuevo Usuario
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <% } %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                </div><!-- /p-8 -->
+            </div><!-- /main-content -->
+    </div><!-- /wrapper -->
+
+    <!-- ==================== MODAL NUEVO USUARIO ==================== -->
+    <div id="modalCrearUsuario"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 hidden"
+        onclick="cerrarSiOverlay(event,'modalCrearUsuario')">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]"
+            onclick="event.stopPropagation()">
+            <div
+                class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 tracking-tight">Crear Nuevo Usuario</h2>
+                    <p class="text-slate-500 text-sm mt-0.5">Registre un nuevo miembro en el sistema.</p>
                 </div>
+                <button type="button" onclick="cerrarModal('modalCrearUsuario')"
+                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
+            <form action="/usuarios/crear" method="POST" autocomplete="off"
+                class="flex flex-col overflow-hidden flex-1">
+                <div class="px-8 py-6 space-y-8 overflow-y-auto flex-1">
+
+                    <!-- SecciÃ³n 1: InformaciÃ³n Personal -->
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="p-1.5 bg-[#3b4bc9]/10 rounded-lg">
+                                <span class="material-symbols-outlined text-[#3b4bc9] text-[20px]">person</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800">InformaciÃ³n Personal</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Nombres</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">badge</span>
+                                    <input name="Nombres" required type="text" placeholder="Ej: Juan"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Apellidos</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">badge</span>
+                                    <input name="Apellidos" required type="text" placeholder="Ej: PÃ©rez"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Tipo
+                                    de Documento</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">contact_page</span>
+                                    <select name="TipoDocumento"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none appearance-none transition-all text-sm">
+                                        <option value="DNI">DNI</option>
+                                        <option value="RUC">RUC</option>
+                                        <option value="CE">CarnÃ© de ExtranjerÃ­a</option>
+                                        <option value="PASAPORTE">Pasaporte</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">NÃºmero
+                                    de Documento</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">fingerprint</span>
+                                    <input name="NumeroDocumento" required type="text" placeholder="00000000"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SecciÃ³n 2: Contacto -->
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="p-1.5 bg-[#3b4bc9]/10 rounded-lg">
+                                <span
+                                    class="material-symbols-outlined text-[#3b4bc9] text-[20px]">alternate_email</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800">InformaciÃ³n de Contacto</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Correo
+                                    ElectrÃ³nico</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">mail</span>
+                                    <input name="Correo" required type="email" placeholder="usuario@carsil.com"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">TelÃ©fono</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">phone</span>
+                                    <input name="Telefono" type="tel" placeholder="+51 987 654 321"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="col-span-1 md:col-span-2 space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">DirecciÃ³n
+                                    <span class="normal-case text-slate-400">(Opcional)</span></label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">location_on</span>
+                                    <input name="Direccion" type="text" placeholder="Av. Principal 123, Lima"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SecciÃ³n 3: Credenciales -->
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="p-1.5 bg-[#3b4bc9]/10 rounded-lg">
+                                <span class="material-symbols-outlined text-[#3b4bc9] text-[20px]">lock</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800">Credenciales y Rol</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">ContraseÃ±a</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">key</span>
+                                    <input name="Clave" required type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" minlength="6"
+                                        class="pwd-toggle w-full pl-10 pr-10 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                    <button type="button"
+                                        class="btn-toggle-pwd absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Confirmar
+                                    ContraseÃ±a</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">verified_user</span>
+                                    <input name="ConfirmarClave" required type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                                        minlength="6"
+                                        class="pwd-toggle w-full pl-10 pr-10 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                    <button type="button"
+                                        class="btn-toggle-pwd absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Rol
+                                    del Sistema</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">manage_accounts</span>
+                                    <select name="IdRol" required
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none appearance-none transition-all text-sm">
+                                        <option value="">Seleccionar rol...</option>
+                                        <% if (typeof roles !=='undefined' && roles) { roles.forEach(rol=> { %>
+                                            <option value="<%= rol.IdRol %>">
+                                                <%= rol.Descripcion %>
+                                            </option>
+                                            <% }); } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Estado
+                                    de Cuenta</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">toggle_on</span>
+                                    <select name="Estado"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none appearance-none transition-all text-sm">
+                                        <option value="1">Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="px-8 py-5 border-t border-slate-100 flex justify-end gap-3 bg-slate-50 flex-shrink-0">
+                    <button type="button" onclick="cerrarModal('modalCrearUsuario')"
+                        class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2.5 text-sm font-bold text-white bg-[#3b4bc9] hover:bg-[#3b4bc9]/90 rounded-lg shadow-lg shadow-[#3b4bc9]/20 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
+                        Guardar Usuario
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleBtn = document.getElementById('toggleSidebarBtn');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-        const toggleIcon = document.getElementById('toggleIcon');
-        const menuItems = document.querySelectorAll('.menu-item');
-        const userAvatar = document.querySelector('.user-avatar');
-        const userName = 'Administrador';
-        userAvatar.textContent = userName.charAt(0);
 
-        toggleBtn.addEventListener('click', function() {
-            sidebar.classList.toggle('hide');
-            mainContent.classList.toggle('full');
-            // Cambia el icono de dirección
-            if (sidebar.classList.contains('hide')) {
-                toggleIcon.classList.remove('bi-chevron-left');
-                toggleIcon.classList.add('bi-chevron-right');
-            } else {
-                toggleIcon.classList.remove('bi-chevron-right');
-                toggleIcon.classList.add('bi-chevron-left');
-            }
+    <!-- ==================== MODAL EDITAR USUARIO ==================== -->
+    <div id="modalEditarUsuario"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 hidden"
+        onclick="cerrarSiOverlay(event,'modalEditarUsuario')">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]"
+            onclick="event.stopPropagation()">
+            <div
+                class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <div id="u_edit_avatar"
+                        class="w-12 h-12 rounded-full bg-[#3b4bc9]/10 flex items-center justify-center text-[#3b4bc9] font-bold text-lg border border-[#3b4bc9]/20">
+                        U</div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Editar Usuario</h2>
+                        <p id="u_edit_title" class="text-slate-500 text-sm mt-0.5">Actualice los datos del perfil
+                            seleccionado.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="cerrarModal('modalEditarUsuario')"
+                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <!-- Form action set dynamically via JS -->
+            <form id="formEditarUsuario" method="POST" autocomplete="off" class="flex flex-col overflow-hidden flex-1">
+                <input type="hidden" name="_method" value="PUT">
+                <!-- If backend supports it, or standard POST handled in controller -->
+                <div class="px-8 py-6 space-y-8 overflow-y-auto flex-1">
+
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="p-1.5 bg-[#3b4bc9]/10 rounded-lg">
+                                <span class="material-symbols-outlined text-[#3b4bc9] text-[20px]">person</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800">InformaciÃ³n Personal</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Nombres</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">badge</span>
+                                    <input id="u_edit_nombres" name="Nombres" required type="text"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Apellidos</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">badge</span>
+                                    <input id="u_edit_apellidos" name="Apellidos" required type="text"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Tipo
+                                    de Documento</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">contact_page</span>
+                                    <select id="u_edit_tipodocumento" name="TipoDocumento"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none appearance-none transition-all text-sm">
+                                        <option value="DNI">DNI</option>
+                                        <option value="RUC">RUC</option>
+                                        <option value="CE">CarnÃ© de ExtranjerÃ­a</option>
+                                        <option value="PASAPORTE">Pasaporte</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">NÃºmero
+                                    de Documento</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">fingerprint</span>
+                                    <input id="u_edit_numerodocumento" name="NumeroDocumento" required type="text"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="p-1.5 bg-[#3b4bc9]/10 rounded-lg">
+                                <span
+                                    class="material-symbols-outlined text-[#3b4bc9] text-[20px]">alternate_email</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800">InformaciÃ³n de Contacto</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Correo
+                                    ElectrÃ³nico</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">mail</span>
+                                    <input id="u_edit_correo" name="Correo" required type="email"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">TelÃ©fono</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">phone</span>
+                                    <input id="u_edit_telefono" name="Telefono" type="tel"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="col-span-1 md:col-span-2 space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">DirecciÃ³n
+                                    (Opcional)</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">location_on</span>
+                                    <input id="u_edit_direccion" name="Direccion" type="text"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="p-1.5 bg-[#3b4bc9]/10 rounded-lg">
+                                <span class="material-symbols-outlined text-[#3b4bc9] text-[20px]">lock</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800">Credenciales y Rol</h3>
+                        </div>
+
+                        <!-- Box indicativo: Para no cambiar password dejar en blanco -->
+                        <div
+                            class="mb-5 flex items-center gap-3 bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm text-slate-600">
+                            <span class="material-symbols-outlined text-slate-400">info</span>
+                            <span>Si no desea cambiar la contraseÃ±a de este usuario, deje los siguientes campos en
+                                blanco.</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Nueva
+                                    ContraseÃ±a</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">key</span>
+                                    <input name="Clave" type="password" placeholder="(Sin cambios)" minlength="6"
+                                        class="pwd-toggle w-full pl-10 pr-10 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                    <button type="button"
+                                        class="btn-toggle-pwd absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Confirmar
+                                    Nueva ContraseÃ±a</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">verified_user</span>
+                                    <input name="ConfirmarClave" type="password" placeholder="(Sin cambios)"
+                                        minlength="6"
+                                        class="pwd-toggle w-full pl-10 pr-10 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none transition-all text-sm">
+                                    <button type="button"
+                                        class="btn-toggle-pwd absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Rol
+                                    del Sistema</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">manage_accounts</span>
+                                    <select id="u_edit_idrol" name="IdRol" required
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none appearance-none transition-all text-sm">
+                                        <option value="">Seleccionar rol...</option>
+                                        <% if (typeof roles !=='undefined' && roles) { roles.forEach(rol=> { %>
+                                            <option value="<%= rol.IdRol %>">
+                                                <%= rol.Descripcion %>
+                                            </option>
+                                            <% }); } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Estado
+                                    de Cuenta</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">toggle_on</span>
+                                    <select id="u_edit_estado" name="Estado"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] outline-none appearance-none transition-all text-sm">
+                                        <option value="1">Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="px-8 py-5 border-t border-slate-100 flex justify-end gap-3 bg-slate-50 flex-shrink-0">
+                    <button type="button" onclick="cerrarModal('modalEditarUsuario')"
+                        class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2.5 text-sm font-bold text-white bg-[#3b4bc9] hover:bg-[#3b4bc9]/90 rounded-lg shadow-lg shadow-[#3b4bc9]/20 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
+                        Actualizar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ConfiguraciÃ³n de visualizaciÃ³n de contraseÃ±a global
+        document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenir submit accidental
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.textContent = 'visibility_off';
+                } else {
+                    input.type = 'password';
+                    icon.textContent = 'visibility';
+                }
+            });
         });
-        
-        // Menú activo// Filtro por campo seleccionable para usuarios
+
+        // Filtro de tabla
         const campoFiltroUsuario = document.getElementById('campoFiltroUsuario');
         const valorFiltroUsuario = document.getElementById('valorFiltroUsuario');
         if (campoFiltroUsuario && valorFiltroUsuario) {
-            valorFiltroUsuario.addEventListener('input', filtrarTablaUsuarios);
-            campoFiltroUsuario.addEventListener('change', filtrarTablaUsuarios);
+            [campoFiltroUsuario, valorFiltroUsuario].forEach(el =>
+                el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', filtrarTablaUsuarios)
+            );
             function filtrarTablaUsuarios() {
-                const col = parseInt(campoFiltroUsuario.value);
-                const searchTerm = valorFiltroUsuario.value.toLowerCase();
-                const rows = document.querySelectorAll('tbody tr');
-                rows.forEach(row => {
-                    const cell = row.querySelectorAll('td')[col];
-                    if (cell) {
-                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    }
+                // Mapeo:
+                // 1: Nombres (col 1)
+                // 2: Apellidos (col 1 - combinados en front)
+                // 3: Documento (col 2)
+                // 4: Correo (col 3)
+                // 5: Rol (col 4)
+                // 6: Estado (col 5)
+                const mapCol = { '1': 1, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5 };
+                const col = mapCol[campoFiltroUsuario.value] || 1;
+                const term = valorFiltroUsuario.value.toLowerCase();
+                document.querySelectorAll('#tbodyUsuarios tr').forEach(row => {
+                    const tds = row.querySelectorAll('td');
+                    if (tds.length < 7) return;
+                    const show = tds[col] && tds[col].textContent.toLowerCase().includes(term);
+                    row.style.display = show ? '' : 'none';
                 });
             }
         }
-    });
+
+        // Funciones Modal
+        function cerrarModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        function abrirModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarSiOverlay(e, id) {
+            if (e.target.id === id) cerrarModal(id);
+        }
+        function abrirModalCrearUsuario() {
+            abrirModal('modalCrearUsuario');
+        }
+        function abrirModalEditarUsuario(btn) {
+            const d = btn.dataset;
+
+            // Avatar y titulos dinamicos
+            const iniciales = (d.nombres.charAt(0) + d.apellidos.charAt(0)).toUpperCase() || 'U';
+            document.getElementById('u_edit_avatar').textContent = iniciales;
+            document.getElementById('u_edit_title').textContent = `Actualice el perfil de ${d.nombres} ${d.apellidos}.`;
+
+            // Asignar endpoint de formulario (POST a editar)
+            document.getElementById('formEditarUsuario').action = `/usuarios/editar/${d.id}`;
+
+            // Llenar campos
+            document.getElementById('u_edit_nombres').value = d.nombres || '';
+            document.getElementById('u_edit_apellidos').value = d.apellidos || '';
+            document.getElementById('u_edit_tipodocumento').value = d.tipodocumento || 'DNI';
+            document.getElementById('u_edit_numerodocumento').value = d.numerodocumento || '';
+            document.getElementById('u_edit_correo').value = d.correo || '';
+            document.getElementById('u_edit_telefono').value = d.telefono || '';
+            document.getElementById('u_edit_direccion').value = d.direccion || '';
+            document.getElementById('u_edit_idrol').value = d.idrol || '';
+            document.getElementById('u_edit_estado').value = d.estado || '1';
+
+            // Reset inputs de clave de ser necesario
+            document.querySelectorAll('#formEditarUsuario input[type="password"]').forEach(i => i.value = '');
+
+            abrirModal('modalEditarUsuario');
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                cerrarModal('modalCrearUsuario');
+                cerrarModal('modalEditarUsuario');
+            }
+        });
+
+        // Confirm form submit para ediciÃ³n de contraseÃ±as
+        const formEditarUsuario = document.getElementById('formEditarUsuario');
+        if (formEditarUsuario) {
+            formEditarUsuario.addEventListener('submit', function (e) {
+                const pwd = this.querySelector('input[name="Clave"]').value;
+                const confirmPwd = this.querySelector('input[name="ConfirmarClave"]').value;
+                if (pwd || confirmPwd) {
+                    if (pwd !== confirmPwd) {
+                        e.preventDefault();
+                        alert("Las nuevas contraseÃ±as no coinciden. Verifique y vuelva a intentarlo.");
+                    }
+                }
+            });
+        }
+
+        // Confirm form submit para crear para validaciÃ³n de contraseÃ±as
+        const formCrearUsuario = document.querySelector('#modalCrearUsuario form');
+        if (formCrearUsuario) {
+            formCrearUsuario.addEventListener('submit', function (e) {
+                const pwd = this.querySelector('input[name="Clave"]').value;
+                const confirmPwd = this.querySelector('input[name="ConfirmarClave"]').value;
+                if (pwd !== confirmPwd) {
+                    e.preventDefault();
+                    alert("Las contraseÃ±as no coinciden. Verifique y vuelva a intentarlo.");
+                }
+            });
+        }
+
     </script>
     <script src="/publico/js/layout.js?v=1772427290149"></script>
 </body>
+
 </html>

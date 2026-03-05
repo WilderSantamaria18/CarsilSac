@@ -1,494 +1,368 @@
+<!-- PAGOS/CREAR.EJS - MODAL FORM - TAILWIND DESIGN -->
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Remuneración - CARSIL Equipos y Servicios SAC</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/publico/css/layout.css?v=<%= Date.now() %>">
-    <link rel="stylesheet" href="/publico/css/form-views.css?v=<%= Date.now() %>">
+    <title>Registrar Pago - CARSIL</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { "primary": "#3b4bc9" },
+                fontFamily: { "display": ["Inter", "sans-serif"] },
+            }},
+        }
+    </script>
     <style>
-        /* Estilos para campos calculados automáticamente */
-        .campo-calculado {
-            position: relative;
-        }
-
-        .campo-calculado::after {
-            content: "🔄";
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            animation: rotation 1s infinite linear;
-            opacity: 0;
-            z-index: 10;
-        }
-
-        .campo-calculado.calculando::after {
-            opacity: 1;
-        }
-
-        .campo-calculado.calculando {
-            background: linear-gradient(90deg, #e3f2fd, #bbdefb, #e3f2fd);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes rotation {
-            from {
-                transform: translateY(-50%) rotate(0deg);
-            }
-
-            to {
-                transform: translateY(-50%) rotate(359deg);
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        .total-highlight {
-            border: 2px solid var(--success, #16a34a) !important;
-            font-weight: 700;
-            font-size: 1.05rem;
-        }
+        body { font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        input[readonly], input.cursor-not-allowed { cursor: not-allowed; }
     </style>
+    <!-- Placeholder tags removed: bootstrap, bootstrap-icons, layout.css, form-views.css -->
 </head>
 
-<body>
-    <div class="wrapper">
-        <%- include("../parciales/sidebar") %>
-            <!-- Main Content -->
-            <div class="main-content" id="main-content">
-                <nav class="navbar navbar-expand-lg navbar-top border-bottom">
-                    <div class="container-fluid">
-                        <h5 class="page-title mb-0">
-                            <i class="bi bi-cash-coin"></i>
-                            Registrar Pago
-                        </h5>
-                        <div class="user-profile ms-auto">
-                            <span>
-                                <%= typeof user !=='undefined' && user && user.Nombres ? user.Nombres : 'Administrador'
-                                    %>
-                            </span>
-                            <div class="user-avatar">
-                                <%= typeof user !=='undefined' && user && user.Nombres ? user.Nombres.charAt(0) : 'A' %>
-                            </div>
-                        </div>
+<body class="bg-white h-screen flex flex-col overflow-hidden text-slate-900 font-display">
+
+<form action="/pagos/crear" method="POST" class="flex flex-col h-full overflow-hidden">
+
+    <!-- Modal Header -->
+    <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center flex-shrink-0 bg-white">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900">Registrar Pago de Remuneración</h2>
+            <p class="text-sm text-slate-500 mt-1">Complete los detalles para procesar el pago del empleado.</p>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-slate-600 transition-colors"
+            onclick="try { window.parent.cerrarModal(); } catch(e) { window.location.href='/pagos/listar'; }">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <% if (error && error.length > 0) { %>
+    <div class="mx-8 mt-4 flex items-center gap-3 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl text-sm flex-shrink-0">
+        <span class="material-symbols-outlined text-rose-500">error</span>
+        <span><%= error %></span>
+    </div>
+    <% } %>
+
+    <!-- Modal Body (scrollable) -->
+    <div class="flex-1 overflow-y-auto p-8 space-y-8">
+
+        <!-- Sección 1: Empleado y Periodo -->
+        <section>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-[#3b4bc9] text-xl">person_search</span>
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Empleado y Periodo</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Seleccionar Empleado</label>
+                    <div class="relative">
+                        <select id="IdEmpleado" name="IdEmpleado" required
+                            class="w-full h-11 pl-10 pr-10 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] appearance-none text-sm outline-none">
+                            <option value="">Seleccione un empleado...</option>
+                            <% if (typeof empleados !== 'undefined' && empleados) { %>
+                            <% empleados.forEach(function(empleado) { %>
+                            <option value="<%= empleado.IdEmpleado %>"
+                                data-sueldo="<%= empleado.SueldoBase %>"
+                                data-horasbase="<%= empleado.HorasBase %>">
+                                <%= empleado.Nombres %> <%= empleado.Apellidos %> - S/ <%= empleado.SueldoBase %>
+                            </option>
+                            <% }); %>
+                            <% } %>
+                        </select>
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">person</span>
+                        <span class="material-symbols-outlined absolute right-3 top-2.5 text-slate-400 pointer-events-none">expand_more</span>
                     </div>
-                </nav>
-
-                <div class="form-container">
-                    <div class="form-card" style="max-width: 960px;">
-                        <div class="form-header-title">
-                            <i class="bi bi-cash-coin"></i> Registrar Pago de Remuneración
-                        </div>
-
-                        <div class="form-body">
-                            <form action="/pagos/crear" method="POST">
-                                <!-- Empleado y Periodo -->
-                                <div class="form-section">
-                                    <h5 class="section-title">
-                                        <i class="bi bi-person"></i> Empleado y Periodo
-                                    </h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="IdEmpleado" class="form-label"><i class="bi bi-person"></i>
-                                                    Empleado</label>
-                                                <select class="form-control-modern form-select-modern" id="IdEmpleado"
-                                                    name="IdEmpleado" required>
-                                                    <option value="">Seleccione un empleado</option>
-                                                    <% if (typeof empleados !=='undefined' && empleados) { %>
-                                                        <% empleados.forEach(empleado=> { %>
-                                                            <option value="<%= empleado.IdEmpleado %>"
-                                                                data-sueldo="<%= empleado.SueldoBase %>"
-                                                                data-horasbase="<%= empleado.HorasBase %>">
-                                                                <%= empleado.Nombres %>
-                                                                    <%= empleado.Apellidos %> - S/ <%=
-                                                                            empleado.SueldoBase %>
-                                                            </option>
-                                                            <% }); %>
-                                                                <% } %>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="Semana" class="form-label"><i
-                                                        class="bi bi-calendar-week"></i> Semana</label>
-                                                <input type="number" class="form-control-modern" id="Semana"
-                                                    name="Semana" min="1" max="53" readonly required>
-                                                <small class="form-text text-muted">Se calcula automáticamente</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="Anio" class="form-label"><i class="bi bi-calendar"></i>
-                                                    Año</label>
-                                                <input type="number" class="form-control-modern" id="Anio" name="Anio"
-                                                    min="2020" max="2030" readonly required>
-                                                <small class="form-text text-muted">Se calcula automáticamente</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Fechas -->
-                                <div class="form-section">
-                                    <h5 class="section-title">
-                                        <i class="bi bi-calendar-range"></i> Fechas del Periodo
-                                    </h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="FechaInicio" class="form-label"><i
-                                                        class="bi bi-calendar-event"></i> Fecha Inicio</label>
-                                                <input type="date" class="form-control-modern" id="FechaInicio"
-                                                    name="FechaInicio" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="FechaFin" class="form-label"><i
-                                                        class="bi bi-calendar-event"></i> Fecha Fin</label>
-                                                <input type="date" class="form-control-modern" id="FechaFin"
-                                                    name="FechaFin" required>
-                                                <small class="form-text text-muted">Se sugiere automáticamente</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="FechaPago" class="form-label">
-                                                    <i class="bi bi-calendar-check"></i> Fecha de Pago
-                                                    <span class="optional-badge">Opcional</span>
-                                                </label>
-                                                <input type="date" class="form-control-modern" id="FechaPago"
-                                                    name="FechaPago">
-                                                <small class="form-text text-muted">Dejar vacío si aún no se ha
-                                                    pagado</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Cálculos -->
-                                <div class="form-section">
-                                    <h5 class="section-title">
-                                        <i class="bi bi-calculator"></i> Cálculo de Remuneración
-                                    </h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="HorasTrabajadas" class="form-label"><i
-                                                        class="bi bi-clock-history"></i> Horas Trabajadas</label>
-                                                <input type="number" step="0.01" class="form-control-modern"
-                                                    id="HorasTrabajadas" name="HorasTrabajadas" required>
-                                                <small class="form-text text-muted"><i class="bi bi-magic me-1"></i>Se
-                                                    calcula automáticamente desde asistencias</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="SueldoSemanal" class="form-label"><i
-                                                        class="bi bi-calculator"></i> Sueldo Calculado</label>
-                                                <input type="number" step="0.01" class="form-control-modern"
-                                                    id="SueldoSemanal" name="SueldoSemanal" readonly required>
-                                                <small class="form-text text-muted">(SueldoBase ÷ HorasBase) × Horas
-                                                    reales</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="Bonificaciones" class="form-label"><i
-                                                        class="bi bi-gift"></i> Bonificaciones</label>
-                                                <input type="number" step="0.01" class="form-control-modern"
-                                                    id="Bonificaciones" name="Bonificaciones" value="0.00">
-                                                <small class="form-text text-muted">Bonos, incentivos, horas
-                                                    extras</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="Descuentos" class="form-label"><i
-                                                        class="bi bi-dash-circle"></i> Descuentos</label>
-                                                <input type="number" step="0.01" class="form-control-modern"
-                                                    id="Descuentos" name="Descuentos" value="0.00">
-                                                <small class="form-text text-muted">Tardanzas, faltas, anticipos</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="TotalPago" class="form-label"><i
-                                                        class="bi bi-cash-stack"></i> Total a Pagar</label>
-                                                <input type="number" step="0.01"
-                                                    class="form-control-modern total-highlight" id="TotalPago"
-                                                    name="TotalPago" readonly required>
-                                                <small class="form-text"
-                                                    style="color: var(--success, #16a34a); font-weight: 600;"><i
-                                                        class="bi bi-calculator me-1"></i>Sueldo + Bonificaciones -
-                                                    Descuentos</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Detalles Adicionales -->
-                                <div class="form-section">
-                                    <h5 class="section-title">
-                                        <i class="bi bi-sliders"></i> Detalles Adicionales
-                                    </h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="MetodoPago" class="form-label"><i
-                                                        class="bi bi-credit-card"></i> Método de Pago</label>
-                                                <select class="form-control-modern form-select-modern" id="MetodoPago"
-                                                    name="MetodoPago">
-                                                    <option value="TRANSFERENCIA">Transferencia Bancaria</option>
-                                                    <option value="EFECTIVO">Efectivo</option>
-                                                    <option value="CHEQUE">Cheque</option>
-                                                    <option value="DEPOSITO">Depósito Bancario</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="Estado" class="form-label"><i class="bi bi-toggle-on"></i>
-                                                    Estado del Pago</label>
-                                                <select class="form-control-modern form-select-modern" id="Estado"
-                                                    name="Estado">
-                                                    <option value="PENDIENTE">Pendiente</option>
-                                                    <option value="PAGADO">Pagado</option>
-                                                    <option value="PARCIAL">Pago Parcial</option>
-                                                    <option value="CANCELADO">Cancelado</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="SueldoBaseInfo" class="form-label"><i
-                                                        class="bi bi-info-circle"></i> Sueldo Base Semanal</label>
-                                                <input type="number" step="0.01" class="form-control-modern"
-                                                    id="SueldoBaseInfo" readonly>
-                                                <small class="form-text text-muted">Sueldo base del empleado
-                                                    seleccionado</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="Comentarios" class="form-label">
-                                                    <i class="bi bi-chat-left-text"></i> Comentarios
-                                                    <span class="optional-badge">Opcional</span>
-                                                </label>
-                                                <textarea class="form-control-modern" id="Comentarios"
-                                                    name="Comentarios" rows="3"
-                                                    placeholder="Observaciones adicionales sobre el pago..."></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-buttons">
-                                    <a href="/pagos/listar" class="btn btn-form btn-form-cancel">
-                                        <i class="bi bi-x-circle me-2"></i> Cancelar
-                                    </a>
-                                    <button type="submit" class="btn btn-form-primary">
-                                        <i class="bi bi-save me-2"></i> Registrar Pago
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Semana (Auto)</label>
+                    <div class="relative">
+                        <input type="number" id="Semana" name="Semana" min="1" max="53" readonly required
+                            placeholder="—"
+                            class="w-full h-11 pl-10 pr-3 rounded-lg border border-slate-100 bg-slate-50 text-slate-500 text-sm outline-none cursor-not-allowed">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">calendar_view_week</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Año (Auto)</label>
+                    <div class="relative">
+                        <input type="number" id="Anio" name="Anio" min="2020" max="2030" readonly required
+                            placeholder="—"
+                            class="w-full h-11 pl-10 pr-3 rounded-lg border border-slate-100 bg-slate-50 text-slate-500 text-sm outline-none cursor-not-allowed">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">event</span>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Sección 2: Fechas del Periodo -->
+        <section>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-[#3b4bc9] text-xl">date_range</span>
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Fechas del Periodo</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Fecha Inicio</label>
+                    <input type="date" id="FechaInicio" name="FechaInicio" required
+                        class="w-full h-11 px-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Fecha Fin</label>
+                    <input type="date" id="FechaFin" name="FechaFin" required
+                        class="w-full h-11 px-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                        Fecha Pago <span class="text-slate-400 font-normal">(Opcional)</span>
+                    </label>
+                    <input type="date" id="FechaPago" name="FechaPago"
+                        class="w-full h-11 px-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none">
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 3: Cálculo de Remuneración -->
+        <section class="bg-[#3b4bc9]/5 p-6 rounded-xl border border-[#3b4bc9]/10">
+            <div class="flex items-center gap-2 mb-5">
+                <span class="material-symbols-outlined text-[#3b4bc9] text-xl">calculate</span>
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-[#3b4bc9]/70">Cálculo de Remuneración</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Horas Trabajadas</label>
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-1">
+                            <input type="number" step="0.01" id="HorasTrabajadas" name="HorasTrabajadas" required
+                                class="w-full h-11 pl-10 pr-3 rounded-lg border border-slate-200 bg-white font-bold text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">schedule</span>
+                        </div>
+                        <span class="text-xs font-medium text-slate-500 bg-slate-200 px-2 py-1 rounded whitespace-nowrap">Basado en asistencia</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Sueldo Calculado</label>
+                    <div class="relative">
+                        <input type="number" step="0.01" id="SueldoSemanal" name="SueldoSemanal" readonly required
+                            class="w-full h-11 pl-10 pr-3 rounded-lg border border-[#3b4bc9]/30 bg-white text-[#3b4bc9] font-bold text-lg outline-none">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#3b4bc9] text-xl pointer-events-none">payments</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">(SueldoBase ÷ HorasBase) × Horas reales</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Bonificaciones</label>
+                    <div class="relative">
+                        <input type="number" step="0.01" id="Bonificaciones" name="Bonificaciones" value="0.00"
+                            class="w-full h-11 pl-10 pr-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-emerald-400 text-xl pointer-events-none">redeem</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1">Bonos, incentivos, horas extras</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Descuentos</label>
+                    <div class="relative">
+                        <input type="number" step="0.01" id="Descuentos" name="Descuentos" value="0.00"
+                            class="w-full h-11 pl-10 pr-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-rose-400 text-xl pointer-events-none">remove_circle</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1">Tardanzas, faltas, anticipos</p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Total a Pagar</label>
+                    <div class="relative">
+                        <input type="number" step="0.01" id="TotalPago" name="TotalPago" readonly required
+                            class="w-full h-12 pl-10 pr-3 rounded-lg border-2 border-emerald-400 bg-emerald-50 text-emerald-700 font-bold text-lg outline-none">
+                        <span class="material-symbols-outlined absolute left-3 top-3 text-emerald-500 text-xl pointer-events-none">savings</span>
+                    </div>
+                    <p class="text-[10px] text-emerald-600 mt-1 font-semibold uppercase tracking-tighter">Sueldo Calculado + Bonificaciones − Descuentos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 4: Detalles Adicionales -->
+        <section>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-[#3b4bc9] text-xl">info</span>
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Detalles Adicionales</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Método de Pago</label>
+                    <div class="relative">
+                        <select id="MetodoPago" name="MetodoPago"
+                            class="w-full h-11 pl-10 pr-10 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] appearance-none text-sm outline-none">
+                            <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="CHEQUE">Cheque</option>
+                            <option value="DEPOSITO">Depósito Bancario</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">account_balance</span>
+                        <span class="material-symbols-outlined absolute right-2 top-2.5 text-slate-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Estado del Pago</label>
+                    <div class="relative">
+                        <select id="Estado" name="Estado"
+                            class="w-full h-11 pl-10 pr-10 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] appearance-none text-sm outline-none">
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="PAGADO">Pagado</option>
+                            <option value="PARCIAL">Pago Parcial</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">pending_actions</span>
+                        <span class="material-symbols-outlined absolute right-2 top-2.5 text-slate-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Sueldo Base Semanal <span class="text-slate-400 font-normal">(Lectura)</span></label>
+                    <div class="relative">
+                        <input type="number" step="0.01" id="SueldoBaseInfo" readonly placeholder="—"
+                            class="w-full h-11 pl-10 pr-3 rounded-lg border border-slate-100 bg-slate-50 text-slate-500 text-sm outline-none cursor-not-allowed">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl pointer-events-none">money_off</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1">Del empleado seleccionado</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                        Comentarios <span class="text-slate-400 font-normal">(Opcional)</span>
+                    </label>
+                    <textarea id="Comentarios" name="Comentarios"
+                        placeholder="Observaciones adicionales sobre el pago..."
+                        class="w-full p-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#3b4bc9]/20 focus:border-[#3b4bc9] text-sm outline-none resize-none h-[88px]"></textarea>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- /body scroll -->
+
+    <!-- Modal Footer -->
+    <div class="px-8 py-5 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50 flex-shrink-0">
+        <button type="button"
+            onclick="try { window.parent.cerrarModal(); } catch(e) { window.location.href='/pagos/listar'; }"
+            class="px-6 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-200 transition-colors">
+            Cancelar
+        </button>
+        <button type="submit"
+            class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-[#3b4bc9] text-white hover:bg-[#3b4bc9]/90 shadow-lg shadow-[#3b4bc9]/25 transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">check_circle</span>
+            Registrar Pago
+        </button>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Campos del formulario
-            const empleadoSelect = document.getElementById('IdEmpleado');
-            const fechaInicio = document.getElementById('FechaInicio');
-            const fechaFin = document.getElementById('FechaFin');
-            const horasTrabajadas = document.getElementById('HorasTrabajadas');
-            const sueldoBaseInfo = document.getElementById('SueldoBaseInfo');
-            const sueldoSemanal = document.getElementById('SueldoSemanal');
-            const bonificaciones = document.getElementById('Bonificaciones');
-            const descuentos = document.getElementById('Descuentos');
-            const totalPago = document.getElementById('TotalPago');
-            const semana = document.getElementById('Semana');
-            const anio = document.getElementById('Anio');
 
-            // Función para obtener el sueldo base del empleado seleccionado
-            function obtenerSueldoBaseEmpleado() {
-                const selectedOption = empleadoSelect.options[empleadoSelect.selectedIndex];
-                if (selectedOption && selectedOption.value) {
-                    const sueldoBase = parseFloat(selectedOption.getAttribute('data-sueldo')) || 0;
-                    sueldoBaseInfo.value = sueldoBase.toFixed(2);
-                    calcularSueldoProporcional();
-                    return sueldoBase;
-                }
-                sueldoBaseInfo.value = '';
-                return 0;
-            }
+</form>
 
-            // Función para calcular semana y año automáticamente
-            function calcularSemanaAnio() {
-                if (!fechaInicio.value) return;
-                const fecha = new Date(fechaInicio.value);
-                const fechaTemp = new Date(fecha);
-                fechaTemp.setHours(0, 0, 0, 0);
-                fechaTemp.setDate(fechaTemp.getDate() + 3 - (fechaTemp.getDay() + 6) % 7);
-                const primerJueves = new Date(fechaTemp.getFullYear(), 0, 4);
-                const numeroSemana = 1 + Math.round(((fechaTemp.getTime() - primerJueves.getTime()) / 86400000 - 3 + (primerJueves.getDay() + 6) % 7) / 7);
-                semana.value = numeroSemana;
-                anio.value = fecha.getFullYear();
-            }
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const empleadoSelect = document.getElementById('IdEmpleado');
+        const fechaInicio    = document.getElementById('FechaInicio');
+        const fechaFin       = document.getElementById('FechaFin');
+        const horasTrabajadas = document.getElementById('HorasTrabajadas');
+        const sueldoBaseInfo  = document.getElementById('SueldoBaseInfo');
+        const sueldoSemanal   = document.getElementById('SueldoSemanal');
+        const bonificaciones  = document.getElementById('Bonificaciones');
+        const descuentos      = document.getElementById('Descuentos');
+        const totalPago       = document.getElementById('TotalPago');
+        const semana          = document.getElementById('Semana');
+        const anio            = document.getElementById('Anio');
 
-            // Función para sugerir fecha de fin
-            function sugerirFechaFin() {
-                if (!fechaInicio.value || fechaFin.value) return;
-                const inicio = new Date(fechaInicio.value);
-                const diaSemanaInicio = inicio.getDay();
-                let diasASumar = 6;
-                if (diaSemanaInicio === 1) diasASumar = 5;
-                else if (diaSemanaInicio === 0) diasASumar = 6;
-                else if (diaSemanaInicio >= 2 && diaSemanaInicio <= 6) {
-                    diasASumar = 6 - diaSemanaInicio;
-                    if (diasASumar === 0) diasASumar = 7;
-                }
-                const fechaFinSugerida = new Date(inicio);
-                fechaFinSugerida.setDate(inicio.getDate() + diasASumar);
-                const año = fechaFinSugerida.getFullYear();
-                const mes = String(fechaFinSugerida.getMonth() + 1).padStart(2, '0');
-                const dia = String(fechaFinSugerida.getDate()).padStart(2, '0');
-                fechaFin.value = `${año}-${mes}-${dia}`;
+        function obtenerSueldoBaseEmpleado() {
+            const opt = empleadoSelect.options[empleadoSelect.selectedIndex];
+            if (opt && opt.value) {
+                const sb = parseFloat(opt.getAttribute('data-sueldo')) || 0;
+                sueldoBaseInfo.value = sb.toFixed(2);
+                calcularSueldoProporcional();
+                return sb;
             }
+            sueldoBaseInfo.value = '';
+            return 0;
+        }
 
-            // Función para calcular el sueldo proporcional
-            function calcularSueldoProporcional() {
-                const opcionSeleccionada = empleadoSelect.options[empleadoSelect.selectedIndex];
-                const sueldoBase = parseFloat(opcionSeleccionada.getAttribute('data-sueldo')) || 0;
-                const horasBase = parseFloat(opcionSeleccionada.getAttribute('data-horasbase')) || 43;
-                const horasReales = parseFloat(horasTrabajadas.value) || 0;
-                if (sueldoBase > 0 && horasReales > 0 && horasBase > 0) {
-                    const valorPorHora = sueldoBase / horasBase;
-                    let sueldoCalculado = valorPorHora * horasReales;
-                    if (sueldoCalculado > sueldoBase) sueldoCalculado = sueldoBase;
-                    sueldoSemanal.value = sueldoCalculado.toFixed(2);
-                    calcularTotal();
-                } else {
-                    sueldoSemanal.value = '0.00';
-                }
-            }
+        function calcularSemanaAnio() {
+            if (!fechaInicio.value) return;
+            const fecha = new Date(fechaInicio.value);
+            const ft = new Date(fecha);
+            ft.setHours(0,0,0,0);
+            ft.setDate(ft.getDate() + 3 - (ft.getDay() + 6) % 7);
+            const pj = new Date(ft.getFullYear(), 0, 4);
+            const ns = 1 + Math.round(((ft.getTime() - pj.getTime()) / 86400000 - 3 + (pj.getDay() + 6) % 7) / 7);
+            semana.value = ns;
+            anio.value = fecha.getFullYear();
+        }
 
-            // Función para calcular el total a pagar
-            function calcularTotal() {
-                const sueldo = parseFloat(sueldoSemanal.value) || 0;
-                const bonos = parseFloat(bonificaciones.value) || 0;
-                const descuentosAplicados = parseFloat(descuentos.value) || 0;
-                const total = sueldo + bonos - descuentosAplicados;
-                totalPago.value = total.toFixed(2);
-            }
+        function sugerirFechaFin() {
+            if (!fechaInicio.value || fechaFin.value) return;
+            const inicio = new Date(fechaInicio.value);
+            const d = inicio.getDay();
+            let add = 6;
+            if (d === 1) add = 5;
+            else if (d >= 2 && d <= 6) { add = 6 - d; if (add === 0) add = 7; }
+            const fin = new Date(inicio);
+            fin.setDate(inicio.getDate() + add);
+            fechaFin.value = fin.getFullYear() + '-' + String(fin.getMonth()+1).padStart(2,'0') + '-' + String(fin.getDate()).padStart(2,'0');
+        }
 
-            // Función para obtener horas trabajadas desde las asistencias
-            async function obtenerHorasDesdeAsistencias() {
-                const idEmpleado = empleadoSelect.value;
-                const fechaInicioVal = fechaInicio.value;
-                const fechaFinVal = fechaFin.value;
-                if (!idEmpleado || !fechaInicioVal || !fechaFinVal) {
-                    horasTrabajadas.value = '0.00';
-                    horasTrabajadas.title = 'Seleccione empleado y fechas para calcular.';
-                    calcularSueldoProporcional();
-                    return;
-                }
-                const horasContainer = horasTrabajadas.closest('.form-group') || horasTrabajadas.closest('.col-md-6');
-                if (horasContainer) horasContainer.querySelectorAll('.alert').forEach(a => a.remove());
-                try {
-                    horasTrabajadas.parentElement.classList.add('campo-calculado', 'calculando');
-                    horasTrabajadas.value = 'Calculando...';
-                    const response = await fetch(`/pagos/calcular-horas?idEmpleado=${idEmpleado}&fechaInicio=${fechaInicioVal}&fechaFin=${fechaFinVal}`);
-                    const data = await response.json();
-                    if (!response.ok) throw new Error(data.message || 'Error de conexión con el servidor.');
-                    if (data.success) {
-                        horasTrabajadas.value = data.horasTrabajadas;
-                        if (data.desglose && data.desglose.length > 0) {
-                            let tooltipText = 'Desglose de asistencias:\n';
-                            data.desglose.forEach(asist => {
-                                const fechaAsistencia = new Date(asist.Fecha).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                                tooltipText += `${fechaAsistencia}: ${asist.HorasTrabajadas}h (${asist.JornadaLaboral})\n`;
-                            });
-                            horasTrabajadas.title = tooltipText.trim();
-                        } else {
-                            horasTrabajadas.title = 'No se encontraron asistencias para este período.';
-                        }
-                    } else {
-                        horasTrabajadas.value = '0.00';
-                        horasTrabajadas.title = data.message || 'No se pudo calcular.';
-                    }
-                } catch (error) {
-                    console.error('Error al calcular horas:', error);
-                    horasTrabajadas.value = '0.00';
-                    horasTrabajadas.title = 'Error al calcular. Puede ingresarlo manualmente.';
-                } finally {
-                    horasTrabajadas.parentElement.classList.remove('campo-calculado', 'calculando');
-                    calcularSueldoProporcional();
-                }
-            }
-
-            // Función para validar y formatear valores numéricos
-            function validarYFormatearNumero(input) {
-                let valor = parseFloat(input.value) || 0;
-                if (valor < 0) valor = 0;
-                input.value = valor.toFixed(2);
-                calcularTotal();
-            }
-
-            // Eventos
-            if (empleadoSelect) empleadoSelect.addEventListener('change', function () {
-                obtenerSueldoBaseEmpleado();
-                obtenerHorasDesdeAsistencias();
-            });
-            if (fechaInicio) fechaInicio.addEventListener('change', function () {
-                calcularSemanaAnio();
-                sugerirFechaFin();
-                obtenerHorasDesdeAsistencias();
-            });
-            if (fechaFin) fechaFin.addEventListener('change', obtenerHorasDesdeAsistencias);
-            if (horasTrabajadas) {
-                horasTrabajadas.addEventListener('input', function () {
-                    calcularSueldoProporcional();
-                    this.title = 'Editado manualmente';
-                });
-                horasTrabajadas.addEventListener('blur', function () {
-                    let valor = parseFloat(this.value) || 0;
-                    if (valor < 0) valor = 0;
-                    this.value = valor.toFixed(2);
-                    calcularSueldoProporcional();
-                });
-            }
-            if (bonificaciones) {
-                bonificaciones.addEventListener('input', calcularTotal);
-                bonificaciones.addEventListener('blur', function () { validarYFormatearNumero(this); });
-            }
-            if (descuentos) {
-                descuentos.addEventListener('input', calcularTotal);
-                descuentos.addEventListener('blur', function () { validarYFormatearNumero(this); });
+        function calcularSueldoProporcional() {
+            const opt = empleadoSelect.options[empleadoSelect.selectedIndex];
+            const sb  = parseFloat(opt ? opt.getAttribute('data-sueldo') : 0) || 0;
+            const hb  = parseFloat(opt ? opt.getAttribute('data-horasbase') : 43) || 43;
+            const hr  = parseFloat(horasTrabajadas.value) || 0;
+            if (sb > 0 && hr > 0 && hb > 0) {
+                let sc = (sb / hb) * hr;
+                if (sc > sb) sc = sb;
+                sueldoSemanal.value = sc.toFixed(2);
+            } else {
+                sueldoSemanal.value = '0.00';
             }
             calcularTotal();
-        });
-    </script>
-    <script src="/publico/js/layout.js?v=<%= Date.now() %>"></script>
-</body>
+        }
 
+        function calcularTotal() {
+            const s = parseFloat(sueldoSemanal.value) || 0;
+            const b = parseFloat(bonificaciones.value) || 0;
+            const d = parseFloat(descuentos.value) || 0;
+            totalPago.value = (s + b - d).toFixed(2);
+        }
+
+        async function obtenerHorasDesdeAsistencias() {
+            const id = empleadoSelect.value;
+            const fi = fechaInicio.value;
+            const ff = fechaFin.value;
+            if (!id || !fi || !ff) { horasTrabajadas.value = '0.00'; calcularSueldoProporcional(); return; }
+            try {
+                horasTrabajadas.value = 'Calculando...';
+                const resp = await fetch(`/pagos/calcular-horas?idEmpleado=${id}&fechaInicio=${fi}&fechaFin=${ff}`);
+                const data = await resp.json();
+                horasTrabajadas.value = (resp.ok && data.success) ? (data.horasTrabajadas || '0.00') : '0.00';
+            } catch (e) {
+                console.error(e);
+                horasTrabajadas.value = '0.00';
+            } finally {
+                calcularSueldoProporcional();
+            }
+        }
+
+        function validarNum(inp) {
+            let v = parseFloat(inp.value) || 0;
+            if (v < 0) v = 0;
+            inp.value = v.toFixed(2);
+            calcularTotal();
+        }
+
+        empleadoSelect.addEventListener('change', function() { obtenerSueldoBaseEmpleado(); obtenerHorasDesdeAsistencias(); });
+        fechaInicio.addEventListener('change', function() { calcularSemanaAnio(); sugerirFechaFin(); obtenerHorasDesdeAsistencias(); });
+        fechaFin.addEventListener('change', obtenerHorasDesdeAsistencias);
+        horasTrabajadas.addEventListener('input', calcularSueldoProporcional);
+        horasTrabajadas.addEventListener('blur', function() { let v = parseFloat(this.value)||0; if(v<0)v=0; this.value=v.toFixed(2); calcularSueldoProporcional(); });
+        bonificaciones.addEventListener('input', calcularTotal);
+        bonificaciones.addEventListener('blur', function() { validarNum(this); });
+        descuentos.addEventListener('input', calcularTotal);
+        descuentos.addEventListener('blur', function() { validarNum(this); });
+        calcularTotal();
+    });
+</script>
+</body>
 </html>
