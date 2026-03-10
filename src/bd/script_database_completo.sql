@@ -386,17 +386,18 @@ INSERT INTO PERMISO (IdRol, NombreMenu) VALUES
 -- -----------------------------------------------
 -- 2.3 USUARIO (10 registros)
 -- -----------------------------------------------
+-- Contraseña por defecto: carsil2024 (hash bcrypt valido de 60 caracteres)
 INSERT INTO USUARIO (Nombres, Apellidos, TipoDocumento, NumeroDocumento, Correo, Clave, IdRol, Estado, Telefono, Direccion) VALUES
-('Juan Carlos', 'Perez Lopez', 'DNI', '12345678', 'juan@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 1, 1, '987654321', 'Av. Principal 123, Lima'),
-('Maria Elena', 'Garcia Torres', 'DNI', '87654321', 'maria@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 2, 1, '987654322', 'Jr. Los Olivos 456, Lima'),
-('Pedro Antonio', 'Rodriguez Silva', 'DNI', '11223344', 'pedro@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 2, 1, '987654323', 'Calle Las Flores 789, Lima'),
-('Ana Lucia', 'Martinez Rios', 'DNI', '22334455', 'ana@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 3, 1, '987654324', 'Av. Arequipa 321, Lima'),
-('Carlos Alberto', 'Ramirez Vega', 'DNI', '33445566', 'carlos@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 4, 1, '987654325', 'Jr. Cusco 654, Lima'),
-('Rosa Maria', 'Flores Huaman', 'DNI', '44556677', 'rosa@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 5, 1, '987654326', 'Calle Ayacucho 987, Lima'),
-('Luis Fernando', 'Torres Mendoza', 'DNI', '55667788', 'luis@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 6, 1, '987654327', 'Av. Brasil 111, Lima'),
-('Carmen Sofia', 'Lopez Castillo', 'DNI', '66778899', 'carmen@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 7, 1, '987654328', 'Jr. Puno 222, Lima'),
-('Jorge Luis', 'Diaz Quispe', 'DNI', '77889900', 'jorge@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 8, 1, '987654329', 'Calle Tacna 333, Lima'),
-('Sandra Patricia', 'Vargas Rojas', 'DNI', '88990011', 'sandra@carsil.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWX', 9, 1, '987654330', 'Av. Colonial 444, Lima');
+('Juan Carlos', 'Perez Lopez', 'DNI', '12345678', 'juan@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 1, 1, '987654321', 'Av. Principal 123, Lima'),
+('Maria Elena', 'Garcia Torres', 'DNI', '87654321', 'maria@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 2, 1, '987654322', 'Jr. Los Olivos 456, Lima'),
+('Pedro Antonio', 'Rodriguez Silva', 'DNI', '11223344', 'pedro@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 2, 1, '987654323', 'Calle Las Flores 789, Lima'),
+('Ana Lucia', 'Martinez Rios', 'DNI', '22334455', 'ana@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 3, 1, '987654324', 'Av. Arequipa 321, Lima'),
+('Carlos Alberto', 'Ramirez Vega', 'DNI', '33445566', 'carlos@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 3, 1, '987654325', 'Jr. Cusco 654, Lima'),
+('Rosa Maria', 'Flores Huaman', 'DNI', '44556677', 'rosa@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 2, 1, '987654326', 'Calle Ayacucho 987, Lima'),
+('Luis Fernando', 'Torres Mendoza', 'DNI', '55667788', 'luis@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 1, 1, '987654327', 'Av. Brasil 111, Lima'),
+('Carmen Sofia', 'Lopez Castillo', 'DNI', '66778899', 'carmen@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 2, 1, '987654328', 'Jr. Puno 222, Lima'),
+('Jorge Luis', 'Diaz Quispe', 'DNI', '77889900', 'jorge@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 3, 1, '987654329', 'Calle Tacna 333, Lima'),
+('Sandra Patricia', 'Vargas Rojas', 'DNI', '88990011', 'sandra@carsil.com', '$2b$10$qb/OBcDiKog7VNClJFXdbukdiQqFiJbXkzMKHUxcvgQihE7zVuLdS', 1, 1, '987654330', 'Av. Colonial 444, Lima');
 
 -- -----------------------------------------------
 -- 2.4 EMPRESA (10 registros)
