@@ -1,4 +1,5 @@
 jest.mock('../../src/modelos/Usuario');
+jest.mock('../../src/middleware/auditoria', () => ({ log: jest.fn().mockResolvedValue(undefined) }));
 
 const Usuario = require('../../src/modelos/Usuario');
 const {
@@ -46,15 +47,13 @@ describe('crearUsuario', () => {
         expect(res.redirect).toHaveBeenCalledWith('/usuarios');
     });
 
-    test('renderiza el formulario con error si falla la creación', async () => {
+    test('redirige con error si falla la creación', async () => {
         Usuario.crear.mockRejectedValue(new Error('Correo ya existe'));
-        Usuario.obtenerRoles.mockResolvedValue([{ IdRol: 1, Descripcion: 'Admin' }]);
         req.body = { Nombres: 'Juan', Correo: 'juan@mail.com' };
 
         await crearUsuario(req, res);
-        expect(res.render).toHaveBeenCalledWith('usuarios/crear', expect.objectContaining({
-            error: 'Correo ya existe'
-        }));
+        expect(req.flash).toHaveBeenCalledWith('error', 'Correo ya existe');
+        expect(res.redirect).toHaveBeenCalledWith('/usuarios');
     });
 });
 
@@ -82,26 +81,20 @@ describe('actualizarUsuario', () => {
         expect(Usuario.actualizar).toHaveBeenCalledWith('5', expect.objectContaining({ Clave: 'nueva123' }));
     });
 
-    test('renderiza error si las contraseñas no coinciden', async () => {
-        Usuario.obtenerPorId.mockResolvedValue({ IdUsuario: 5 });
-        Usuario.obtenerRoles.mockResolvedValue([]);
+    test('redirige con error si las contraseñas no coinciden', async () => {
         req.body = { Nombres: 'Editado', Clave: 'abc123', ConfirmarClave: 'xyz789' };
 
         await actualizarUsuario(req, res);
-        expect(res.render).toHaveBeenCalledWith('usuarios/editar', expect.objectContaining({
-            error: 'Las contraseñas no coinciden'
-        }));
+        expect(req.flash).toHaveBeenCalledWith('error', 'Las contrasenas no coinciden');
+        expect(res.redirect).toHaveBeenCalledWith('/usuarios');
     });
 
-    test('renderiza error si la contraseña es muy corta', async () => {
-        Usuario.obtenerPorId.mockResolvedValue({ IdUsuario: 5 });
-        Usuario.obtenerRoles.mockResolvedValue([]);
+    test('redirige con error si la contraseña es muy corta', async () => {
         req.body = { Nombres: 'Editado', Clave: '123', ConfirmarClave: '123' };
 
         await actualizarUsuario(req, res);
-        expect(res.render).toHaveBeenCalledWith('usuarios/editar', expect.objectContaining({
-            error: expect.stringContaining('6 caracteres')
-        }));
+        expect(req.flash).toHaveBeenCalledWith('error', expect.stringContaining('6 caracteres'));
+        expect(res.redirect).toHaveBeenCalledWith('/usuarios');
     });
 });
 

@@ -106,14 +106,14 @@ describe('Usuario.obtenerPorId()', () => {
 // Usuario.eliminar()
 // ─────────────────────────────────────────────
 describe('Usuario.eliminar()', () => {
-    test('ejecuta DELETE y retorna true', async () => {
+    test('hace soft-delete (Estado=0) y retorna true', async () => {
         conexion.query.mockResolvedValue([{ affectedRows: 1 }]);
 
         const resultado = await Usuario.eliminar(5);
 
         expect(resultado).toBe(true);
         expect(conexion.query).toHaveBeenCalledWith(
-            'DELETE FROM USUARIO WHERE IdUsuario = ?',
+            'UPDATE USUARIO SET Estado = 0 WHERE IdUsuario = ?',
             [5]
         );
     });

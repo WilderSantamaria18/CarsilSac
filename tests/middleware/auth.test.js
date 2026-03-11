@@ -8,7 +8,7 @@ describe('verificarAutenticacion', () => {
 
     beforeEach(() => {
         req = { session: {}, path: '/clientes', flash: jest.fn() };
-        res = { redirect: jest.fn() };
+        res = { redirect: jest.fn(), set: jest.fn() };
         next = jest.fn();
     });
 

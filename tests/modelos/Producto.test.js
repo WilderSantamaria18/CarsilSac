@@ -22,7 +22,7 @@ describe('Producto.listar()', () => {
 
         expect(resultado).toEqual(productosMock);
         expect(conexion.query).toHaveBeenCalledWith(
-            'SELECT * FROM PRODUCTO WHERE Estado = 1',
+            'SELECT * FROM PRODUCTO ORDER BY Codigo',
             []
         );
     });

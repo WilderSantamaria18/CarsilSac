@@ -1,4 +1,5 @@
 jest.mock('../../src/modelos/Usuario');
+jest.mock('../../src/middleware/auditoria', () => ({ log: jest.fn().mockResolvedValue(undefined) }));
 
 const Usuario = require('../../src/modelos/Usuario');
 const { mostrarLogin, procesarLogin, cerrarSesion } = require('../../src/controladores/loginController');
@@ -89,7 +90,7 @@ describe('procesarLogin', () => {
         await procesarLogin(req, res);
 
         expect(res.render).toHaveBeenCalledWith('login/login', {
-            error: 'Correo o contraseña incorrectos.'
+            error: 'Correo o contrasena incorrectos.'
         });
     });
 
@@ -127,9 +128,10 @@ describe('procesarLogin', () => {
 // cerrarSesion
 // ─────────────────────────────────────────────
 describe('cerrarSesion', () => {
-    test('destruye la sesión y redirige a /login', () => {
+    test('destruye la sesión y redirige a /login', async () => {
         const req = {
             session: {
+                usuario: null,
                 destroy: jest.fn((cb) => cb(null))
             }
         };
@@ -138,16 +140,17 @@ describe('cerrarSesion', () => {
             redirect: jest.fn()
         };
 
-        cerrarSesion(req, res);
+        await cerrarSesion(req, res);
 
         expect(req.session.destroy).toHaveBeenCalled();
         expect(res.clearCookie).toHaveBeenCalledWith('connect.sid');
         expect(res.redirect).toHaveBeenCalledWith('/login');
     });
 
-    test('redirige a /login aunque falle la destrucción de sesión', () => {
+    test('redirige a /login aunque falle la destrucción de sesión', async () => {
         const req = {
             session: {
+                usuario: null,
                 destroy: jest.fn((cb) => cb(new Error('destroy error')))
             }
         };
@@ -156,7 +159,7 @@ describe('cerrarSesion', () => {
             redirect: jest.fn()
         };
 
-        cerrarSesion(req, res);
+        await cerrarSesion(req, res);
 
         expect(res.redirect).toHaveBeenCalledWith('/login');
     });

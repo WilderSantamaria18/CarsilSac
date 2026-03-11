@@ -24,7 +24,7 @@ describe('Cliente.listar()', () => {
 
         expect(resultado).toEqual(clientesFalsos);
         expect(conexion.query).toHaveBeenCalledWith(
-            'SELECT * FROM CLIENTE WHERE Estado = 1',
+            'SELECT * FROM CLIENTE ORDER BY RazonSocial',
             []
         );
     });
