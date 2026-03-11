@@ -4,9 +4,13 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "jest --coverage"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
     "collectCoverageFrom": [
       "src/**/*.js",
       "tests/**/*.js"
