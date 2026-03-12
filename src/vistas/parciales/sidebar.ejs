@@ -37,10 +37,9 @@
                             <% } %>
 
                                 <% if (user && tienePermiso(user, 'productos' )) { %>
-                                    <a href="/productos" class="sidebar-item" data-page="productos" style="position:relative;">
+                                    <a href="/productos" class="sidebar-item" data-page="productos">
                                         <i class="bi bi-box"></i>
                                         <span>Productos</span>
-                                        <span id="stockAlertBadge" style="display:none;position:absolute;top:4px;right:6px;min-width:18px;height:18px;background:#f59e0b;color:#fff;font-size:0.55rem;font-weight:700;border-radius:9px;line-height:18px;text-align:center;padding:0 4px;"></span>
                                     </a>
                                     <% } %>
 
@@ -302,20 +301,6 @@
         // Iniciar el timer al cargar la página, no al abrir el modal
         document.addEventListener('DOMContentLoaded', function () {
             startTimer();
-
-            // Cargar badge de alertas de stock
-            const stockBadge = document.getElementById('stockAlertBadge');
-            if (stockBadge) {
-                fetch('/productos/api/alertas-count')
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success && data.count > 0) {
-                            stockBadge.textContent = data.count > 99 ? '99+' : data.count;
-                            stockBadge.style.display = 'inline-block';
-                        }
-                    })
-                    .catch(() => {});
-            }
         });
     </script>
     <% } %>
