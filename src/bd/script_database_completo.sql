@@ -315,24 +315,21 @@ CREATE INDEX idx_empleado_estado ON EMPLEADO(Estado);
 
 
 
---tabla para auditoria
-
+-- Tabla para auditoría de operaciones del sistema
 CREATE TABLE IF NOT EXISTS AUDITORIA (
-    IdAuditoria  INT           PRIMARY KEY AUTO_INCREMENT,
-    IdUsuario    INT           NULL,
+    IdAuditoria INT PRIMARY KEY AUTO_INCREMENT,
+    IdUsuario INT NULL,
     NombreUsuario VARCHAR(120) NOT NULL DEFAULT 'Sistema',
-    Modulo       VARCHAR(50)  NOT NULL,
-    Accion       VARCHAR(30)  NOT NULL,   -- CREAR | ACTUALIZAR | ELIMINAR | LOGIN | LOGOUT | ERROR
-    Descripcion  TEXT         NULL,
-    IP           VARCHAR(50)  NULL,
-    FechaHora    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (IdUsuario) REFERENCES USUARIO(IdUsuario) ON DELETE SET NULL
+    Modulo VARCHAR(50) NOT NULL,
+    Accion VARCHAR(30) NOT NULL COMMENT 'CREAR | ACTUALIZAR | ELIMINAR | LOGIN | LOGOUT | ERROR',
+    Descripcion TEXT NULL,
+    IP VARCHAR(50) NULL,
+    FechaHora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdUsuario) REFERENCES USUARIO(IdUsuario) ON DELETE SET NULL,
+    INDEX idx_auditoria_fecha (FechaHora),
+    INDEX idx_auditoria_modulo (Modulo),
+    INDEX idx_auditoria_usuario (IdUsuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Indices para acelerar consultas del dashboard y reportes
-ALTER TABLE AUDITORIA ADD INDEX idx_auditoria_fecha   (FechaHora);
-ALTER TABLE AUDITORIA ADD INDEX idx_auditoria_modulo  (Modulo);
-ALTER TABLE AUDITORIA ADD INDEX idx_auditoria_usuario (IdUsuario);
 
 
 -- =============================================
@@ -580,17 +577,18 @@ INSERT INTO notificaciones (Tipo, Modulo, Mensaje, Detalle, Usuario, Leida) VALU
 ('ACTUALIZAR', 'empleados', 'Se actualizó información de empleado', 'Empleado: Pedro Antonio Rodriguez Silva - Cambio de área', 'Ana Lucia Martinez Rios', 0);
 
 
---Insertar registros para auditoría (10 registros)
-insert into auditoria (Usuario, Accion, Tabla, Detalle) values
-('Juan Carlos Perez Lopez', 'INSERT', 'CLIENTE', 'Se registró el cliente Constructora Los Andes S.A.C.'),
-('Juan Carlos Perez Lopez', 'INSERT', 'PROFORMA', 'Se creó la proforma PRO-2025-001 por S/ 2,419.00'),
-('Juan Carlos Perez Lopez', 'UPDATE', 'PROFORMA', 'Proforma PRO-2025-001 cambió a APROBADA'),
-('Juan Carlos Perez Lopez', 'INSERT', 'FACTURA', 'Se generó la factura FAC-2025-001 por S/ 2,419.00'),
-('Juan Carlos Perez Lopez', 'INSERT', 'PRODUCTO', 'Se registró el producto Bomba Sumergible 1HP'),
-('Juan Carlos Perez Lopez', 'UPDATE', 'FACTURA', 'Factura FAC-2025-001 cambió a PAGADA'),
-('Juan Carlos Perez Lopez', 'INSERT', 'EMPLEADO', 'Se registró el empleado Maria Elena Garcia Torres'),
-('Ana Lucia Martinez Rios', 'DELETE', 'CLIENTE', 'Se desactivó el cliente Universidad Nacional de Ingenieria'),
-('Ana Lucia Martinez Rios', 'UPDATE', 'EMPLEADO', 'Empleado Pedro Antonio Rodriguez Silva - Cambio de área');
+-- Insertar registros para auditoría (10 registros)
+INSERT INTO AUDITORIA (IdUsuario, NombreUsuario, Modulo, Accion, Descripcion, IP) VALUES
+(1, 'Juan Carlos Perez Lopez', 'CLIENTE', 'CREAR', 'Se registró el cliente Constructora Los Andes S.A.C.', '192.168.1.100'),
+(1, 'Juan Carlos Perez Lopez', 'PROFORMA', 'CREAR', 'Se creó la proforma PRO-2025-001 por S/ 2,419.00', '192.168.1.100'),
+(1, 'Juan Carlos Perez Lopez', 'PROFORMA', 'ACTUALIZAR', 'Proforma PRO-2025-001 cambió a APROBADA', '192.168.1.100'),
+(1, 'Juan Carlos Perez Lopez', 'FACTURA', 'CREAR', 'Se generó la factura FAC-2025-001 por S/ 2,419.00', '192.168.1.100'),
+(1, 'Juan Carlos Perez Lopez', 'PRODUCTO', 'CREAR', 'Se registró el producto Bomba Sumergible 1HP', '192.168.1.100'),
+(1, 'Juan Carlos Perez Lopez', 'FACTURA', 'ACTUALIZAR', 'Factura FAC-2025-001 cambió a PAGADA', '192.168.1.100'),
+(1, 'Juan Carlos Perez Lopez', 'EMPLEADO', 'CREAR', 'Se registró el empleado Maria Elena Garcia Torres', '192.168.1.100'),
+(4, 'Ana Lucia Martinez Rios', 'CLIENTE', 'ELIMINAR', 'Se desactivó el cliente Universidad Nacional de Ingenieria', '192.168.1.101'),
+(4, 'Ana Lucia Martinez Rios', 'EMPLEADO', 'ACTUALIZAR', 'Empleado Pedro Antonio Rodriguez Silva - Cambio de área', '192.168.1.101'),
+(1, 'Juan Carlos Perez Lopez', 'SISTEMA', 'LOGIN', 'Usuario Juan Carlos Perez Lopez inició sesión', '192.168.1.100');
 
 
 
@@ -887,5 +885,5 @@ UNION ALL SELECT 'VENTA', COUNT(*) FROM VENTA
 UNION ALL SELECT 'EMPLEADO', COUNT(*) FROM EMPLEADO
 UNION ALL SELECT 'ASISTENCIA', COUNT(*) FROM ASISTENCIA
 UNION ALL SELECT 'PAGO', COUNT(*) FROM PAGO
-UNION ALL SELECT 'notificaciones', COUNT(*) FROM notificaciones;
+UNION ALL SELECT 'notificaciones', COUNT(*) FROM notificaciones
 UNION ALL SELECT 'auditoria', COUNT(*) FROM auditoria;
