@@ -67,12 +67,14 @@
                                                             </a>
                                                             <% } %>
 
-                                                                <div class="sidebar-section-label">
-                                                                    ADMINISTRACION</div>
-
-                                                                <% if (user && tienePermiso(user, 'reportes' )) { %>
-                                                                    <a href="/reportes" class="sidebar-item"
-                                                                        data-page="reportes">
+                                            <!-- Opción para que empleados marquen asistencia -->
+                                            <% if (user && user.IdRol === 2) { %>
+                                                <a href="/asistencia/marcar" class="sidebar-item"
+                                                    data-page="marcado-asistencia">
+                                                    <i class="bi bi-clock-history"></i>
+                                                    <span>Marcar Asistencia</span>
+                                                </a>
+                                            <% } %>
                                                                         <i class="bi bi-bar-chart-line"></i>
                                                                         <span>Reportes</span>
                                                                     </a>

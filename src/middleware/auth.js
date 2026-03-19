@@ -79,7 +79,7 @@ exports.tienePermiso = (usuario, modulo) => {
             pagos: false,
             reportes: false,
             usuarios: false,
-            asistencias: false,  // No acceso a gestión de asistencias
+            asistencias: true,  // ✅ Acceso a asistencias (solo marcar la propia)
             empresa: false,
             auditoria: false
         },

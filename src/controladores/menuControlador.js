@@ -7,6 +7,11 @@ const pool = require('../bd/conexion');
 
 exports.mostrarMenu = async (req, res) => {
     try {
+        // Si es empleado, redirigir directamente a marcar asistencia
+        if (req.session.usuario && req.session.usuario.IdRol === 2) {
+            return res.redirect('/asistencia/marcar');
+        }
+
         const periodo = req.query.periodo || 'todo';
         let filterWhere = '';
         if (periodo === 'mes') {

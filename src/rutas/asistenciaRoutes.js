@@ -3,12 +3,22 @@ const router = express.Router();
 const asistenciaController = require('../controladores/asistenciaController');
 const { verificarAutenticacion, verificarRol } = require('../middleware/auth');
 
-// Rutas de marcado para TODOS los empleados (deben ir ANTES de las rutas con middleware de rol)
+// ✅ RUTA PRIORITARIA: Empleados pueden SIEMPRE marcar asistencia
 router.get('/asistencia/marcar', verificarAutenticacion, asistenciaController.mostrarMarcado);
 router.post('/asistencia/marcar-entrada', verificarAutenticacion, asistenciaController.marcarEntrada);
 router.post('/asistencia/marcar-salida', verificarAutenticacion, asistenciaController.marcarSalida);
 
-// Aplicar verificación de rol SOLO para gestión administrativa
+// Middleware para empleados: si intenta ir a /asistencia, redirigir a /asistencia/marcar
+router.use((req, res, next) => {
+    if (req.session?.usuario?.IdRol === 2) {
+        // Empleado intenta acceder a otras rutas de asistencia - redirigir
+        if (req.path === '/asistencia' || req.path === '/asistencia/') {
+            return res.redirect('/asistencia/marcar');
+        }
+    }
+    next();
+});
+
 // Rutas de GESTIÓN de asistencia - Solo Administrador (1) y Supervisor (3)
 router.get('/asistencia/resumen-semanal', verificarAutenticacion, verificarRol(1, 3), asistenciaController.getResumenSemanal);
 router.get('/asistencia/create', verificarAutenticacion, verificarRol(1, 3), asistenciaController.createForm);

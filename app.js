@@ -100,13 +100,19 @@ app.use((req, res, next) => {
 
     const usuario = req.session.usuario;
 
-    // Permitir siempre el marcado de asistencia para todos los roles
-    if (req.path === '/asistencia/marcar' || req.path.startsWith('/asistencia/marcar/')) {
+    // ✅ EXCEPCIONES: Permitir acceso sin restricción de permisos
+    // Empleados pueden SIEMPRE marcar su propia asistencia
+    if (req.path === '/asistencia/marcar' || 
+        req.path === '/asistencia/marcar-entrada' || 
+        req.path === '/asistencia/marcar-salida' ||
+        req.path.startsWith('/asistencia/marcar/')) {
+        console.log(`✅ [PERMISO] Empleado ${usuario.IdUsuario} accede a: ${req.path}`);
         return next();
     }
 
     // Empleados (rol 2) solo pueden acceder a /asistencia/marcar
     if (usuario.IdRol === 2) {
+        console.log(`❌ [PERMISO] Empleado ${usuario.IdUsuario} bloqueado en: ${req.path}`);
         req.flash('error', 'No tiene permisos para acceder a esta sección');
         return res.redirect('/asistencia/marcar');
     }
@@ -133,6 +139,7 @@ app.use((req, res, next) => {
     if (moduloPath) {
         const modulo = pathModuleMap[moduloPath];
         if (!tienePermiso(usuario, modulo)) {
+            console.log(`❌ [PERMISO] Usuario ${usuario.IdUsuario} (Rol ${usuario.IdRol}) no tiene permiso para: ${modulo}`);
             req.flash('error', 'No tiene permisos para acceder a esta sección');
             return res.redirect('/menu/principal');
         }

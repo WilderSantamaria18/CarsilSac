@@ -565,63 +565,7 @@
                         </div>
                     </div>
 
-                    <!-- Cuentas por Cobrar Section -->
-                    <div style="margin-top: 24px;">
-                        <div class="rp-chart-card" style="padding: 24px;">
-                            <div class="rp-chart-header" style="margin-bottom: 20px;">
-                                <div>
-                                    <div class="rp-chart-title" style="display:flex;align-items:center;gap:8px;">
-                                        <i class="bi bi-cash-coin" style="color: var(--primary); font-size:1.1rem;"></i>
-                                        Cuentas por Cobrar
-                                    </div>
-                                    <div class="rp-chart-subtitle">Facturas pendientes y vencidas por cliente</div>
-                                </div>
-                            </div>
-
-                            <!-- KPI mini cards -->
-                            <div id="cxcKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
-                                <div style="background:var(--bg-main,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:10px;padding:14px 16px;text-align:center;">
-                                    <div style="font-size:0.7rem;font-weight:600;color:var(--text-secondary,#64748b);text-transform:uppercase;letter-spacing:0.03em;">Total por Cobrar</div>
-                                    <div id="cxcMontoTotal" style="font-size:1.25rem;font-weight:700;color:var(--text-primary,#0f172a);margin-top:4px;">S/ 0</div>
-                                    <div style="font-size:0.7rem;color:var(--text-secondary,#64748b);margin-top:2px;"><span id="cxcTotalFacturas">0</span> facturas</div>
-                                </div>
-                                <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 16px;text-align:center;">
-                                    <div style="font-size:0.7rem;font-weight:600;color:#991b1b;text-transform:uppercase;letter-spacing:0.03em;">Monto Vencido</div>
-                                    <div id="cxcMontoVencido" style="font-size:1.25rem;font-weight:700;color:#dc2626;margin-top:4px;">S/ 0</div>
-                                    <div style="font-size:0.7rem;color:#991b1b;margin-top:2px;"><span id="cxcTotalVencidas">0</span> vencidas</div>
-                                </div>
-                                <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px 16px;text-align:center;">
-                                    <div style="font-size:0.7rem;font-weight:600;color:#92400e;text-transform:uppercase;letter-spacing:0.03em;">Monto Pendiente</div>
-                                    <div id="cxcMontoPendiente" style="font-size:1.25rem;font-weight:700;color:#d97706;margin-top:4px;">S/ 0</div>
-                                    <div style="font-size:0.7rem;color:#92400e;margin-top:2px;"><span id="cxcTotalPendientes">0</span> al día</div>
-                                </div>
-                                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;text-align:center;">
-                                    <div style="font-size:0.7rem;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:0.03em;">Clientes Deudores</div>
-                                    <div id="cxcTotalClientes" style="font-size:1.25rem;font-weight:700;color:#16a34a;margin-top:4px;">0</div>
-                                    <div style="font-size:0.7rem;color:#166534;margin-top:2px;">con facturas abiertas</div>
-                                </div>
-                            </div>
-
-                            <!-- Table of invoices -->
-                            <div style="overflow-x:auto;border:1px solid var(--border,#e2e8f0);border-radius:10px;">
-                                <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
-                                    <thead>
-                                        <tr style="background:var(--bg-main,#f8fafc);">
-                                            <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text-secondary,#64748b);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border,#e2e8f0);">Factura</th>
-                                            <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text-secondary,#64748b);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border,#e2e8f0);">Cliente</th>
-                                            <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text-secondary,#64748b);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border,#e2e8f0);">Emisión</th>
-                                            <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text-secondary,#64748b);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border,#e2e8f0);">Vencimiento</th>
-                                            <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text-secondary,#64748b);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border,#e2e8f0);">Monto</th>
-                                            <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text-secondary,#64748b);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border,#e2e8f0);">Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cxcTablaBody">
-                                        <tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-secondary,#64748b);">Cargando...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
     </div>
@@ -1067,54 +1011,7 @@
             } catch (err) { console.error('Error chartFacturas:', err); }
         }
 
-        // ===== Cuentas por Cobrar =====
-        async function cargarCuentasPorCobrar() {
-            try {
-                const res = await fetch('/reportes/api/cuentas-por-cobrar');
-                const json = await res.json();
-                if (!json.success) return;
-
-                const { resumen, facturas } = json.data;
-                const fmt = (v) => 'S/ ' + Number(v || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 });
-
-                // KPIs
-                document.getElementById('cxcMontoTotal').textContent = fmt(resumen.montoTotal);
-                document.getElementById('cxcTotalFacturas').textContent = resumen.totalFacturas || 0;
-                document.getElementById('cxcMontoVencido').textContent = fmt(resumen.montoVencido);
-                document.getElementById('cxcTotalVencidas').textContent = resumen.totalVencidas || 0;
-                document.getElementById('cxcMontoPendiente').textContent = fmt(resumen.montoPendiente);
-                document.getElementById('cxcTotalPendientes').textContent = resumen.totalPendientes || 0;
-                document.getElementById('cxcTotalClientes').textContent = (json.data.porCliente || []).length;
-
-                // Table
-                const tbody = document.getElementById('cxcTablaBody');
-                if (!facturas || facturas.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-secondary,#64748b);"><i class="bi bi-check-circle" style="font-size:1.2rem;color:#10b981;margin-right:6px;"></i>No hay facturas pendientes de cobro</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = facturas.map(f => {
-                    const esVencida = f.diasVencido > 0;
-                    const badgeColor = esVencida ? 'background:#fef2f2;color:#dc2626;' : 'background:#fffbeb;color:#d97706;';
-                    const badgeText = esVencida ? 'Vencida (' + f.diasVencido + 'd)' : 'Pendiente';
-                    const fechaEmision = f.FechaEmision ? new Date(f.FechaEmision).toLocaleDateString('es-PE') : '-';
-                    const fechaVenc = f.FechaVencimiento ? new Date(f.FechaVencimiento).toLocaleDateString('es-PE') : '-';
-
-                    return '<tr style="border-bottom:1px solid var(--border,#e2e8f0);">' +
-                        '<td style="padding:10px 14px;font-weight:600;color:var(--text-primary,#0f172a);">' + (f.Codigo || '-') + '</td>' +
-                        '<td style="padding:10px 14px;color:var(--text-primary,#0f172a);">' + (f.RazonSocial || '-') + '</td>' +
-                        '<td style="padding:10px 14px;color:var(--text-secondary,#64748b);">' + fechaEmision + '</td>' +
-                        '<td style="padding:10px 14px;color:' + (esVencida ? '#dc2626' : 'var(--text-secondary,#64748b)') + ';font-weight:' + (esVencida ? '600' : '400') + ';">' + fechaVenc + '</td>' +
-                        '<td style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text-primary,#0f172a);">' + fmt(f.Total) + '</td>' +
-                        '<td style="padding:10px 14px;text-align:center;"><span style="display:inline-block;padding:3px 10px;border-radius:9999px;font-size:0.7rem;font-weight:600;' + badgeColor + '">' + badgeText + '</span></td>' +
-                        '</tr>';
-                }).join('');
-            } catch (err) {
-                console.error('Error cuentasPorCobrar:', err);
-                document.getElementById('cxcTablaBody').innerHTML = '<tr><td colspan="6" style="padding:24px;text-align:center;color:#dc2626;">Error al cargar datos</td></tr>';
-            }
-        }
-
+        
 
     </script>
 </body>

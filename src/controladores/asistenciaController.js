@@ -385,13 +385,18 @@ exports.registrarMultiple = async (req, res) => {
 exports.mostrarMarcado = async (req, res) => {
     try {
         const usuario = req.session.usuario;
+        console.log('🔑 Usuario en sesión:', usuario.IdUsuario, usuario.Correo);
         
         // Obtener el empleado asociado al usuario
         const empleados = await Asistencia.getEmpleados();
+        console.log('👥 Total empleados obtenidos:', empleados.length);
+        
         const empleado = empleados.find(emp => emp.IdUsuario === usuario.IdUsuario);
+        console.log('👤 Empleado encontrado:', empleado?.IdEmpleado, empleado?.NombreCompleto);
         
         if (!empleado) {
-            req.flash('error', 'No se encontró información de empleado para este usuario');
+            console.error('❌ No se encontró empleado para el usuario:', usuario.IdUsuario);
+            req.flash('error', 'No se encontró información de empleado para este usuario. Contacte al administrador.');
             return res.redirect('/login');
         }
         
@@ -402,26 +407,45 @@ exports.mostrarMarcado = async (req, res) => {
         
         // Obtener asistencia de hoy
         const fechaHoy = hoy.toISOString().split('T')[0];
+        console.log('📅 Fecha de hoy:', fechaHoy, '| Es domingo:', esDomingo);
         
         // CERRAR REGISTROS PENDIENTES DE DÍAS ANTERIORES
-        await cerrarRegistrosPendientes(empleado.IdEmpleado, fechaHoy);
+        try {
+            await cerrarRegistrosPendientes(empleado.IdEmpleado, fechaHoy);
+        } catch (err) {
+            console.warn('⚠️  Error al cerrar registros pendientes (no crítico):', err.message);
+        }
         
-        const asistenciaHoy = await Asistencia.checkDuplicate(empleado.IdEmpleado, fechaHoy) 
-            ? await Asistencia.getByEmpleadoAndDateRange(empleado.IdEmpleado, fechaHoy, fechaHoy)
-            : [];
+        // Obtener registro de hoy
+        let registroHoy = null;
+        try {
+            const existeRegistro = await Asistencia.checkDuplicate(empleado.IdEmpleado, fechaHoy);
+            if (existeRegistro) {
+                const asistenciaHoy = await Asistencia.getByEmpleadoAndDateRange(empleado.IdEmpleado, fechaHoy, fechaHoy);
+                registroHoy = asistenciaHoy.length > 0 ? asistenciaHoy[0] : null;
+            }
+        } catch (err) {
+            console.warn('⚠️  Error al obtener registro de hoy (no crítico):', err.message);
+        }
         
-        const registroHoy = asistenciaHoy.length > 0 ? asistenciaHoy[0] : null;
+        console.log('📝 Registro de hoy:', registroHoy?.IdAsistencia, 'Entrada:', registroHoy?.HoraEntrada, 'Salida:', registroHoy?.HoraSalida);
         
         // Obtener últimas asistencias (últimos 7 días)
-        const hace7Dias = new Date(hoy);
-        hace7Dias.setDate(hace7Dias.getDate() - 7);
-        const fecha7Dias = hace7Dias.toISOString().split('T')[0];
-        
-        const historialReciente = await Asistencia.getByEmpleadoAndDateRange(
-            empleado.IdEmpleado, 
-            fecha7Dias, 
-            fechaHoy
-        );
+        let historialReciente = [];
+        try {
+            const hace7Dias = new Date(hoy);
+            hace7Dias.setDate(hace7Dias.getDate() - 7);
+            const fecha7Dias = hace7Dias.toISOString().split('T')[0];
+            
+            historialReciente = await Asistencia.getByEmpleadoAndDateRange(
+                empleado.IdEmpleado, 
+                fecha7Dias, 
+                fechaHoy
+            );
+            console.log('📊 Registros últimos 7 días:', historialReciente.length);
+        } catch (err) {
+            console.warn('⚠️  Error al obtener historial (no crítico):', err.message);
+        }
         
         res.render('asistencia/marcar', {
             title: 'Marcado de Asistencia',
@@ -431,8 +455,9 @@ exports.mostrarMarcado = async (req, res) => {
             esDomingo
         });
     } catch (error) {
-        console.error('Error al mostrar marcado:', error);
-        req.flash('error', 'Error al cargar la interfaz de marcado');
+        console.error('❌ Error crítico al mostrar marcado:', error);
+        console.error('Stack:', error.stack);
+        req.flash('error', 'Error al cargar la interfaz de marcado: ' + error.message);
         res.redirect('/login');
     }
 };
@@ -442,26 +467,31 @@ exports.marcarEntrada = async (req, res) => {
     try {
         const usuario = req.session.usuario;
         
-        console.log('Usuario intentando marcar:', usuario);
+        console.log('📍 [MARCAR ENTRADA] Usuario intentando marcar:', usuario.IdUsuario, usuario.Correo);
         
         // Obtener el empleado asociado al usuario
         const empleados = await Asistencia.getEmpleados();
-        console.log('Total empleados encontrados:', empleados.length);
+        console.log('👥 [MARCAR ENTRADA] Empleados encontrados:', empleados.length);
         
         const empleado = empleados.find(emp => emp.IdUsuario === usuario.IdUsuario);
-        console.log('Empleado encontrado:', empleado);
         
         if (!empleado) {
-            req.flash('error', 'No se encontró información de empleado para este usuario. Contacte al administrador.');
+            console.error('❌ [MARCAR ENTRADA] No se encontró empleado para usuario:', usuario.IdUsuario);
+            req.flash('error', 'No se encontró información de empleado para este usuario. Verifique los datos de registro.');
             return res.redirect('/asistencia/marcar');
         }
+        
+        console.log('👤 [MARCAR ENTRADA] Empleado OK:', empleado.IdEmpleado, empleado.NombreCompleto);
         
         const hoy = new Date();
         const fechaHoy = hoy.toISOString().split('T')[0];
         const horaActual = hoy.toTimeString().split(' ')[0];
         
+        console.log('⏰ [MARCAR ENTRADA] Fecha:', fechaHoy, '| Hora:', horaActual, '| Día semana:', hoy.getDay());
+        
         // Verificar si es domingo
         if (hoy.getDay() === 0) {
+            console.log('⚠️  [MARCAR ENTRADA] Intento en domingo - Bloqueado');
             req.flash('error', 'No se puede marcar asistencia los domingos');
             return res.redirect('/asistencia/marcar');
         }
@@ -470,6 +500,7 @@ exports.marcarEntrada = async (req, res) => {
         const existeRegistro = await Asistencia.checkDuplicate(empleado.IdEmpleado, fechaHoy);
         
         if (existeRegistro) {
+            console.log('⚠️  [MARCAR ENTRADA] Ya existe registro - Bloqueado');
             req.flash('error', 'Ya has marcado tu entrada hoy');
             return res.redirect('/asistencia/marcar');
         }
@@ -486,21 +517,23 @@ exports.marcarEntrada = async (req, res) => {
             Observaciones: 'Marcado automático por empleado - Jornada en curso'
         };
         
-        await Asistencia.create(asistenciaData);
+        const idAsistencia = await Asistencia.create(asistenciaData);
+        console.log('✅ [MARCAR ENTRADA] Registro creado exitosamente:', idAsistencia);
         
-        req.flash('success', `Entrada marcada correctamente a las ${horaActual.slice(0,5)}`);
+        req.flash('success', `✅ Entrada marcada correctamente a las ${horaActual.slice(0,5)}`);
         
         // Guardar la sesión antes de redirigir para asegurar que el flash se guarde
         req.session.save((err) => {
             if (err) {
-                console.error('Error al guardar sesión:', err);
+                console.error('❌ Error al guardar sesión:', err);
             }
             res.redirect('/asistencia/marcar');
         });
         
     } catch (error) {
-        console.error('Error al marcar entrada:', error);
-        req.flash('error', 'Error al registrar la entrada');
+        console.error('❌ [MARCAR ENTRADA] Error crítico:', error.message);
+        console.error('Stack:', error.stack);
+        req.flash('error', 'Error al registrar la entrada: ' + error.message);
         res.redirect('/asistencia/marcar');
     }
 };
@@ -509,12 +542,14 @@ exports.marcarEntrada = async (req, res) => {
 exports.marcarSalida = async (req, res) => {
     try {
         const usuario = req.session.usuario;
+        console.log('🚪 [MARCAR SALIDA] Usuario intentando marcar salida:', usuario.IdUsuario);
         
         // Obtener el empleado asociado al usuario
         const empleados = await Asistencia.getEmpleados();
         const empleado = empleados.find(emp => emp.IdUsuario === usuario.IdUsuario);
         
         if (!empleado) {
+            console.error('❌ [MARCAR SALIDA] No encontrado empleado');
             req.flash('error', 'No se encontró información de empleado');
             return res.redirect('/asistencia/marcar');
         }
@@ -523,10 +558,13 @@ exports.marcarSalida = async (req, res) => {
         const fechaHoy = hoy.toISOString().split('T')[0];
         const horaActual = hoy.toTimeString().split(' ')[0];
         
+        console.log('⏰ [MARCAR SALIDA] Fecha:', fechaHoy, '| Hora:', horaActual);
+        
         // Verificar si existe un registro hoy
         const existeRegistro = await Asistencia.checkDuplicate(empleado.IdEmpleado, fechaHoy);
         
         if (!existeRegistro) {
+            console.log('⚠️  [MARCAR SALIDA] No existe entrada previa');
             req.flash('error', 'Debes marcar tu entrada primero');
             return res.redirect('/asistencia/marcar');
         }
@@ -542,6 +580,7 @@ exports.marcarSalida = async (req, res) => {
         
         // Verificar si ya marcó salida
         if (registroHoy.HoraSalida) {
+            console.log('⚠️  [MARCAR SALIDA] Ya tiene salida registrada');
             req.flash('error', 'Ya has marcado tu salida hoy');
             return res.redirect('/asistencia/marcar');
         }
@@ -552,21 +591,21 @@ exports.marcarSalida = async (req, res) => {
         const diferenciaMs = horaSalida - horaEntrada;
         const horasTrabajadas = diferenciaMs / (1000 * 60 * 60); // Convertir a horas
         
-        console.log('=== DEBUG MARCADO SALIDA ===');
-        console.log('Hora entrada:', registroHoy.HoraEntrada);
-        console.log('Hora salida:', horaActual);
-        console.log('Horas trabajadas:', horasTrabajadas);
+        console.log('📊 [MARCAR SALIDA] Calculos:');
+        console.log('  - Entrada:', registroHoy.HoraEntrada);
+        console.log('  - Salida:', horaActual);
+        console.log('  - Horas trabajadas:', horasTrabajadas.toFixed(2));
         
         // Validar mínimo 2 horas de trabajo
         if (horasTrabajadas < 2) {
-            console.log('VALIDACION: Menos de 2 horas, bloqueando');
+            console.log('⚠️  [MARCAR SALIDA] Validación fallida: menos de 2 horas');
             req.flash('error', `Debes trabajar mínimo 2 horas. Has trabajado ${horasTrabajadas.toFixed(2)} horas.`);
             return res.redirect('/asistencia/marcar');
         }
         
         // Clasificar jornada laboral según horas trabajadas
         let jornadaLaboral;
-        let observaciones = registroHoy.Observaciones || '';
+        let observaciones = '';
         
         if (horasTrabajadas < 4) {
             jornadaLaboral = 'MEDIO_TIEMPO';
@@ -580,6 +619,8 @@ exports.marcarSalida = async (req, res) => {
             observaciones = `Jornada completa con ${horasExtras.toFixed(2)} horas extras`;
         }
         
+        console.log('📝 [MARCAR SALIDA] Clasificación:', jornadaLaboral, '|', observaciones);
+        
         // Actualizar con hora de salida y jornada clasificada
         await Asistencia.update(registroHoy.IdAsistencia, {
             HoraSalida: horaActual,
@@ -587,19 +628,22 @@ exports.marcarSalida = async (req, res) => {
             Observaciones: observaciones
         });
         
-        req.flash('success', `Salida marcada a las ${horaActual.slice(0,5)}. Total: ${horasTrabajadas.toFixed(2)} horas (${jornadaLaboral})`);
+        console.log('✅ [MARCAR SALIDA] Salida registrada exitosamente');
+        
+        req.flash('success', `✅ Salida marcada a las ${horaActual.slice(0,5)}. Total: ${horasTrabajadas.toFixed(2)} horas (${jornadaLaboral})`);
         
         // Guardar la sesión antes de redirigir para asegurar que el flash se guarde
         req.session.save((err) => {
             if (err) {
-                console.error('Error al guardar sesión:', err);
+                console.error('❌ Error al guardar sesión:', err);
             }
             res.redirect('/asistencia/marcar');
         });
         
     } catch (error) {
-        console.error('Error al marcar salida:', error);
-        req.flash('error', 'Error al registrar la salida');
+        console.error('❌ [MARCAR SALIDA] Error crítico:', error.message);
+        console.error('Stack:', error.stack);
+        req.flash('error', 'Error al registrar la salida: ' + error.message);
         res.redirect('/asistencia/marcar');
     }
 };

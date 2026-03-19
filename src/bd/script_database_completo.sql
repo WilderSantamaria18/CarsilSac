@@ -364,6 +364,7 @@ INSERT INTO PERMISO (IdRol, NombreMenu) VALUES
 (1, 'Reportes'),
 (2, 'Dashboard'),
 (2, 'Clientes'),
+(2, 'Asistencias'),
 (3, 'Dashboard');
 
 -- -----------------------------------------------
