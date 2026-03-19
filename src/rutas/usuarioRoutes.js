@@ -11,6 +11,6 @@ router.get('/usuarios/crear', usuarioController.mostrarFormularioCrear);
 router.post('/usuarios/crear', usuarioController.crearUsuario);
 router.get('/usuarios/editar/:id', usuarioController.mostrarFormularioEditar);
 router.post('/usuarios/editar/:id', usuarioController.actualizarUsuario);
-router.get('/usuarios/eliminar/:id', usuarioController.eliminarUsuario);
+router.post('/usuarios/eliminar/:id', usuarioController.eliminarUsuario);
 
 module.exports = router;
