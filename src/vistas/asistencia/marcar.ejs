@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white-translucent">
     <title>Marcar Asistencia - CARSIL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -22,30 +22,30 @@
         }
 
         :root {
-            --bg: #0d1117;
-            --bg-card: #161b22;
-            --bg-card-hover: #1c2230;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-light: rgba(255, 255, 255, 0.04);
-            --accent: #137fec;
-            --accent-glow: rgba(19, 127, 236, 0.3);
-            --accent-light: rgba(19, 127, 236, 0.12);
-            --success: #2ea043;
-            --success-glow: rgba(46, 160, 67, 0.25);
-            --warning: #e3b341;
-            --warning-bg: rgba(227, 179, 65, 0.12);
-            --text-primary: #e6edf3;
-            --text-secondary: #7d8590;
-            --text-muted: #484f58;
-            --white: #ffffff;
-            --danger: #f85149;
-            --danger-bg: rgba(248, 81, 73, 0.12);
+            --bg-page: #F7F7F8;
+            --bg-surface: #FFFFFF;
+            --bg-hover: #F3F3F5;
+            --border: #E5E5E7;
+            --border-light: #F0F0F2;
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --text-muted: #A1A1A6;
+            --primary: #3B49DF;
+            --primary-light: rgba(59, 73, 223, 0.1);
+            --primary-hover: #2E3ABE;
+            --success: #10B981;
+            --success-light: rgba(16, 185, 129, 0.1);
+            --warning: #F59E0B;
+            --warning-light: rgba(245, 158, 11, 0.1);
+            --danger: #EF4444;
+            --danger-light: rgba(239, 68, 68, 0.1);
         }
+
 
         html,
         body {
             height: 100%;
-            background: var(--bg);
+            background: var(--bg-page);
             color: var(--text-primary);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             overflow-x: hidden;
@@ -63,17 +63,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 1.25rem;
+            padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border);
-            background: rgba(13, 17, 23, 0.95);
-            backdrop-filter: blur(12px);
+            background: var(--bg-surface);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .company-name {
-            font-size: 0.8rem;
+            font-size: 0.875rem;
             font-weight: 600;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -86,58 +85,58 @@
             gap: 0.4rem;
             color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            padding: 0.4rem 0.75rem;
+            padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             border: 1px solid var(--border);
-            background: transparent;
+            background: var(--bg-page);
             transition: all 0.2s ease;
         }
 
-        .logout-btn:hover,
-        .logout-btn:active {
+        .logout-btn:hover {
             color: var(--danger);
-            border-color: rgba(248, 81, 73, 0.4);
-            background: var(--danger-bg);
+            border-color: var(--danger-light);
+            background: var(--danger-light);
         }
 
         /* ─── MAIN SCROLL AREA ─── */
         .scroll-area {
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem 1.25rem 2rem;
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1.5rem;
         }
 
         /* ─── ALERTS ─── */
         .alert-banner {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            border-radius: 0.875rem;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
             font-size: 0.875rem;
             font-weight: 500;
             animation: slideIn 0.3s ease;
+            border: 1px solid transparent;
         }
 
         .alert-banner.success {
-            background: rgba(46, 160, 67, 0.15);
-            border: 1px solid rgba(46, 160, 67, 0.3);
-            color: #4caf7d;
+            background: var(--success-light);
+            border-color: #D1FAE5;
+            color: var(--success);
         }
 
         .alert-banner.error {
-            background: var(--danger-bg);
-            border: 1px solid rgba(248, 81, 73, 0.3);
-            color: #ff6b6b;
+            background: var(--danger-light);
+            border-color: #FEE2E2;
+            color: var(--danger);
         }
 
         .alert-icon {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
             margin-top: 0.05rem;
         }
@@ -147,7 +146,6 @@
                 opacity: 0;
                 transform: translateY(-8px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -156,63 +154,52 @@
 
         /* ─── PROFILE CARD ─── */
         .profile-card {
-            background: var(--bg-card);
+            background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 1.25rem;
-            padding: 1.75rem 1.5rem;
+            border-radius: 1rem;
+            padding: 2rem 1.5rem;
             text-align: center;
         }
 
         .employee-avatar {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, var(--accent-light), rgba(19, 127, 236, 0.2));
-            border: 2px solid var(--accent);
+            width: 80px;
+            height: 80px;
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
-            color: var(--accent);
-            margin: 0 auto 1rem;
-            box-shadow: 0 0 20px var(--accent-glow);
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0 auto 1.25rem;
         }
 
         .employee-name {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.25rem;
         }
 
         .employee-role {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: var(--text-secondary);
             font-weight: 500;
-        }
-
-        .role-dot {
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            margin: 0 0.4rem;
-            vertical-align: middle;
         }
 
         /* ─── CLOCK ─── */
         .clock-section {
             text-align: center;
-            padding: 0.5rem 0;
+            padding: 0;
         }
 
         .clock-time {
-            font-size: 4.5rem;
+            font-size: 3.5rem;
             font-weight: 300;
-            letter-spacing: -3px;
+            letter-spacing: -2px;
             font-variant-numeric: tabular-nums;
-            color: var(--white);
+            color: var(--primary);
             line-height: 1;
             margin-bottom: 0.5rem;
         }
@@ -223,19 +210,16 @@
         }
 
         @keyframes blink {
-
-            0%,
-            100% {
+            0%, 100% {
                 opacity: 1;
             }
-
             50% {
-                opacity: 0.2;
+                opacity: 0.3;
             }
         }
 
         .clock-date {
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-secondary);
             letter-spacing: 0.02em;
@@ -243,16 +227,16 @@
 
         /* ─── SUNDAY ALERT ─── */
         .sunday-alert {
-            background: var(--warning-bg);
-            border: 1px solid rgba(227, 179, 65, 0.3);
-            border-radius: 1rem;
+            background: var(--warning-light);
+            border: 1px solid #FEF3C7;
+            border-radius: 0.75rem;
             padding: 1.25rem;
             display: flex;
             align-items: center;
-            gap: 0.875rem;
+            gap: 1rem;
             color: var(--warning);
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
         .sunday-alert-icon {
@@ -264,7 +248,7 @@
         .punch-buttons {
             display: flex;
             flex-direction: column;
-            gap: 0.875rem;
+            gap: 1rem;
         }
 
         .btn-punch {
@@ -272,16 +256,16 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 1.125rem 1.375rem;
-            border-radius: 1rem;
-            border: none;
+            padding: 1.25rem 1.5rem;
+            border-radius: 0.875rem;
+            border: 1px solid transparent;
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             text-decoration: none;
-            min-height: 72px;
+            min-height: 80px;
             position: relative;
             overflow: hidden;
         }
@@ -290,28 +274,28 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(255, 255, 255, 0);
+            background: rgba(0, 0, 0, 0);
             transition: background 0.2s ease;
         }
 
         .btn-punch:active::before {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .btn-punch-left {
             display: flex;
             align-items: center;
-            gap: 0.875rem;
+            gap: 1rem;
         }
 
         .btn-punch-icon {
-            width: 42px;
-            height: 42px;
+            width: 48px;
+            height: 48px;
             border-radius: 0.625rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             flex-shrink: 0;
         }
 
@@ -321,35 +305,35 @@
 
         .btn-punch-label {
             font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-weight: 600;
+            letter-spacing: 0.01em;
         }
 
         .btn-punch-sublabel {
             font-size: 0.75rem;
             font-weight: 400;
             opacity: 0.7;
-            margin-top: 0.15rem;
+            margin-top: 0.2rem;
         }
 
         .btn-punch-time {
-            font-size: 1.1rem;
+            font-size: 1.125rem;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.5px;
-            font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+            font-family: ui-monospace, 'Courier New', monospace;
         }
 
         /* ENTRADA button */
         .btn-entrada {
-            background: linear-gradient(135deg, var(--accent), #0f6fd4);
-            color: var(--white);
-            box-shadow: 0 4px 20px var(--accent-glow);
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         .btn-entrada:not(:disabled):hover {
+            background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 8px 28px var(--accent-glow);
         }
 
         .btn-entrada .btn-punch-icon {
@@ -359,63 +343,67 @@
 
         /* SALIDA button */
         .btn-salida {
-            background: var(--bg-card);
+            background: var(--bg-surface);
             color: var(--text-primary);
-            border: 1px solid var(--border);
+            border-color: var(--border);
         }
 
         .btn-salida:not(:disabled):hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(255, 255, 255, 0.15);
+            background: var(--bg-hover);
+            border-color: var(--text-muted);
             transform: translateY(-1px);
         }
 
         .btn-salida .btn-punch-icon {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--bg-hover);
             color: var(--text-secondary);
         }
 
         /* DISABLED state */
         .btn-punch:disabled {
-            opacity: 0.35;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
-            box-shadow: none !important;
         }
 
         /* ─── STATUS SUMMARY ─── */
         .status-summary {
-            display: flex;
-            gap: 0.75rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         .status-pill {
-            flex: 1;
-            background: var(--bg-card);
+            background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 0.875rem;
-            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
             text-align: center;
+            transition: all 0.2s ease;
         }
 
         .status-pill-label {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
         }
 
         .status-pill-value {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
-            font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+            font-family: ui-monospace, 'Courier New', monospace;
         }
 
         .status-pill-value.in {
-            color: #4caf7d;
+            color: var(--success);
         }
 
         .status-pill-value.out {
@@ -428,18 +416,19 @@
 
         /* ─── HISTORY SECTION ─── */
         .history-section {
-            background: var(--bg-card);
+            background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 1.25rem;
+            border-radius: 1rem;
             overflow: hidden;
         }
 
         .history-header {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border-light);
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-page);
         }
 
         .history-title {
@@ -454,13 +443,17 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.875rem 1.25rem;
+            padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border-light);
             transition: background 0.15s ease;
         }
 
         .history-item:last-child {
             border-bottom: none;
+        }
+
+        .history-item:hover {
+            background: var(--bg-page);
         }
 
         .history-date {
@@ -473,15 +466,15 @@
         .history-times {
             display: flex;
             align-items: center;
-            gap: 0.875rem;
+            gap: 1rem;
         }
 
         .history-time {
             display: flex;
             align-items: center;
-            gap: 0.35rem;
-            font-size: 0.85rem;
-            font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+            gap: 0.4rem;
+            font-size: 0.875rem;
+            font-family: ui-monospace, 'Courier New', monospace;
             font-weight: 500;
         }
 
@@ -501,24 +494,70 @@
         }
 
         .history-time.in {
-            color: #7d8590;
+            color: var(--success);
         }
 
         .history-time.out {
-            color: #7d8590;
+            color: var(--risk);
         }
 
         .history-empty {
-            padding: 2rem 1.25rem;
+            padding: 2.5rem 1.5rem;
             text-align: center;
             color: var(--text-muted);
             font-size: 0.875rem;
         }
 
         .history-empty i {
-            font-size: 2rem;
+            font-size: 2.5rem;
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--border);
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 640px) {
+            .scroll-area {
+                padding: 1.5rem 1rem;
+                gap: 1.25rem;
+            }
+
+            .top-bar {
+                padding: 1rem;
+            }
+
+            .profile-card {
+                padding: 1.5rem;
+            }
+
+            .clock-time {
+                font-size: 3rem;
+            }
+
+            .btn-punch {
+                padding: 1rem 1.25rem;
+                min-height: 72px;
+            }
+
+            .btn-punch-left {
+                gap: 0.75rem;
+            }
+
+            .btn-punch-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .status-summary {
+                gap: 0.75rem;
+            }
+
+            .history-header,
+            .history-item {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
         }
     </style>
 </head>
@@ -538,178 +577,150 @@
     <div class="scroll-area">
 
         <!-- ALERTS -->
-        <% if (messages.success && messages.success.length> 0) { %>
+        <% if (messages.success && messages.success.length > 0) { %>
             <div class="alert-banner success">
                 <i class="bi bi-check-circle-fill alert-icon"></i>
-                <span>
-                    <%= messages.success[0] %>
-                </span>
+                <span><%= messages.success[0] %></span>
             </div>
-            <% } %>
+        <% } %>
 
-                <% if (messages.error && messages.error.length> 0) { %>
-                    <div class="alert-banner error">
-                        <i class="bi bi-exclamation-circle-fill alert-icon"></i>
-                        <span>
-                            <%= messages.error[0] %>
-                        </span>
+        <% if (messages.error && messages.error.length > 0) { %>
+            <div class="alert-banner error">
+                <i class="bi bi-exclamation-circle-fill alert-icon"></i>
+                <span><%= messages.error[0] %></span>
+            </div>
+        <% } %>
+
+        <!-- PROFILE CARD -->
+        <div class="profile-card">
+            <div class="employee-avatar">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <div class="employee-name">
+                <%= empleado.NombreCompleto %>
+            </div>
+            <div class="employee-role">
+                <%= empleado.Cargo || 'Empleado' %> • <%= empleado.Area || 'Sin Área' %>
+            </div>
+        </div>
+
+        <!-- CLOCK -->
+        <div class="clock-section">
+            <div class="clock-time" id="horaDisplay">
+                <span id="horaH">00</span><span class="clock-separator">:</span><span id="horaM">00</span>
+            </div>
+            <div class="clock-date" id="fechaDisplay">Cargando...</div>
+        </div>
+
+        <!-- ESTADO DOMINICAL -->
+        <% if (esDomingo) { %>
+            <div class="sunday-alert">
+                <i class="bi bi-calendar-x sunday-alert-icon"></i>
+                <div>
+                    <strong>Día de descanso</strong><br>
+                    No se registra asistencia los domingos.
+                </div>
+            </div>
+        <% } else { %>
+
+            <!-- STATUS SUMMARY -->
+            <div class="status-summary">
+                <div class="status-pill">
+                    <div class="status-pill-label">
+                        <i class="bi bi-arrow-down-right"></i> Entrada
                     </div>
-                    <% } %>
+                    <div class="status-pill-value <%= registroHoy && registroHoy.HoraEntrada ? 'in' : 'empty' %>">
+                        <%= registroHoy && registroHoy.HoraEntrada ? registroHoy.HoraEntrada.slice(0,5) : '--:--' %>
+                    </div>
+                </div>
+                <div class="status-pill">
+                    <div class="status-pill-label">
+                        <i class="bi bi-arrow-up-right"></i> Salida
+                    </div>
+                    <div class="status-pill-value <%= registroHoy && registroHoy.HoraSalida ? 'out' : 'empty' %>">
+                        <%= registroHoy && registroHoy.HoraSalida ? registroHoy.HoraSalida.slice(0,5) : '--:--' %>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- PROFILE CARD -->
-                        <div class="profile-card">
-                            <div class="employee-avatar">
-                                <i class="bi bi-person-badge"></i>
+            <!-- PUNCH BUTTONS -->
+            <div class="punch-buttons">
+                <form action="/asistencia/marcar-entrada" method="POST" style="margin:0">
+                    <button type="submit" class="btn-punch btn-entrada" <%= registroHoy ? 'disabled' : '' %>>
+                        <div class="btn-punch-left">
+                            <div class="btn-punch-icon">
+                                <i class="bi bi-arrow-down-right"></i>
                             </div>
-                            <div class="employee-name">
-                                <%= empleado.NombreCompleto %>
-                            </div>
-                            <div class="employee-role">
-                                <%= empleado.Cargo || 'Empleado' %><span class="role-dot"></span>
-                                    <%= empleado.Area || 'Sin Área' %>
+                            <div class="btn-punch-text">
+                                <div class="btn-punch-label">MARCAR ENTRADA</div>
+                                <div class="btn-punch-sublabel">
+                                    <%= registroHoy && registroHoy.HoraEntrada ? 'Registrada a las ' + registroHoy.HoraEntrada.slice(0,5) : 'Toca para registrar' %>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- CLOCK -->
-                        <div class="clock-section">
-                            <div class="clock-time" id="horaDisplay">
-                                <span id="horaH">00</span><span class="clock-separator">:</span><span
-                                    id="horaM">00</span>
-                            </div>
-                            <div class="clock-date" id="fechaDisplay">Cargando...</div>
+                        <div class="btn-punch-time">
+                            <%= registroHoy && registroHoy.HoraEntrada ? registroHoy.HoraEntrada.slice(0,5) : '' %>
                         </div>
+                    </button>
+                </form>
 
-                        <!-- ESTADO DOMINICAL -->
-                        <% if (esDomingo) { %>
-                            <div class="sunday-alert">
-                                <i class="bi bi-calendar-x sunday-alert-icon"></i>
-                                <div>
-                                    <strong>Día de descanso</strong><br>
-                                    No se registra asistencia los domingos.
+                <form action="/asistencia/marcar-salida" method="POST" style="margin:0">
+                    <button type="submit" class="btn-punch btn-salida" <%= !registroHoy || registroHoy.HoraSalida ? 'disabled' : '' %>>
+                        <div class="btn-punch-left">
+                            <div class="btn-punch-icon">
+                                <i class="bi bi-arrow-up-right"></i>
+                            </div>
+                            <div class="btn-punch-text">
+                                <div class="btn-punch-label">MARCAR SALIDA</div>
+                                <div class="btn-punch-sublabel">
+                                    <%= registroHoy && registroHoy.HoraSalida ? 'Registrada a las ' + registroHoy.HoraSalida.slice(0,5) : (!registroHoy ? 'Primero registra tu entrada' : 'Toca para registrar' ) %>
                                 </div>
                             </div>
-                            <% } else { %>
+                        </div>
+                        <div class="btn-punch-time">
+                            <%= registroHoy && registroHoy.HoraSalida ? registroHoy.HoraSalida.slice(0,5) : '' %>
+                        </div>
+                    </button>
+                </form>
+            </div>
 
-                                <!-- STATUS SUMMARY -->
-                                <div class="status-summary">
-                                    <div class="status-pill">
-                                        <div class="status-pill-label"><i class="bi bi-box-arrow-in-right"></i> Entrada
-                                        </div>
-                                        <div
-                                            class="status-pill-value <%= registroHoy && registroHoy.HoraEntrada ? 'in' : 'empty' %>">
-                                            <%= registroHoy && registroHoy.HoraEntrada ?
-                                                registroHoy.HoraEntrada.slice(0,5) : '--:--' %>
-                                        </div>
-                                    </div>
-                                    <div class="status-pill">
-                                        <div class="status-pill-label"><i class="bi bi-box-arrow-right"></i> Salida
-                                        </div>
-                                        <div
-                                            class="status-pill-value <%= registroHoy && registroHoy.HoraSalida ? 'out' : 'empty' %>">
-                                            <%= registroHoy && registroHoy.HoraSalida ?
-                                                registroHoy.HoraSalida.slice(0,5) : '--:--' %>
-                                        </div>
-                                    </div>
-                                </div>
+        <% } %>
 
-                                <!-- PUNCH BUTTONS -->
-                                <div class="punch-buttons">
-                                    <form action="/asistencia/marcar-entrada" method="POST" style="margin:0">
-                                        <button type="submit" class="btn-punch btn-entrada" <%=registroHoy ? 'disabled'
-                                            : '' %>>
-                                            <div class="btn-punch-left">
-                                                <div class="btn-punch-icon">
-                                                    <i class="bi bi-box-arrow-in-right"></i>
-                                                </div>
-                                                <div class="btn-punch-text">
-                                                    <div class="btn-punch-label">MARCAR ENTRADA</div>
-                                                    <div class="btn-punch-sublabel">
-                                                        <%= registroHoy && registroHoy.HoraEntrada ? 'Registrada a las '
-                                                            + registroHoy.HoraEntrada.slice(0,5) : 'Toca para registrar'
-                                                            %>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="btn-punch-time">
-                                                <%= registroHoy && registroHoy.HoraEntrada ?
-                                                    registroHoy.HoraEntrada.slice(0,5) : '' %>
-                                                    <% if (!(registroHoy && registroHoy.HoraEntrada)) { %>
-                                                        <i class="bi bi-chevron-right"
-                                                            style="font-size:1rem; opacity:0.7;"></i>
-                                                        <% } %>
-                                            </div>
-                                        </button>
-                                    </form>
+        <!-- HISTORIAL RECIENTE -->
+        <div class="history-section">
+            <div class="history-header">
+                <i class="bi bi-journal-text" style="color: var(--text-muted); font-size: 1rem;"></i>
+                <span class="history-title">Historial Reciente</span>
+            </div>
 
-                                    <form action="/asistencia/marcar-salida" method="POST" style="margin:0">
-                                        <button type="submit" class="btn-punch btn-salida" <%=!registroHoy ||
-                                            registroHoy.HoraSalida ? 'disabled' : '' %>>
-                                            <div class="btn-punch-left">
-                                                <div class="btn-punch-icon">
-                                                    <i class="bi bi-box-arrow-right"></i>
-                                                </div>
-                                                <div class="btn-punch-text">
-                                                    <div class="btn-punch-label">MARCAR SALIDA</div>
-                                                    <div class="btn-punch-sublabel">
-                                                        <%= registroHoy && registroHoy.HoraSalida ? 'Registrada a las '
-                                                            + registroHoy.HoraSalida.slice(0,5) : (!registroHoy
-                                                            ? 'Primero registra tu entrada' : 'Toca para registrar' ) %>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="btn-punch-time">
-                                                <%= registroHoy && registroHoy.HoraSalida ?
-                                                    registroHoy.HoraSalida.slice(0,5) : '' %>
-                                                    <% if (!(registroHoy && registroHoy.HoraSalida) && registroHoy) { %>
-                                                        <i class="bi bi-chevron-right"
-                                                            style="font-size:1rem; opacity:0.7;"></i>
-                                                        <% } %>
-                                            </div>
-                                        </button>
-                                    </form>
-                                </div>
-
-                                <% } %>
-
-                                    <!-- HISTORIAL RECIENTE -->
-                                    <div class="history-section">
-                                        <div class="history-header">
-                                            <i class="bi bi-journal-check"
-                                                style="color: var(--text-muted); font-size:0.875rem;"></i>
-                                            <span class="history-title">Historial Reciente</span>
-                                        </div>
-
-                                        <% if (historialReciente && historialReciente.length> 0) { %>
-                                            <% historialReciente.slice(0, 7).forEach(registro=> {
-                                                const fecha = new Date(registro.Fecha);
-                                                const fechaFormat = fecha.toLocaleDateString('es-PE', { weekday:
-                                                'short', day: '2-digit', month: 'short' });
-                                                %>
-                                                <div class="history-item">
-                                                    <span class="history-date">
-                                                        <%= fechaFormat %>
-                                                    </span>
-                                                    <div class="history-times">
-                                                        <span class="history-time in">
-                                                            <span class="history-time-dot in"></span>
-                                                            <%= registro.HoraEntrada ? registro.HoraEntrada.slice(0,5)
-                                                                : '--:--' %>
-                                                        </span>
-                                                        <span class="history-time out">
-                                                            <span class="history-time-dot out"></span>
-                                                            <%= registro.HoraSalida ? registro.HoraSalida.slice(0,5)
-                                                                : '--:--' %>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <% }); %>
-                                                    <% } else { %>
-                                                        <div class="history-empty">
-                                                            <i class="bi bi-inbox"></i>
-                                                            No hay registros recientes
-                                                        </div>
-                                                        <% } %>
-                                    </div>
+            <% if (historialReciente && historialReciente.length > 0) { %>
+                <% historialReciente.slice(0, 7).forEach(registro=> {
+                    const fecha = new Date(registro.Fecha);
+                    const fechaFormat = fecha.toLocaleDateString('es-PE', { weekday: 'short', day: '2-digit', month: 'short' });
+                %>
+                    <div class="history-item">
+                        <span class="history-date">
+                            <%= fechaFormat %>
+                        </span>
+                        <div class="history-times">
+                            <span class="history-time in">
+                                <span class="history-time-dot in"></span>
+                                <%= registro.HoraEntrada ? registro.HoraEntrada.slice(0,5) : '--:--' %>
+                            </span>
+                            <span class="history-time out">
+                                <span class="history-time-dot out"></span>
+                                <%= registro.HoraSalida ? registro.HoraSalida.slice(0,5) : '--:--' %>
+                            </span>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="history-empty">
+                    <i class="bi bi-inbox"></i>
+                    No hay registros recientes
+                </div>
+            <% } %>
+        </div>
 
     </div><!-- end scroll-area -->
 
@@ -735,11 +746,9 @@
         // Auto-dismiss alerts
         setTimeout(() => {
             document.querySelectorAll('.alert-banner').forEach(el => {
-                el.style.transition = 'opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease';
+                el.style.transition = 'opacity 0.5s ease';
                 el.style.opacity = '0';
-                el.style.maxHeight = '0';
-                el.style.overflow = 'hidden';
-                el.style.marginBottom = '0';
+                el.style.pointerEvents = 'none';
             });
         }, 4000);
     </script>
