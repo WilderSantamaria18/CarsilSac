@@ -101,11 +101,12 @@ app.use((req, res, next) => {
     const usuario = req.session.usuario;
 
     // ✅ EXCEPCIONES: Permitir acceso sin restricción de permisos
-    // Empleados pueden SIEMPRE marcar su propia asistencia
+    // Empleados pueden SIEMPRE marcar su propia asistencia y cerrar sesión
     if (req.path === '/asistencia/marcar' || 
         req.path === '/asistencia/marcar-entrada' || 
         req.path === '/asistencia/marcar-salida' ||
-        req.path.startsWith('/asistencia/marcar/')) {
+        req.path.startsWith('/asistencia/marcar/') ||
+        req.path === '/logout') {
         console.log(`✅ [PERMISO] Empleado ${usuario.IdUsuario} accede a: ${req.path}`);
         return next();
     }
